@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dayjs from "dayjs";
 import { blogSchema } from "@/schemas/blogSchema";
 import { prisma } from "@/lib/prismaClient";
-import { verifyToken } from "@/lib/verifyToken";
+import { verifyToken } from "@/lib/token/verifyToken";
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,7 +56,8 @@ export async function POST(req: NextRequest) {
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
-    console.error(error);
+    console.error((error as Error).message);
+    console.error((error as Error).stack);
   }
 }
 
@@ -79,6 +80,7 @@ export async function GET() {
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
-    console.log(error);
+    console.error((error as Error).message);
+    console.error((error as Error).stack);
   }
 }

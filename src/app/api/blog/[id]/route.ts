@@ -34,6 +34,7 @@ export async function GET({ params }: RouteParams) {
     return NextResponse.json({ formattedBlog }, { status: 200 });
   } catch (error) {
     console.error((error as Error).message);
+    console.error((error as Error).stack);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
@@ -58,6 +59,7 @@ export async function DELETE({ params }: RouteParams) {
     );
   } catch (error) {
     console.error((error as Error).message);
+    console.error((error as Error).stack);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
@@ -93,7 +95,8 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(error);
+    console.error((error as Error).message);
+    console.error((error as Error).stack);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
