@@ -6,42 +6,45 @@ import { verifyToken } from "@/lib/verifyToken";
 
 export async function POST(req: NextRequest) {
   try {
-    //access the request header for user ID passed from middleware
-    const userID = req.headers.get("x-user-ID");
-    console.log(userID);
+    // //access the request header for user ID passed from middleware
+    // const userID = req.headers.get("x-user-ID");
+    // console.log(userID);
 
     const body = await req.json();
 
     //zod validate
-    const parseResult = blogZodSchema.safeParse(body);
+    const parsedBody = blogSchema.safeParse(body);
 
-    if (!parseResult.success) {
-      return NextResponse.json({ error: parseResult.error }, { status: 400 });
+    if (!parsedBody.success) {
+      return NextResponse.json({ error: "invalid data" }, { status: 400 });
     }
 
     type DecodedPayload = {
       id: String;
     };
-    //get cookie
 
+    //get cookie
     const cookie = req.cookies.get("token");
     //verify cookie
     const { errorMessage, decodedPayload } = await verifyToken(
       cookie?.value ?? ""
     );
+
     if (errorMessage) {
       return NextResponse.json(
         { error: "invalid user token" },
         { status: 403 }
       );
     }
+
     const blogData = {
-      ...parseResult.data,
+      ...parsedBody.data,
       authorID: (decodedPayload as DecodedPayload).id,
     };
 
     //create blog
     const blog = await prisma.blog.create({ data: blogData });
+
     if (!blog) {
       return NextResponse.json(
         { error: "blog could not be created" },
@@ -60,7 +63,12 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     const blogs = await prisma.blog.findMany({});
-    // const formattedBlogs = blogs;
+    if (!blogs) {
+      return NextResponse.json(
+        { message: "blogs could not be retrieved" },
+        { status: 500 }
+      );
+    }
     const formattedBlogs = blogs.map((blog) => ({
       ...blog,
       createdAt: dayjs(blog.createdAt).format("DD/MM/YYYY"),
