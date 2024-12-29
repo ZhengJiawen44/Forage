@@ -27,7 +27,9 @@ export default function RootLayout({
           >
             <div className="flex max-w-[70%] sm:min-w-[50%] items-center gap-3">
               <h1 className="sm:text-[1.5rem]">
-                <Link href={"/Blog"}>BlogSpot</Link>1
+                <Link href={"/"} className="font-mono">
+                  Forage
+                </Link>
               </h1>
               <SearchBar />
             </div>

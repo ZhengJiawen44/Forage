@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
   darkMode: ["class"],
@@ -8,10 +9,41 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    fontSize: {
+      xs: "0.75rem",
+      sm: "0.75rem",
+      base: "1rem",
+      lg: "1.125rem",
+      xl: "1.125rem",
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+      "4xl": "2.25rem",
+      title: "var(--title)",
+      subtitle: "var(--subtitle)",
+    },
     extend: {
+      fontFamily: {
+        lora: '"Lora"',
+        mono: '"Roboto Mono"',
+      },
+      screens: {
+        xlg: "1600px",
+        badgeBR: "1020px",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        hoverColor: "hsl(var(--hover-color))",
+        primaryLight: "var(--primary-light)",
+        primaryMedium: "var(--primary-medium)",
+        primaryDark: "var(--primary-dark)",
+        cyan100: "var(--cyan-100)",
+        cyan200: "var(--cyan-200)",
+        cyan300: "var(--cyan-300)",
+        item: {
+          DEFAULT: "hsl(var(--item))",
+          foreground: "hsl(var(--item-foreground))",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -51,12 +83,50 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
+      boxShadow: {
+        outset: "var(--shadow-outset)",
+        inset: "var(--shadow-inset)",
+      },
+      fontSize: {
+        small: "var(--text-small)",
+        medium: "var(--text-medium)",
+        large: "var(--text-large)",
+      },
       borderRadius: {
+        DEFAULT: "var(--border-radius)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      letterSpacing: {
+        DEFAULT: "var(--letter-spacing)",
+      },
+      transitionDuration: {
+        DEFAULT: "var(--transition)",
+      },
+      keyframes: {
+        slide: {
+          from: {
+            left: "100%",
+          },
+          to: {
+            left: "-3rem",
+          },
+        },
+        slideR: {
+          from: {
+            left: "-3rem",
+          },
+          to: {
+            left: "100%",
+          },
+        },
+      },
+      animation: {
+        slide: "slide 7s linear infinite",
+        slideReverse: "slideR 15s linear infinite",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // plugins: [require("tailwindcss-animate")],
 } satisfies Config;
