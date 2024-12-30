@@ -3,6 +3,8 @@ import { verifyToken } from "@/lib/token/verifyToken";
 import { prisma } from "@/lib/prismaClient";
 import { cookies } from "next/headers";
 export async function POST(req: NextRequest) {
+  console.log("hit");
+
   try {
     const { payload } = await req.json();
 
@@ -33,6 +35,9 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error((error as Error).message);
     console.error((error as Error).stack);
-    return NextResponse.json({ error: error });
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 }
+    );
   }
 }

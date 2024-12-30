@@ -46,7 +46,12 @@ export async function POST(req: NextRequest) {
     const idToken = await signToken({ id: dbUser?.id }, "1h");
 
     //send email with the token embedded in the URL
-    sendVerificationEmail(body.email, idToken);
+    const error = await sendVerificationEmail(body.email, idToken);
+    console.log("err: ", error);
+
+    if (error) {
+      return NextResponse.json({ error: error }, { status: 500 });
+    }
 
     return NextResponse.json({ success: "email sent" });
   } catch (error) {
