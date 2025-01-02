@@ -5,8 +5,8 @@ const SearchBar = () => {
   return (
     <>
       <div
-        className="flex items-center justify-between bg-background
-      rounded-[5px] w-full h-10 border"
+        className="flex items-center justify-between bg-item
+      rounded-[5px] w-full h-10 border-2"
       >
         <input
           aria-label="Search blogs"
