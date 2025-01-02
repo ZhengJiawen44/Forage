@@ -1,7 +1,8 @@
 import React from "react";
 import { prisma } from "@/lib/prismaClient";
 import { format } from "@/lib/getFormattedDay";
-import OptionsBar from "../(components)/blogCard/OptionsBar";
+import OptionsBar from "../../(components)/blogCard/OptionsBar";
+import Link from "next/link";
 interface PageProps {
   params: {
     id: string;
@@ -60,6 +61,8 @@ const page = async ({ params }: PageProps) => {
         </div>
         <p className="text-gray-300 text-[1.3rem] pt-10">{blog?.content}</p>
       </div>
+      <Link href={`/${id}/update`}>edit</Link>
+      <Link href={`/new`}>create</Link>
     </>
   );
 };
