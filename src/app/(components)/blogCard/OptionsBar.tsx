@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { LuBookmarkPlus } from "react-icons/lu";
 import { SlOptions } from "react-icons/sl";
@@ -11,14 +12,24 @@ import {
 
 const OptionsBar = () => {
   return (
-    <div className="flex items-center gap-4">
-      <button className="p-1 rounded-[7px]  hover:bg-gray-800 transition-colors duration-300">
-        <LuBookmarkPlus className="w-6 h-6 hover:text-white" />
+    <div className="flex items-center gap-4 ">
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          console.log("bookmarked");
+        }}
+        title="bookmark"
+        className="p-1 rounded-[7px]  hover:bg-gray-800 transition-colors duration-300"
+      >
+        <LuBookmarkPlus className="w-5 h-5 md:w-6 md:h-6 hover:text-white" />
       </button>
 
       <DropdownMenu>
         <DropdownMenuTrigger className="p-1 rounded-[7px] hover:bg-gray-800 transition-colors duration-300">
-          <SlOptions className="w-6 h-6 hover:text-white" />
+          <SlOptions
+            title="options"
+            className="w-5 h-5 md:w-6 md:h-6 hover:text-white"
+          />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="min-w-[140px] font-mono font-thin">
           <DropdownMenuItem className="cursor-pointer">Follow</DropdownMenuItem>

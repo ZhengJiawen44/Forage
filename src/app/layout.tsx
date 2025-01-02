@@ -17,12 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lora.className} ${roboto_mono.className} ${amita.className}  antialiased`}
+        className={`${lora.className} ${roboto_mono.className} ${amita.className}  antialiased bg-item lg:bg-background`}
       >
         <Dashboard />
-        <div className="lg:grid grid-cols-3 h-screen lg:p-[5rem]  gap-[3rem] min-h-screen">
-          <div className="col-span-2 p-10  min-h-screen ">{children}</div>
-          <div className="col-span-1 pt-16 pl-[2.5rem] bg-item">
+        <div className="block lg:flex h-screen lg:gap-[2rem] md:p-5 xl:px-28 2xl:px-64 min-h-screen mt-10 2xl:mt-20">
+          <div className=" lg:w-[80%] xl:w-[70%] min-h-screen">{children}</div>
+          <div className=" lg:w-[20%] xl:w-[30%] pt-16 pl-[2.5rem] bg-item">
             <Sidebar />
           </div>
         </div>

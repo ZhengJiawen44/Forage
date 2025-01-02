@@ -123,11 +123,6 @@ export default {
           },
         },
       },
-      animation: {
-        slide: "slide 7s linear infinite",
-        slideReverse: "slideR 15s linear infinite",
-      },
     },
   },
-  // plugins: [require("tailwindcss-animate")],
 } satisfies Config;
