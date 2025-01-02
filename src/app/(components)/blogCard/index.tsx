@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "@/lib/getFormattedDay";
-
+import OptionsBar from "./OptionsBar";
 type Blog = {
   id: number;
   title: string;
@@ -13,17 +13,24 @@ type Blog = {
 
 const BlogCardPreview = (blog: Blog) => {
   return (
-    <div className="mb-16">
-      <div className="flex w-full">
-        <div className="w-[80%] border">
-          <h1 className="font-sans text-2xl">{blog.title}</h1>
-          <p className="font-lora">{blog.subtitle}</p>
-          <p className="font-lora">{blog.length} min read</p>
-          <p className="font-lora">{format(blog.createdAt)}</p>
+    <div className="flex w-full mb-10 border bg-item p-6 gap-20 rounded-[5px]">
+      <div className="w-[80%]">
+        <h1 className="font-sans text-2xl mb-4">{blog.title}</h1>
+        <p className="font-lora font-thin text-item-foreground mb-10">
+          {blog.subtitle}
+        </p>
+
+        <div className="flex font-lora font-thin text-item-foreground justify-between">
+          <div className="flex gap-4">
+            <p className="font-lora">{blog.length} min read</p>
+            <p className="font-lora">{format(blog.createdAt)}</p>
+          </div>
+          <OptionsBar />
         </div>
-        <div className="w-[20%] border">
-          <Image />
-        </div>
+      </div>
+
+      <div className="w-[20%]">
+        <Image />
       </div>
     </div>
   );

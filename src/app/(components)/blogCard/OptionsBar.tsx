@@ -1,0 +1,39 @@
+import React from "react";
+import { LuBookmarkPlus } from "react-icons/lu";
+import { SlOptions } from "react-icons/sl";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const OptionsBar = () => {
+  return (
+    <div className="flex items-center gap-4">
+      <button className="p-1 rounded-[7px]  hover:bg-gray-800 transition-colors duration-300">
+        <LuBookmarkPlus className="w-6 h-6 hover:text-white" />
+      </button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger className="p-1 rounded-[7px] hover:bg-gray-800 transition-colors duration-300">
+          <SlOptions className="w-6 h-6 hover:text-white" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="min-w-[140px] font-mono font-thin">
+          <DropdownMenuItem className="cursor-pointer">Follow</DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer whitespace-nowrap">
+            Mute author
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">Hide</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="cursor-pointer text-red-500">
+            Report...
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
+
+export default OptionsBar;
