@@ -8,11 +8,11 @@ html {
 
 @layer base {
   :root {
-    --background: 0 0% 7.8%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --hover-color: 0 0% 100%;
-    --item: 0 0% 12.9%;
-    --item-foreground: 240 0% 50%;
+    --item: 0 0% 9%;
+    --item-foreground: 0 0% 70%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
@@ -39,6 +39,7 @@ html {
     /* fonts */
     --font-lora: "Lora", monospace;
     --font-mono: "Roboto Mono", monospace;
+    --font-amita: "Amita", monospace;
     --title: 3rem;
     --subtitle: 2rem;
 

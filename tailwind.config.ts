@@ -25,6 +25,7 @@ export default {
       fontFamily: {
         lora: '"Lora"',
         mono: '"Roboto Mono"',
+        amita: '"Amita"',
       },
       screens: {
         xlg: "1600px",
