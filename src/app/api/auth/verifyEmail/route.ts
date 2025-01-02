@@ -3,8 +3,6 @@ import { verifyToken } from "@/lib/token/verifyToken";
 import { prisma } from "@/lib/prismaClient";
 import { cookies } from "next/headers";
 export async function POST(req: NextRequest) {
-  console.log("hit");
-
   try {
     const { payload } = await req.json();
 
