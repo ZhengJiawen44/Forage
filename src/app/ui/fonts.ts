@@ -12,6 +12,6 @@ export const roboto_mono = Roboto_Mono({
 });
 export const amita = Amita({
   subsets: ["latin"],
-  weight: "700",
+  weight: "400",
   variable: "--font-amita",
 });

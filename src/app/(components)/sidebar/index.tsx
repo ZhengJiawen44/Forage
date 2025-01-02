@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import RecommendationCard from "./RecommendationCard";
 import Link from "next/link";
+import { useSidebar } from "@/app/hooks/useSidebar";
+
 // import LoadingForm from "@/components/Loading/LoadingForm";
 const Recommendation = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [lastRead, setLastRead] = useState<Record<string, string>>({});
-
+  const [display, setDisplay] = useState(true);
   // useEffect(() => {
   //   async function getRecommendations() {
   //     try {
@@ -25,9 +27,16 @@ const Recommendation = () => {
   //   }
   //   getRecommendations();
   // }, []);
+  const visibility = useSidebar();
 
   return (
-    <div>
+    <div
+      className={
+        visibility
+          ? "lg:w-[20%] xl:w-[30%] pt-16 pl-[2.5rem] bg-item"
+          : "hidden"
+      }
+    >
       <h1 className="mb-8 text-xl font-sans">Recommended</h1>
 
       {recommendations?.length > 0

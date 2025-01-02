@@ -1,4 +1,7 @@
-export function format(date: Date): string {
+export function format(date: Date | undefined): string {
+  if (typeof date === "undefined") {
+    return "Not a Date";
+  }
   const month = getMonthString(date);
   return month + " " + date.getUTCDate() + ", " + date.getFullYear();
 }
