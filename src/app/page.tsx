@@ -1,10 +1,27 @@
 import React from "react";
 import { prisma } from "@/lib/prismaClient";
+import { BlogCard } from "./(components)";
 
 const page = async () => {
-  const blog = await prisma.blog.findMany({});
-  console.log("blog: ", blog);
-  return <p className="text-purple-500 text-4xl">page</p>;
+  type Blog = {
+    id: number;
+    title: string;
+    length: number;
+    subtitle: string | null;
+    content: string;
+    authorID: number;
+    createdAt: Date;
+  };
+
+  const blog: Blog[] = await prisma.blog.findMany({});
+
+  return (
+    <>
+      {blog.map(({ ...blog }) => (
+        <BlogCard {...blog} />
+      ))}
+    </>
+  );
 };
 
 export default page;

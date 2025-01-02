@@ -117,14 +117,10 @@ html {
   body {
     @apply bg-background text-foreground;
   }
-  h1,
-  h2,
-  h3 {
-    @apply font-mono;
-  }
-  p {
+
+  /* p {
     @apply font-lora;
-  }
+  } */
 }
 
 @layer utilities {

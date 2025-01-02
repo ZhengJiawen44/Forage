@@ -21,9 +21,7 @@ export default function RootLayout({
       >
         <Dashboard />
         <div className="lg:grid grid-cols-3 h-screen lg:p-[5rem]  gap-[3rem] min-h-screen">
-          <div className="col-span-2 p-10  min-h-screen bg-item">
-            {children}
-          </div>
+          <div className="col-span-2 p-10  min-h-screen ">{children}</div>
           <div className="col-span-1 pt-16 pl-[2.5rem] bg-item">
             <Sidebar />
           </div>
