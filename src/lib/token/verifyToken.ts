@@ -3,7 +3,7 @@ import * as jose from "jose";
 //asynchronously returns a error message if any and the decoded payload as object
 export async function verifyToken(
   claims: string
-): Promise<{ errorMessage: String; decodedPayload: { [key: string]: any } }> {
+): Promise<{ errorMessage: string; decodedPayload: { [key: string]: any } }> {
   let errorMessage;
   let decodedPayload;
   const secret = new TextEncoder().encode(process.env.AUTH_SECRET);

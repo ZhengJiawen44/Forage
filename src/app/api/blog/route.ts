@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
 
     type DecodedPayload = {
-      id: String;
+      id: string;
     };
 
     //get cookie

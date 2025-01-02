@@ -18,7 +18,7 @@ const page = async () => {
   return (
     <>
       {blog.map(({ ...blog }) => (
-        <BlogCard {...blog} />
+        <BlogCard key={blog.id} {...blog} />
       ))}
     </>
   );

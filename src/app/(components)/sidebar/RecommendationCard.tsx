@@ -2,9 +2,9 @@ import Link from "next/link";
 import React from "react";
 
 interface CardProps {
-  id: String;
-  title: String;
-  date: String;
+  id: string;
+  title: string;
+  date: string;
 }
 const RecommendationCard = ({ id, title, date }: CardProps) => {
   return (

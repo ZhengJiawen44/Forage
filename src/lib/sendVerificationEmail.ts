@@ -23,7 +23,7 @@ export async function sendVerificationEmail(
     <a href="http://localhost:3000/auth/verifyEmail/?token=${emailToken}">Verify Email</a>`,
   };
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         resolve((error as Error).message);
