@@ -7,102 +7,149 @@ import { FaListUl } from "react-icons/fa";
 import { FaListOl } from "react-icons/fa";
 import { TbBlockquote } from "react-icons/tb";
 import { LuCodeXml } from "react-icons/lu";
-import { IoImageOutline } from "react-icons/io5";
+import { GoItalic } from "react-icons/go";
+import { GoStrikethrough } from "react-icons/go";
+import ImagePicker from "./ImagePicker";
 
 import { Toggle } from "@/app/(components)/reusable-ui/toggle";
 import { useCurrentEditor } from "@tiptap/react";
 const MenuBar = () => {
   const { editor } = useCurrentEditor();
   if (!editor) return null;
-  useEffect(() => {
-    console.log("rendered");
-  }, [editor.getHTML()]);
 
   return (
-    <>
-      {/* <button
-        onClick={() => {
-          editor.chain().focus().toggleBold().run();
-        }}
+    <div className="flex justify-center mb-4 gap-1">
+      <Toggle
+        asChild
+        pressed={editor?.isActive("heading", { level: 1 })}
+        title="heading1"
       >
-        Bold
-      </button>
-      <button
-        onClick={() => {
-          editor.chain().focus().toggleHeading({ level: 1 }).run();
-        }}
-      >
-        H1
-      </button> */}
-      <Toggle asChild pressed={editor?.isActive("heading", { level: 1 })}>
         <BsTypeH1
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleHeading({ level: 1 }).run();
           }}
         />
       </Toggle>
-      <Toggle asChild pressed={editor?.isActive("heading", { level: 2 })}>
+      <Toggle
+        asChild
+        pressed={editor?.isActive("heading", { level: 2 })}
+        title="heading2"
+      >
         <BsTypeH2
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleHeading({ level: 2 }).run();
           }}
         />
       </Toggle>
-      <Toggle asChild pressed={editor?.isActive("heading", { level: 3 })}>
+      <Toggle
+        asChild
+        pressed={editor?.isActive("heading", { level: 3 })}
+        title="heading3"
+      >
         <BsTypeH3
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleHeading({ level: 3 }).run();
           }}
         />
       </Toggle>
-      <Toggle asChild pressed={editor?.isActive("bold")}>
+      <Toggle asChild pressed={editor?.isActive("bold")} title="bold">
         <GoBold
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleBold().run();
           }}
         />
       </Toggle>
-      <Toggle asChild pressed={editor?.isActive("bulletList")}>
+      <Toggle
+        asChild
+        pressed={editor?.isActive("bulletList")}
+        title="bullet list"
+      >
         <FaListUl
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleBulletList().run();
           }}
         />
       </Toggle>
 
-      <Toggle asChild pressed={editor?.isActive("orderedList")}>
+      <Toggle
+        asChild
+        pressed={editor?.isActive("orderedList")}
+        title="ordered list"
+      >
         <FaListOl
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleOrderedList().run();
           }}
         />
       </Toggle>
-      <Toggle asChild pressed={editor?.isActive("blockquote")}>
+      <Toggle
+        asChild
+        pressed={editor?.isActive("blockquote")}
+        title="block quote"
+      >
         <TbBlockquote
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleBlockquote().run();
           }}
         />
       </Toggle>
-      <Toggle asChild pressed={editor?.isActive("codeBlock")}>
+      <Toggle
+        asChild
+        pressed={editor?.isActive("codeBlock")}
+        title="code block"
+      >
         <LuCodeXml
-          className="h-[3rem] w-[3rem]"
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
           onClick={() => {
             editor.chain().focus().toggleCodeBlock().run();
           }}
         />
       </Toggle>
-      <Toggle asChild>
-        <IoImageOutline className="h-[3rem] w-[3rem]" />
+      <Toggle asChild pressed={editor?.isActive("italic")} title="code block">
+        <GoItalic
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
+          onClick={() => {
+            editor.chain().focus().toggleItalic().run();
+          }}
+        />
       </Toggle>
-    </>
+      <Toggle asChild pressed={editor?.isActive("strike")} title="code block">
+        <GoStrikethrough
+          className="h-[3rem] w-[3rem] text-item-foreground 
+          hover:cursor-pointer transition-all duration-100 rounded-[8px]
+          hover:text-white"
+          onClick={() => {
+            editor.chain().focus().toggleStrike().run();
+          }}
+        />
+      </Toggle>
+      <ImagePicker />
+    </div>
   );
 };
 

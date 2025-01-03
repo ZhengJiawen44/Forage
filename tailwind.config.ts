@@ -93,12 +93,7 @@ export default {
         medium: "var(--text-medium)",
         large: "var(--text-large)",
       },
-      borderRadius: {
-        DEFAULT: "var(--border-radius)",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
+
       letterSpacing: {
         DEFAULT: "var(--letter-spacing)",
       },

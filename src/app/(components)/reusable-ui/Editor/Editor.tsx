@@ -1,6 +1,6 @@
 "use client";
-import { EditorProvider, useCurrentEditor } from "@tiptap/react";
-import React, { useEffect } from "react";
+import { EditorProvider } from "@tiptap/react";
+import React from "react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -11,6 +11,9 @@ import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
 import Quote from "@tiptap/extension-blockquote";
 import Code from "@tiptap/extension-code-block";
+import Italic from "@tiptap/extension-italic";
+import Strikethrough from "@tiptap/extension-strike";
+// import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 
 import { mergeAttributes } from "@tiptap/core";
 import MenuBar from "./MenuBar";
@@ -31,7 +34,9 @@ const Editor = () => {
     Paragraph,
     Bold,
     listItem,
-    Code,
+    Italic,
+    Strikethrough,
+    Code.configure({ HTMLAttributes: { class: "bg-item p-4 rounded-[5px]" } }),
     BulletList.configure({ HTMLAttributes: { class: "list-disc pl-[3rem]" } }),
     OrderedList.configure({
       HTMLAttributes: { class: "list-decimal pl-[3rem]" },
@@ -61,7 +66,11 @@ const Editor = () => {
       extensions={extensions}
       content={content}
       immediatelyRender={false}
-      editorProps={{ attributes: { class: "p-4" } }}
+      editorProps={{
+        attributes: {
+          class: "p-4 border-item-foreground border rounded-[5px] min-h-[50vh]",
+        },
+      }}
     ></EditorProvider>
   );
 };
