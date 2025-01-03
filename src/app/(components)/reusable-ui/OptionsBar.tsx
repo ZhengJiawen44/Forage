@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/app/(components)/ui/dropdown-menu";
+} from "@/app/(components)/reusable-ui/dropdown-menu";
 
 const OptionsBar = () => {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "@/lib/getFormattedDay";
-import OptionsBar from "./OptionsBar";
+import OptionsBar from "../reusable-ui/OptionsBar";
 import Link from "next/link";
 
 type Blog = {
