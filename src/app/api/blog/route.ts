@@ -54,10 +54,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "blog created!" }, { status: 200 });
   } catch (error) {
     if (error instanceof Error) {
+      console.error((error as Error).message);
+      console.error((error as Error).stack);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
-    console.error((error as Error).message);
-    console.error((error as Error).stack);
   }
 }
 

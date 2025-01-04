@@ -32,7 +32,7 @@ model User {
 model Blog {
   id Int @id @default(autoincrement())
   title String 
-  subtitle String?
+  description String?
   content String
   length Int
   createdAt DateTime @default(now())

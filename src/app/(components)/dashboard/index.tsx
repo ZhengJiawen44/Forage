@@ -20,12 +20,12 @@ const Index = () => {
         <Link
           aria-label="create a new blog"
           className="m-0 p-0  border-[1px] bg-item w-fit h-fit px-4 py-2  sm:flex sm:items-center sm:gap-1 rounded-[20px] text-item-foreground hover:text-foreground"
-          href="/Blog/new"
+          href="/blog/new"
         >
           <TbPencil />
           <p className="hidden sm:block m-0 p-0">write</p>
         </Link>
-        <Link href="/Auth/Login">
+        <Link href="/auth/login">
           <TbUserCircle
             className="text-item-foreground h-[2rem] w-[2rem] sm:h-[2.5rem] sm:w-[2.5rem]
     hover:text-white hover:cursor-pointer transition-all duration-300"
