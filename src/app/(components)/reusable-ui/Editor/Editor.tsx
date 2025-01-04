@@ -19,8 +19,9 @@ import MenuBar from "./MenuBar";
 
 interface EditorProps {
   richText?: React.RefObject<string>;
+  error?: string | null;
 }
-const Editor: React.FC<EditorProps> = ({ richText }) => {
+const Editor: React.FC<EditorProps> = ({ richText, error }) => {
   useRender();
   type Levels = 1 | 2 | 3;
 
@@ -77,6 +78,7 @@ const Editor: React.FC<EditorProps> = ({ richText }) => {
           },
         }}
       ></EditorProvider>
+      <p>{error}</p>
     </>
   );
 };

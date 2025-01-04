@@ -1,21 +1,27 @@
 "use client";
-import React, { FormEvent } from "react";
+import React, { FormEvent, useState } from "react";
 import { Editor } from "@/app/(components)";
 import { useRef } from "react";
 import { Button } from "../reusable-ui/button";
 import Link from "next/link";
+import { blogSchema } from "@/schemas/blogSchema";
+
 const index = () => {
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [lengthError, setLengthError] = useState<string | null>(null);
+  const [descError, setDescError] = useState<string | null>(null);
+  const [contentError, setContentError] = useState<string | null>(null);
   const richText = useRef<string>(`<p>how is your day</p>`);
   return (
     <>
       <h1 className="font-extralight  m-auto text-[2rem] w-fit mb-10">
-        write a blog
+        write blog
       </h1>
 
       <form onSubmit={formSubmitHandler}>
         <div className="w-full flex gap-10 mb-6">
           <div className="grow-[10]">
-            <label htmlFor="title" className="block">
+            <label htmlFor="title" className="block text-item-foreground">
               title*
             </label>
             <input
@@ -24,9 +30,10 @@ const index = () => {
               id="title"
               className="w-full bg-transparent border-2 p-1 rounded-md"
             />
+            <p>{titleError}</p>
           </div>
           <div className="grow-[1] ">
-            <label htmlFor="length" className="block">
+            <label htmlFor="length" className="block text-item-foreground">
               length*
             </label>
             <input
@@ -35,10 +42,11 @@ const index = () => {
               id="length"
               className="w-full bg-transparent border-2 p-1 rounded-md"
             />
+            <p>{lengthError}</p>
           </div>
         </div>
         <div className="mb-10">
-          <label htmlFor="description" className="block">
+          <label htmlFor="description" className="block text-item-foreground">
             description
           </label>
           <textarea
@@ -46,8 +54,9 @@ const index = () => {
             id="description"
             className="w-full bg-transparent border-2 p-2 rounded-md"
           />
+          <p>{descError}</p>
         </div>
-        <Editor richText={richText} />
+        <Editor richText={richText} error={contentError} />
         <div className="flex gap-4 mt-4 justify-end">
           <Button
             type="button"
@@ -70,9 +79,33 @@ const index = () => {
 
   function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setTitleError(null);
+    setLengthError(null);
+    setDescError(null);
+    setContentError(null);
     const data = new FormData(event.currentTarget);
     const formData = { ...Object.fromEntries(data), content: richText.current };
-    console.log(formData);
+    const parseResult = blogSchema.safeParse(formData);
+
+    if (!parseResult.success) {
+      const { errors } = parseResult.error;
+      errors.forEach(({ message, path }) => {
+        switch (path[0]) {
+          case "title":
+            setTitleError(message);
+            break;
+          case "length":
+            setLengthError(message);
+            break;
+          case "description":
+            setDescError(message);
+            break;
+          case "content":
+            setContentError(message);
+            break;
+        }
+      });
+    }
   }
 };
 
