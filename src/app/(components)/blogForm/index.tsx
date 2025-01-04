@@ -77,7 +77,7 @@ const index = () => {
     </>
   );
 
-  function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
+  async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setTitleError(null);
     setLengthError(null);
@@ -86,6 +86,16 @@ const index = () => {
     const data = new FormData(event.currentTarget);
     const formData = { ...Object.fromEntries(data), content: richText.current };
     const parseResult = blogSchema.safeParse(formData);
+
+    if (parseResult.success) {
+      const req = await fetch("/api/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parseResult.data),
+      });
+      const res = await req.json();
+      console.log(res);
+    }
 
     if (!parseResult.success) {
       const { errors } = parseResult.error;
