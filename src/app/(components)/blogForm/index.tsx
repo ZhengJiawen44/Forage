@@ -5,8 +5,12 @@ import { useRef } from "react";
 import { Button } from "../reusable-ui/button";
 import Link from "next/link";
 import { blogSchema } from "@/schemas/blogSchema";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const index = () => {
+  const { toast } = useToast();
+  const router = useRouter();
   const [titleError, setTitleError] = useState<string | null>(null);
   const [lengthError, setLengthError] = useState<string | null>(null);
   const [descError, setDescError] = useState<string | null>(null);
@@ -88,13 +92,23 @@ const index = () => {
     const parseResult = blogSchema.safeParse(formData);
 
     if (parseResult.success) {
-      const req = await fetch("/api/blog", {
+      const res = await fetch("/api/blog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parseResult.data),
       });
-      const res = await req.json();
-      console.log(res);
+
+      if (res.ok) {
+        toast({
+          title: "Blog created",
+          description: "you blog has been created and uploaded succesfully!",
+        });
+        console.log("done");
+        router.push("/");
+      } else {
+        const { error } = await res.json();
+        toast({ title: error });
+      }
     }
 
     if (!parseResult.success) {

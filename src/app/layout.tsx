@@ -3,7 +3,7 @@ import "@/app/globals.css";
 import { lora } from "@/app/ui/fonts";
 import { Sidebar } from "@/app/(components)";
 import { Dashboard } from "@/app/(components)";
-
+import { Toaster } from "./(components)/reusable-ui/toaster";
 export const metadata: Metadata = {
   title: "forage",
   description: "forage is a blog site dedicated to developers",
@@ -27,6 +27,7 @@ export default function RootLayout({
 
           <Sidebar />
         </div>
+        <Toaster />
       </body>
     </html>
   );

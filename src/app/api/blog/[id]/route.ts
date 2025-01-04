@@ -9,7 +9,7 @@ interface RouteParams {
   };
 }
 
-export async function GET({ params }: RouteParams) {
+export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     if (!id) {
@@ -39,7 +39,7 @@ export async function GET({ params }: RouteParams) {
   }
 }
 
-export async function DELETE({ params }: RouteParams) {
+export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
 

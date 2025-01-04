@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prismaClient";
 import { format } from "@/lib/getFormattedDay";
 import OptionsBar from "../../(components)/reusable-ui/OptionsBar";
 import Link from "next/link";
+import { BlogDeleteDialog } from "@/app/(components)";
 interface PageProps {
   params: {
     id: string;
@@ -25,7 +26,7 @@ const page = async ({ params }: PageProps) => {
           </h1>
         </div>
         <p className="mb-10 block text-gray-300 font-sans text-[1.2rem]">
-          {blog?.subtitle}
+          {blog?.description}
         </p>
 
         {/*userprofile and name */}
@@ -63,6 +64,7 @@ const page = async ({ params }: PageProps) => {
       </div>
       <Link href={`/blog/${id}/update`}>edit</Link>
       <Link href={`/blog/new`}>create</Link>
+      <BlogDeleteDialog id={id} />
     </>
   );
 };
