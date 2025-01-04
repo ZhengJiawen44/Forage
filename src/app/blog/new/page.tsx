@@ -1,12 +1,8 @@
+"use client";
 import React from "react";
-import { Editor } from "@/app/(components)";
-
+import { BlogForm } from "@/app/(components)";
 const page = () => {
-  return (
-    <div>
-      <Editor />
-    </div>
-  );
+  return <BlogForm />;
 };
 
 export default page;

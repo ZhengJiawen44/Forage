@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { GoBold } from "react-icons/go";
 import { BsTypeH1 } from "react-icons/bs";
 import { BsTypeH2 } from "react-icons/bs";

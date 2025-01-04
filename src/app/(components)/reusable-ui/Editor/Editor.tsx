@@ -1,6 +1,6 @@
 "use client";
 import { EditorProvider } from "@tiptap/react";
-import React from "react";
+import { useRender } from "@/app/hooks/useRenderCounter";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -14,13 +14,14 @@ import Code from "@tiptap/extension-code-block";
 import Italic from "@tiptap/extension-italic";
 import Strikethrough from "@tiptap/extension-strike";
 // import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-
 import { mergeAttributes } from "@tiptap/core";
 import MenuBar from "./MenuBar";
 
-const Editor = () => {
-  const content = `start configuring me!`;
-
+interface EditorProps {
+  richText?: React.RefObject<string>;
+}
+const Editor: React.FC<EditorProps> = ({ richText }) => {
+  useRender();
   type Levels = 1 | 2 | 3;
 
   const classes: Record<Levels, string> = {
@@ -61,17 +62,22 @@ const Editor = () => {
     }),
   ];
   return (
-    <EditorProvider
-      slotBefore={<MenuBar />}
-      extensions={extensions}
-      content={content}
-      immediatelyRender={false}
-      editorProps={{
-        attributes: {
-          class: "p-4 border-item-foreground border rounded-[5px] min-h-[50vh]",
-        },
-      }}
-    ></EditorProvider>
+    <>
+      <EditorProvider
+        slotBefore={<MenuBar />}
+        content={richText?.current}
+        extensions={extensions}
+        immediatelyRender={false}
+        onUpdate={({ editor }) => {
+          if (richText) richText.current = editor.getHTML();
+        }}
+        editorProps={{
+          attributes: {
+            class: "p-4 border-2 rounded-[5px] min-h-[50vh]",
+          },
+        }}
+      ></EditorProvider>
+    </>
   );
 };
 
