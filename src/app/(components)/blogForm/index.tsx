@@ -103,7 +103,6 @@ const index = () => {
           title: "Blog created",
           description: "you blog has been created and uploaded succesfully!",
         });
-        console.log("done");
         router.push("/");
       } else {
         const { error } = await res.json();
