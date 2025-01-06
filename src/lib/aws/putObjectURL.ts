@@ -1,8 +1,4 @@
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 
@@ -34,7 +30,7 @@ export async function getSignedURL(
       expiresIn: 3600,
     });
 
-    return signedURL;
+    return { signedURL, key };
   } catch (error) {
     throw error;
   }

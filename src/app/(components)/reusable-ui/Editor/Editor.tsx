@@ -1,6 +1,6 @@
 "use client";
 import { EditorProvider } from "@tiptap/react";
-import { useRender } from "@/app/hooks/useRenderCounter";
+
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -23,7 +23,6 @@ interface EditorProps {
   error?: string | null;
 }
 const Editor: React.FC<EditorProps> = ({ richText, error }) => {
-  useRender();
   type Levels = 1 | 2 | 3;
 
   const classes: Record<Levels, string> = {

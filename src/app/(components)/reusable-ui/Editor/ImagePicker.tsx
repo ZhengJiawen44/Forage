@@ -4,7 +4,8 @@ import { useCurrentEditor } from "@tiptap/react";
 import { IoImageOutline } from "react-icons/io5";
 import { IoMdImages } from "react-icons/io";
 import { Button } from "@/app/(components)/reusable-ui/button";
-
+import { ImSpinner8 } from "react-icons/im";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -21,8 +22,10 @@ const ImagePicker = () => {
   const { editor } = useCurrentEditor();
   if (!editor) return null;
 
+  const { toast } = useToast();
   const [image, setImage] = useState<File | null>(null);
   const [isOpen, setOpen] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
   return (
     <Dialog open={isOpen}>
       <DialogTrigger onClick={() => setOpen(true)}>
@@ -75,9 +78,12 @@ const ImagePicker = () => {
           <Button
             variant={"outline"}
             className="w-full text-[1rem] mb-4"
-            disabled={image?.name === null ? true : false}
+            disabled={image?.name === null ? true : false || uploading}
             onClick={handleImageSubmit}
           >
+            <ImSpinner8
+              className={uploading ? "animate-spin" : "animate-spin hidden"}
+            />
             Upload
           </Button>
           <DialogClose asChild onClick={() => setOpen(false)}>
@@ -91,7 +97,9 @@ const ImagePicker = () => {
   );
 
   async function handleImageSubmit() {
+    setUploading(true);
     if (!image) {
+      toast({ title: "no image file present" });
       console.log("no image file present");
       return;
     }
@@ -110,21 +118,25 @@ const ImagePicker = () => {
       });
       if (!res.ok) {
         const { error } = await res.json();
+        toast({ title: "server could not process your image" });
         console.log(error);
         return;
       }
-      const { url } = await res.json();
-      putAWS(url);
-      // editor
-      //   .chain()
-      //   .focus()
-      //   .setImage({
-      //     src: "",
-      //   })
-      //   .run();
+      const { url, id } = await res.json();
+      await putAWS(url);
+      editor!
+        .chain()
+        .focus()
+        .setImage({
+          src: `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${id}`,
+        })
+        .run();
       setOpen(false);
     } catch (error) {
+      toast({ title: "server could not process your image" });
       console.log(error);
+    } finally {
+      setUploading(false);
     }
   }
   async function putAWS(url: string) {
@@ -135,8 +147,10 @@ const ImagePicker = () => {
         body: image,
       });
       if (res.ok) {
+        toast({ title: "image uploaded!" });
         console.log("image uploaded!");
       } else {
+        toast({ title: "failed to upload image!" });
         console.log("failed to upload image!");
       }
     } catch (error) {

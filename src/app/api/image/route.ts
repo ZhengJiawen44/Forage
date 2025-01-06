@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSignedURL } from "@/lib/aws/getSignedURL";
+import { getSignedURL } from "@/lib/aws/putObjectURL";
 
 export async function POST(req: NextRequest) {
   const FORMAT = ["image/png", "image/jpg", "image/jpeg"];
@@ -22,9 +22,13 @@ export async function POST(req: NextRequest) {
     }
 
     //return a aws signed url to PUT that image
-    const signedURL = await getSignedURL(imageType, imageSize, checksum);
+    const { signedURL, key } = await getSignedURL(
+      imageType,
+      imageSize,
+      checksum
+    );
 
-    return NextResponse.json({ url: signedURL }, { status: 200 });
+    return NextResponse.json({ url: signedURL, id: key }, { status: 200 });
   } catch (error) {
     if (error instanceof Error) console.log(error.stack);
 
