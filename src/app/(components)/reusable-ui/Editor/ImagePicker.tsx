@@ -1,9 +1,10 @@
 "use client";
-import React, { FormEvent } from "react";
+import React from "react";
 import { useCurrentEditor } from "@tiptap/react";
 import { IoImageOutline } from "react-icons/io5";
 import { IoMdImages } from "react-icons/io";
 import { Button } from "@/app/(components)/reusable-ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import {
   DialogClose,
 } from "@/app/(components)/reusable-ui/dialog";
 import { useState } from "react";
+
 const ImagePicker = () => {
   const { editor } = useCurrentEditor();
   if (!editor) return null;
@@ -66,7 +68,6 @@ const ImagePicker = () => {
               }
               const image = event.target.files[0];
               setImage(image);
-              console.log(image.name);
             }}
           />
         </div>
@@ -75,25 +76,7 @@ const ImagePicker = () => {
             variant={"outline"}
             className="w-full text-[1rem] mb-4"
             disabled={image?.name === null ? true : false}
-            onClick={(event) => {
-              if (!image) {
-                console.log("no image file present");
-
-                return;
-              }
-              const formData = new FormData();
-              formData.append("image", image);
-              handleImageSubmit(formData);
-              // editor
-              //   .chain()
-              //   .focus()
-              //   .setImage({
-              //     src: "",
-              //   })
-              //   .run();
-
-              setOpen(false);
-            }}
+            onClick={handleImageSubmit}
           >
             Upload
           </Button>
@@ -107,27 +90,67 @@ const ImagePicker = () => {
     </Dialog>
   );
 
-  async function handleImageSubmit(formData: FormData) {
+  async function handleImageSubmit() {
+    if (!image) {
+      console.log("no image file present");
+      return;
+    }
+    const checksum = await computeSHA256(image);
+
     try {
-      if (!image) return null;
+      const form = {
+        imageSize: String(image.size),
+        imageType: image.type,
+        checksum: checksum,
+      };
       const res = await fetch("/api/image", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
+      if (!res.ok) {
+        const { error } = await res.json();
+        console.log(error);
+        return;
+      }
       const { url } = await res.json();
-
-      const awsRes = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": image.type },
-        body: image,
-      });
-      const response = awsRes.headers;
-      console.log(response);
-
-      console.log(url);
+      putAWS(url);
+      // editor
+      //   .chain()
+      //   .focus()
+      //   .setImage({
+      //     src: "",
+      //   })
+      //   .run();
+      setOpen(false);
     } catch (error) {
       console.log(error);
     }
+  }
+  async function putAWS(url: string) {
+    try {
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": image!.type },
+        body: image,
+      });
+      if (res.ok) {
+        console.log("image uploaded!");
+      } else {
+        console.log("failed to upload image!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function computeSHA256(file: File) {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return hashHex;
   }
 };
 

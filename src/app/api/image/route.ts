@@ -1,22 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getSignedURL } from "@/lib/aws/getSignedURL";
 
 export async function POST(req: NextRequest) {
-  //return a aws signed url to upload that specific image
-  const s3 = new S3Client({
-    region: process.env.S3_REGION,
-    credentials: {
-      secretAccessKey: process.env.USER_ACCESS_SECRET!,
-      accessKeyId: process.env.USER_ACCESS!,
-    },
-  });
-  const putObjectCommand = new PutObjectCommand({
-    Bucket: process.env.S3_NAME,
-    Key: "image1",
-  });
-  const signedURL = await getSignedUrl(s3, putObjectCommand, {
-    expiresIn: 3600,
-  });
-  return NextResponse.json({ url: signedURL }, { status: 200 });
+  const FORMAT = ["image/png", "image/jpg", "image/jpeg"];
+  const SIZE = 5000000;
+  try {
+    const { imageSize, imageType, checksum } = await req.json();
+
+    console.log(imageSize);
+
+    //check if image is of valid size and type
+    if (imageSize > SIZE || !FORMAT.includes(imageType)) {
+      console.log("toolarge");
+
+      return NextResponse.json(
+        {
+          error: "image is too large or in wrong format",
+        },
+        { status: 422 }
+      );
+    }
+
+    //return a aws signed url to PUT that image
+    const signedURL = await getSignedURL(imageType, imageSize, checksum);
+
+    return NextResponse.json({ url: signedURL }, { status: 200 });
+  } catch (error) {
+    if (error instanceof Error) console.log(error.stack);
+
+    return NextResponse.json({ error: "server error" }, { status: 500 });
+  }
 }
