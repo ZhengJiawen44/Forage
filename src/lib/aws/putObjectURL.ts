@@ -23,7 +23,6 @@ export async function getSignedURL(
       Key: key,
       ContentType: imageType,
       ContentLength: imageSize,
-      ChecksumSHA256: checksum,
     });
 
     const signedURL = await getSignedUrl(s3, putObjectCommand, {

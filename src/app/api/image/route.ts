@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       checksum
     );
 
-    return NextResponse.json({ url: signedURL, id: key }, { status: 200 });
+    return NextResponse.json({ url: signedURL, uuID: key }, { status: 200 });
   } catch (error) {
     if (error instanceof Error) console.log(error.stack);
 

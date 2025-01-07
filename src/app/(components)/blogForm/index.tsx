@@ -1,5 +1,5 @@
 "use client";
-import React, { FormEvent, useState } from "react";
+import React, { createContext, FormEvent, useState } from "react";
 import { Editor } from "@/app/(components)";
 import { useRef } from "react";
 import { Button } from "../reusable-ui/button";
@@ -7,7 +7,14 @@ import Link from "next/link";
 import { blogSchema } from "@/schemas/blogSchema";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { uploadImage } from "@/lib/image-upload/uploadImage";
+interface FileContextType {
+  files: React.RefObject<File[]>;
+}
 
+export const fileContext = createContext<FileContextType | undefined>(
+  undefined
+);
 const index = () => {
   const { toast } = useToast();
   const router = useRouter();
@@ -16,6 +23,9 @@ const index = () => {
   const [descError, setDescError] = useState<string | null>(null);
   const [contentError, setContentError] = useState<string | null>(null);
   const richText = useRef<string>(`<p>how is your day</p>`);
+
+  const files = useRef<File[]>([]);
+
   return (
     <>
       <h1 className="font-extralight  m-auto text-[2rem] w-fit mb-10">
@@ -60,7 +70,10 @@ const index = () => {
           />
           <p>{descError}</p>
         </div>
-        <Editor richText={richText} error={contentError} />
+        <fileContext.Provider value={{ files }}>
+          <Editor richText={richText} error={contentError} />
+        </fileContext.Provider>
+
         <div className="flex gap-4 mt-4 justify-end">
           <Button
             type="button"
@@ -83,6 +96,7 @@ const index = () => {
 
   async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setTitleError(null);
     setLengthError(null);
     setDescError(null);
@@ -90,25 +104,6 @@ const index = () => {
     const data = new FormData(event.currentTarget);
     const formData = { ...Object.fromEntries(data), content: richText.current };
     const parseResult = blogSchema.safeParse(formData);
-
-    if (parseResult.success) {
-      const res = await fetch("/api/blog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parseResult.data),
-      });
-
-      if (res.ok) {
-        toast({
-          title: "Blog created",
-          description: "you blog has been created and uploaded succesfully!",
-        });
-        router.push("/");
-      } else {
-        const { error } = await res.json();
-        toast({ title: error });
-      }
-    }
 
     if (!parseResult.success) {
       const { errors } = parseResult.error;
@@ -128,8 +123,37 @@ const index = () => {
             break;
         }
       });
+      return;
+    }
+
+    if (parseResult.success) {
+      const res = await fetch("/api/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parseResult.data),
+      });
+
+      if (res.ok) {
+        toast({
+          title: "Blog created",
+          description: "you blog has been created and uploaded succesfully!",
+        });
+        router.push("/");
+      } else {
+        const { error } = await res.json();
+        toast({ title: error });
+      }
     }
   }
+  // //upload all images in the editor to aws S3 bucket
+  // const res = await uploadImage(richText.current, files.current);
+  // if (!res?.success) {
+  //   console.log("not success");
+  //   console.log(res?.message);
+  //   toast({ title: res!.message });
+  // }
+  // const html = res.html;
+  // toast({ title: res!.message });
 };
 
 export default index;

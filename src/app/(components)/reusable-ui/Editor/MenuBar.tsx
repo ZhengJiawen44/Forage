@@ -13,6 +13,7 @@ import ImagePicker from "./ImagePicker";
 
 import { Toggle } from "@/app/(components)/reusable-ui/toggle";
 import { useCurrentEditor } from "@tiptap/react";
+
 const MenuBar = () => {
   const { editor } = useCurrentEditor();
   if (!editor) return null;

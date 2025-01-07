@@ -17,18 +17,21 @@ import {
   DialogClose,
 } from "@/app/(components)/reusable-ui/dialog";
 import { useState } from "react";
-
+import { useContext } from "react";
+import { fileContext } from "@/app/(components)/blogForm";
 const ImagePicker = () => {
+  const [open, setOpen] = useState(false);
+  const { files } = useContext(fileContext);
+
   const { editor } = useCurrentEditor();
   if (!editor) return null;
 
   const { toast } = useToast();
   const [image, setImage] = useState<File | null>(null);
-  const [isOpen, setOpen] = useState<boolean>(false);
-  const [uploading, setUploading] = useState<boolean>(false);
+
   return (
-    <Dialog open={isOpen}>
-      <DialogTrigger onClick={() => setOpen(true)}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>
         <IoImageOutline
           title="upload image"
           className="p-3 h-[3rem] w-[3rem] text-item-foreground 
@@ -70,103 +73,87 @@ const ImagePicker = () => {
                 return;
               }
               const image = event.target.files[0];
+              files.current.push(image);
               setImage(image);
+              const link = URL.createObjectURL(image);
+
+              editor!
+                .chain()
+                .focus()
+                .setImage({
+                  src: link,
+                  alt: image.name,
+                })
+                .run();
+              setOpen(false);
             }}
           />
         </div>
-        <DialogFooter>
-          <Button
-            variant={"outline"}
-            className="w-full text-[1rem] mb-4"
-            disabled={image?.name === null ? true : false || uploading}
-            onClick={handleImageSubmit}
-          >
-            <ImSpinner8
-              className={uploading ? "animate-spin" : "animate-spin hidden"}
-            />
-            Upload
-          </Button>
-          <DialogClose asChild onClick={() => setOpen(false)}>
-            <Button variant={"destructive"} className="w-full text-[1rem] mb-4">
-              Cancel
-            </Button>
-          </DialogClose>
-        </DialogFooter>
+        <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>
   );
 
   async function handleImageSubmit() {
-    setUploading(true);
     if (!image) {
       toast({ title: "no image file present" });
       console.log("no image file present");
       return;
     }
-    const checksum = await computeSHA256(image);
+    // const checksum = await computeSHA256(image);
 
     try {
-      const form = {
-        imageSize: String(image.size),
-        imageType: image.type,
-        checksum: checksum,
-      };
-      const res = await fetch("/api/image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) {
-        const { error } = await res.json();
-        toast({ title: "server could not process your image" });
-        console.log(error);
-        return;
-      }
-      const { url, id } = await res.json();
-      await putAWS(url);
-
-      editor!
-        .chain()
-        .focus()
-        .setImage({
-          src: `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${id}`,
-        })
-        .run();
-      setOpen(false);
+      // const form = {
+      //   imageSize: String(image.size),
+      //   imageType: image.type,
+      //   checksum: checksum,
+      // };
+      // const res = await fetch("/api/image", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(form),
+      // });
+      // if (!res.ok) {
+      //   const { error } = await res.json();
+      //   toast({ title: "server could not process your image" });
+      //   console.log(error);
+      //   return;
+      // }
+      // const { url, id } = await res.json();
+      // await putAWS(url);
     } catch (error) {
       toast({ title: "server could not process your image" });
       console.log(error);
     } finally {
-      setUploading(false);
     }
   }
-  async function putAWS(url: string) {
-    try {
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": image!.type },
-        body: image,
-      });
-      if (res.ok) {
-        toast({ title: "image uploaded!" });
-        console.log("image uploaded!");
-      } else {
-        toast({ title: "failed to upload image!" });
-        console.log("failed to upload image!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  async function computeSHA256(file: File) {
-    const buffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
-  }
+  // async function putAWS(url: string) {
+  //   try {
+  //     const res = await fetch(url, {
+  //       method: "PUT",
+  //       headers: { "Content-Type": image!.type },
+  //       body: image,
+  //     });
+  //     if (res.ok) {
+  //       toast({ title: "image uploaded!" });
+  //       console.log("image uploaded!");
+  //     } else {
+  //       toast({ title: "failed to upload image!" });
+  //       console.log("failed to upload image!");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  // async function computeSHA256(file: File) {
+  //   const buffer = await file.arrayBuffer();
+  //   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  //   const hashArray = Array.from(new Uint8Array(hashBuffer));
+  //   const hashHex = hashArray
+  //     .map((b) => b.toString(16).padStart(2, "0"))
+  //     .join("");
+  //   return hashHex;
+  // }
 };
 
 export default ImagePicker;

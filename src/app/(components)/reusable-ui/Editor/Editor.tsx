@@ -17,7 +17,6 @@ import Image from "@tiptap/extension-image";
 // import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { mergeAttributes } from "@tiptap/core";
 import MenuBar from "./MenuBar";
-import { useRef } from "react";
 
 interface EditorProps {
   richText?: React.RefObject<string>;
