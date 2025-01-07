@@ -17,6 +17,7 @@ import Image from "@tiptap/extension-image";
 // import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { mergeAttributes } from "@tiptap/core";
 import MenuBar from "./MenuBar";
+import { useRef } from "react";
 
 interface EditorProps {
   richText?: React.RefObject<string>;
@@ -63,6 +64,8 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
       },
     }),
   ];
+  let allImages = useRef<string[]>([]);
+
   return (
     <>
       <EditorProvider
@@ -70,7 +73,43 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
         content={richText?.current}
         extensions={extensions}
         immediatelyRender={false}
-        onUpdate={({ editor }) => {
+        onUpdate={async ({ editor }) => {
+          //diffing for image deletion from s3
+          let content = editor.getJSON().content;
+          let images: string[] = [];
+
+          content?.forEach(({ type, attrs }) => {
+            if (type === "image" && !allImages.current.includes(attrs!.src)) {
+              allImages.current.push(attrs!.src);
+            }
+            if (type === "image") {
+              images.push(attrs!.src);
+            }
+          });
+
+          // console.log("current: ", images);
+          // console.log("All: ", allImages.current);
+          let deleteObj = [];
+
+          for (let i = 0; i < allImages.current.length; i++) {
+            let remove = true;
+            for (let j = 0; j < images.length; j++) {
+              if (allImages.current[i] === images[j]) {
+                remove = false;
+              }
+            }
+            if (remove) {
+              deleteObj.push(allImages.current[i]);
+            }
+          }
+          // console.log(deleteObj);
+          //diffing end
+          if (deleteObj.length > 0) {
+            const id = deleteObj[0].slice(-36);
+            const res = await fetch(`/api/image/${id}`, { method: "DELETE" });
+            console.log(deleteObj);
+          }
+
           if (richText) richText.current = editor.getHTML();
         }}
         editorProps={{

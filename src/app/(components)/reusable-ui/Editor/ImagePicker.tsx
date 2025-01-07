@@ -124,6 +124,7 @@ const ImagePicker = () => {
       }
       const { url, id } = await res.json();
       await putAWS(url);
+
       editor!
         .chain()
         .focus()
