@@ -89,25 +89,32 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
 
           // console.log("current: ", images);
           // console.log("All: ", allImages.current);
-          let deleteObj = [];
+          let deleteObj = null;
 
           for (let i = 0; i < allImages.current.length; i++) {
             let remove = true;
+
             for (let j = 0; j < images.length; j++) {
               if (allImages.current[i] === images[j]) {
                 remove = false;
               }
             }
             if (remove) {
-              deleteObj.push(allImages.current[i]);
+              console.log("remove triggered");
+              deleteObj = allImages.current[i];
+              allImages.current.splice(i, 1);
             }
           }
-          // console.log(deleteObj);
           //diffing end
-          if (deleteObj.length > 0) {
-            const id = deleteObj[0].slice(-36);
+          if (deleteObj) {
+            // console.log("id: ", id);
+            const id = deleteObj!.slice(-36);
             const res = await fetch(`/api/image/${id}`, { method: "DELETE" });
-            console.log(deleteObj);
+            deleteObj = null;
+
+            if (!res.ok) {
+              console.log("failed to remove from array");
+            }
           }
 
           if (richText) richText.current = editor.getHTML();
