@@ -64,7 +64,6 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
       },
     }),
   ];
-  let allImages = useRef<string[]>([]);
 
   return (
     <>
@@ -74,49 +73,6 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
         extensions={extensions}
         immediatelyRender={false}
         onUpdate={async ({ editor }) => {
-          //diffing for image deletion from s3
-          let content = editor.getJSON().content;
-          let images: string[] = [];
-
-          content?.forEach(({ type, attrs }) => {
-            if (type === "image" && !allImages.current.includes(attrs!.src)) {
-              allImages.current.push(attrs!.src);
-            }
-            if (type === "image") {
-              images.push(attrs!.src);
-            }
-          });
-
-          // console.log("current: ", images);
-          // console.log("All: ", allImages.current);
-          let deleteObj = null;
-
-          for (let i = 0; i < allImages.current.length; i++) {
-            let remove = true;
-
-            for (let j = 0; j < images.length; j++) {
-              if (allImages.current[i] === images[j]) {
-                remove = false;
-              }
-            }
-            if (remove) {
-              console.log("remove triggered");
-              deleteObj = allImages.current[i];
-              allImages.current.splice(i, 1);
-            }
-          }
-          //diffing end
-          if (deleteObj) {
-            // console.log("id: ", id);
-            const id = deleteObj!.slice(-36);
-            const res = await fetch(`/api/image/${id}`, { method: "DELETE" });
-            deleteObj = null;
-
-            if (!res.ok) {
-              console.log("failed to remove from array");
-            }
-          }
-
           if (richText) richText.current = editor.getHTML();
         }}
         editorProps={{
