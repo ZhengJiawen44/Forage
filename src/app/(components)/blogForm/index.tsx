@@ -124,6 +124,8 @@ const index = () => {
       toast({ title: upload!.message });
 
       const formData = { ...Object.fromEntries(data), content: html };
+      console.log(formData);
+
       const parseResult = blogSchema.safeParse(formData);
       if (!parseResult.success) {
         const { errors } = parseResult.error;
