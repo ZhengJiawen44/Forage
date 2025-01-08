@@ -7,7 +7,7 @@ const page = async () => {
     id: number;
     title: string;
     length: number;
-    subtitle: string | null;
+    description: string | null;
     content: string;
     authorID: number;
     createdAt: Date;

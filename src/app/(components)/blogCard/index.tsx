@@ -2,12 +2,12 @@ import React from "react";
 import { format } from "@/lib/getFormattedDay";
 import OptionsBar from "../reusable-ui/OptionsBar";
 import Link from "next/link";
-
+import SanitizedContent from "./SanitizedContent";
 type Blog = {
   id: number;
   title: string;
   length: number;
-  subtitle: string | null;
+  description: string | null;
   content: string;
   authorID: number;
   createdAt: Date;
@@ -26,12 +26,12 @@ const BlogCardPreview = (blog: Blog) => {
           </h1>
         </Link>
 
-        <p
+        <div
           className="font-lora font-thin text-item-foreground mb-8 md:mb-10
           overflow-hidden text-ellipsis line-clamp-2"
         >
-          {blog.subtitle ?? blog.content}
-        </p>
+          {blog.description ?? <SanitizedContent content={blog.content} />}
+        </div>
 
         <div className=" flex font-lora font-thin text-item-foreground justify-between text-[0.8rem] md:text-[1rem]">
           <div className="flex gap-4 items-center">
