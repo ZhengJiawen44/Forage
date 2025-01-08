@@ -27,6 +27,7 @@ export async function uploadImage(richText: string, files: File[]) {
             return { success: false, message: "image failed to upload" };
           }
           //if image is succefully uploaded to s3, we swap out the img src with the s3 image Link
+
           DOMImage.setAttribute(
             "src",
             `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${url.uuID}`
@@ -37,6 +38,7 @@ export async function uploadImage(richText: string, files: File[]) {
       }
     }
   }
+
   return {
     success: true,
     message: "succesfully uploaded Image",
