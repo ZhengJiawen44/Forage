@@ -120,9 +120,14 @@ const index = () => {
         toast({ title: upload!.message });
         return;
       }
-      const html = upload.html;
-      toast({ title: upload!.message });
+      console.log(upload.message);
 
+      console.log(upload.message === "no image");
+
+      if (upload.message !== "no image") {
+        toast({ title: upload!.message });
+      }
+      const html = upload.html;
       const formData = { ...Object.fromEntries(data), content: html };
       console.log(formData);
 

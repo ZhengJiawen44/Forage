@@ -9,7 +9,12 @@ export async function uploadImage(richText: string, files: File[]) {
 
   // console.log(files);
   // console.log(richText);
+  console.log(DOMImages.length);
 
+  DOMImages.length < 1 && {
+    success: true,
+    message: "no image",
+  };
   //for each img in the richtext, get their actual file blob
   for (let DOMImage of DOMImages) {
     for (let j = 0; j < files.length; j++) {
