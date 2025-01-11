@@ -1,4 +1,5 @@
 {
+  "typeAcquisition": { "include": ["jest"] },
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -22,6 +23,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "babel.config.js",
+    "test/playground.js"
+  ],
   "exclude": ["node_modules"]
 }
