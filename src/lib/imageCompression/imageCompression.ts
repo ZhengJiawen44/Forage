@@ -14,13 +14,14 @@ export async function CompressImage(file: File): Promise<File> {
       canvas!.height = image.height;
       canvas!.width = image.width;
       ctx?.drawImage(image, 0, 0, image.width, image.height);
-      URL.revokeObjectURL(url);
 
       //export canvas as compressed image
-      const compressedImg = ctx?.canvas.toDataURL("image/jpeg", 0.7);
-      const res = await fetch(compressedImg!);
-      const blob = await res.blob();
-      const file = new File([blob], "compressed", { type: "image/jpeg" });
+      // const compressedImg = ctx?.canvas.toDataURL("image/jpeg", 0.7);
+      ctx?.canvas.toBlob((blob) => {}, "image/jpeg", 0.7);
+      // const res = await fetch(compressedImg!);
+      // const blob = await res.blob();
+      // const file = new File([blob], "compressed", { type: "image/jpeg" });
+      URL.revokeObjectURL(url);
     };
   } catch (error) {
     if (error instanceof Error) throw new Error(error.message);
