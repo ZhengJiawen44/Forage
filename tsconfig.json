@@ -1,5 +1,4 @@
 {
-  "typeAcquisition": { "include": ["jest"] },
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -28,8 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "babel.config.js",
-    "test/playground.js"
+    "test/playground.js",
+    "test/compression.test.ts"
   ],
   "exclude": ["node_modules"]
 }
