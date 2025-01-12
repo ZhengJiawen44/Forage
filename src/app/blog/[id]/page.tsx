@@ -60,7 +60,10 @@ const page = async ({ params }: PageProps) => {
             </div>
           </div>
         </div>
-        <p className="text-gray-300 text-[1.3rem] pt-10">{blog?.content}</p>
+        <p
+          className="text-gray-300 text-[1.3rem] pt-10"
+          dangerouslySetInnerHTML={{ __html: blog!.content }}
+        />
       </div>
       <Link href={`/blog/${id}/update`}>edit</Link>
       <Link href={`/blog/new`}>create</Link>

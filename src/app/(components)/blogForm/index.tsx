@@ -152,10 +152,6 @@ const index = () => {
     //error handling for form data validation
     event.preventDefault();
     setSubmit(true);
-    // setTitleError(null);
-    // setLengthError(null);
-    // setDescError(null);
-    // setContentError(null);
     const data = new FormData(event.currentTarget);
     try {
       setLoading(true);
