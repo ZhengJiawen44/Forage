@@ -1,5 +1,6 @@
 import { uploadToS3 } from "./S3upload";
 import { getSignedURL } from "./getSignedURL";
+import { CompressImage } from "../imageCompression/compressImage";
 export async function uploadImage(richText: string, files: File[]) {
   // create a dom using the richtext
   const dom = new DOMParser();
@@ -9,7 +10,6 @@ export async function uploadImage(richText: string, files: File[]) {
 
   // console.log(files);
   // console.log(richText);
-  console.log(DOMImages.length);
 
   DOMImages.length < 1 && {
     success: true,
@@ -17,12 +17,13 @@ export async function uploadImage(richText: string, files: File[]) {
   };
   //for each img in the richtext, get their actual file blob
   for (let DOMImage of DOMImages) {
-    for (let j = 0; j < files.length; j++) {
-      const Blob = files[j];
-      if (DOMImage.alt === Blob.name) {
+    for (let file of files) {
+      if (DOMImage.alt === file.name) {
         try {
+          //compress the image first
+          // const cImage = await CompressImage(file);
           //get the signed URL for the image
-          const url = await getSignedURL(Blob);
+          const url = await getSignedURL(file);
           if (!url) {
             return {
               success: false,
@@ -32,7 +33,7 @@ export async function uploadImage(richText: string, files: File[]) {
           console.log("uploading: ", url.url);
 
           //store the image using the signed URL
-          const res = await uploadToS3(url.url, Blob);
+          const res = await uploadToS3(url.url, file);
           if (!res) {
             return { success: false, message: "image failed to upload" };
           }

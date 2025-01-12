@@ -24,8 +24,12 @@ const index = () => {
   const [lengthError, setLengthError] = useState<string | null>(null);
   const [descError, setDescError] = useState<string | null>(null);
   const [contentError, setContentError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const titleRef = useRef<HTMLInputElement | null>(null);
+  const lengthRef = useRef<HTMLInputElement | null>(null);
+  const descRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const [loading, setLoading] = useState(false);
+  const [isSubmit, setSubmit] = useState(false);
   const richText = useRef<string>(`<p>how is your day</p>`);
   const files = useRef<File[]>([]);
 
@@ -42,6 +46,21 @@ const index = () => {
               title*
             </label>
             <input
+              ref={titleRef}
+              onChange={(e) => {
+                if (isSubmit) {
+                  const error = blogSchema.shape.title.safeParse(
+                    e.currentTarget.value
+                  ).error?.errors[0];
+
+                  if (!error) {
+                    setTitleError(null);
+                    return;
+                  }
+
+                  setTitleError(error.message);
+                }
+              }}
               type="text"
               name="title"
               id="title"
@@ -54,6 +73,20 @@ const index = () => {
               length*
             </label>
             <input
+              ref={lengthRef}
+              onChange={(e) => {
+                if (isSubmit) {
+                  const error = blogSchema.shape.length.safeParse(
+                    e.currentTarget.value
+                  ).error?.errors[0];
+
+                  if (!error) {
+                    setLengthError(null);
+                    return;
+                  }
+                  setLengthError(error.message);
+                }
+              }}
               type="number"
               name="length"
               id="length"
@@ -67,6 +100,20 @@ const index = () => {
             description/subtitle
           </label>
           <textarea
+            ref={descRef}
+            onChange={(e) => {
+              if (isSubmit) {
+                const error = blogSchema.shape.description.safeParse(
+                  e.currentTarget.value
+                ).error?.errors[0];
+
+                if (!error) {
+                  setDescError(null);
+                  return;
+                }
+                setDescError(error.message);
+              }
+            }}
             name="description"
             id="description"
             className="w-full bg-transparent border-2 p-2 rounded-md"
@@ -104,46 +151,56 @@ const index = () => {
   async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     //error handling for form data validation
     event.preventDefault();
-    setTitleError(null);
-    setLengthError(null);
-    setDescError(null);
-    setContentError(null);
+    setSubmit(true);
+    // setTitleError(null);
+    // setLengthError(null);
+    // setDescError(null);
+    // setContentError(null);
     const data = new FormData(event.currentTarget);
     try {
       setLoading(true);
       //first Post image to AWS S3
       //upload all images in the editor to aws S3 bucket
       const upload = await uploadImage(richText.current, files.current);
+
       if (!upload?.success) {
         console.log("not success");
         console.log(upload?.message);
         toast({ title: upload!.message });
         return;
       }
-      console.log(upload.message);
-
-      console.log(upload.message === "no image");
-
-      if (upload.message !== "no image") {
-        toast({ title: upload!.message });
-      }
+      // toast({ title: "image uploaded" });
       const html = upload.html;
       const formData = { ...Object.fromEntries(data), content: html };
       console.log(formData);
-
       const parseResult = blogSchema.safeParse(formData);
       if (!parseResult.success) {
         const { errors } = parseResult.error;
+        let focus = false;
         errors.forEach(({ message, path }) => {
           switch (path[0]) {
             case "title":
               setTitleError(message);
+              if (focus === false) {
+                titleRef.current?.focus();
+                focus = true;
+              }
+
               break;
             case "length":
               setLengthError(message);
+              if (focus === false) {
+                lengthRef.current?.focus();
+                focus = true;
+              }
+
               break;
             case "description":
-              setDescError(message);
+              descRef.current?.focus();
+
+              if (focus === false) {
+                setDescError(message);
+              }
               break;
             case "content":
               setContentError(message);
@@ -158,7 +215,7 @@ const index = () => {
         const res = await fetch("/api/blog", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(parseResult.data),
+          body: JSON.stringify(formData),
         });
         if (!res.ok) {
           const { error } = await res.json();

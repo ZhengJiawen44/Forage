@@ -4,6 +4,7 @@ import { getSignedURL } from "@/lib/aws/putObjectURL";
 export async function POST(req: NextRequest) {
   const FORMAT = ["image/png", "image/jpg", "image/jpeg"];
   const SIZE = 5000000;
+
   try {
     const { imageSize, imageType, checksum } = await req.json();
 
