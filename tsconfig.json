@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "__tests__/playground.js",
-    "__tests__/compression.test.ts"
+    "__tests__/getFile.test.ts"
   ],
   "exclude": ["node_modules"]
 }
