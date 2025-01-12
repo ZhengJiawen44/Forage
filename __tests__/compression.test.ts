@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from "node:test";
+import { beforeEach, describe } from "node:test";
 import { expect, test } from "@jest/globals";
 import fs from "node:fs";
 
@@ -10,21 +10,18 @@ describe("image compression", () => {
 
   test("compression returns a File type object", async () => {
     image = await getFile();
-
-    // const blob = new Blob([image.buffer]);
-    // console.log(image);
-
-    expect(image).toEqual(undefined);
+    expect(image instanceof File).toBe(true);
   });
 });
 
-async function getFile(): Promise<Buffer<ArrayBufferLike>> {
+async function getFile(): Promise<File> {
   return new Promise((resolve, reject) => {
-    fs.readFile("test/images/SantaClausVillage-UHD.jpg", (error, data) => {
+    fs.readFile("__tests__/images/SantaClausVillage-UHD.jpg", (error, data) => {
       if (error) {
         reject(error);
       }
-      resolve(data);
+      const file = new File([data], "image", { type: "image/jpeg" });
+      resolve(file);
     });
   });
 }
