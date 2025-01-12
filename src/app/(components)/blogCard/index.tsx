@@ -2,7 +2,8 @@ import React from "react";
 import { format } from "@/lib/getFormattedDay";
 import OptionsBar from "../reusable-ui/OptionsBar";
 import Link from "next/link";
-import SanitizedContent from "./SanitizedContent";
+
+import SanitizedContent from "./extractedContent";
 type Blog = {
   id: number;
   title: string;
@@ -14,6 +15,10 @@ type Blog = {
 };
 
 const BlogCardPreview = (blog: Blog) => {
+  //extract first image (if any)
+
+  //extract content without image
+
   return (
     <div
       className="flex w-full mb-5 lg:mb-10 border bg-item p-6 
@@ -30,7 +35,11 @@ const BlogCardPreview = (blog: Blog) => {
           className="font-lora font-thin text-item-foreground mb-8 md:mb-10
           overflow-hidden text-ellipsis line-clamp-2"
         >
-          {blog.description ?? <SanitizedContent content={blog.content} />}
+          {blog.description?.length === 0 ? (
+            <SanitizedContent content={blog.content} />
+          ) : (
+            blog.description
+          )}
         </div>
 
         <div className=" flex font-lora font-thin text-item-foreground justify-between text-[0.8rem] md:text-[1rem]">
