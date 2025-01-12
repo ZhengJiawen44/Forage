@@ -7,6 +7,7 @@ const page = async () => {
     id: number;
     title: string;
     length: number;
+    thumbnail: string | null;
     description: string | null;
     content: string;
     authorID: number;

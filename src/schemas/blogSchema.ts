@@ -12,7 +12,7 @@ export const blogSchema = z.object({
   length: z.coerce
     .number({ message: "length should be a!" })
     .min(1, { message: "length should not be less than 1" }),
-
+  thumbnail: z.string({ message: "thumbnail is a string" }).optional(),
   content: z
     .string({ message: "content cannot be empty!" })
     .min(50, { message: "content cannot be less than 50 characters!" })

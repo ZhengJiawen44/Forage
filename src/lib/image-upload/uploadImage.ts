@@ -16,6 +16,7 @@ export async function uploadImage(richText: string, files: File[]) {
     message: "no image",
   };
   //for each img in the richtext, get their actual file blob
+  let thumbnail = null;
   for (let DOMImage of DOMImages) {
     for (let file of files) {
       if (DOMImage.alt === file.name) {
@@ -44,6 +45,10 @@ export async function uploadImage(richText: string, files: File[]) {
             "src",
             `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${url.uuID}`
           );
+          //set thumbnail image as first image
+          if (!thumbnail) {
+            thumbnail = `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${url.uuID}`;
+          }
           //we then revoke the temporary url assigned to that image
           URL.revokeObjectURL(link);
         } catch (error) {
@@ -57,5 +62,6 @@ export async function uploadImage(richText: string, files: File[]) {
     success: true,
     message: "succesfully uploaded Image",
     html: parsed.body.innerHTML,
+    thumbnail: thumbnail,
   };
 }

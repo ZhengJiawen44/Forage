@@ -35,6 +35,7 @@ model Blog {
   description String?
   content String
   length Int
+  thumbnail String?
   createdAt DateTime @default(now())
   author User @relation(fields:[authorID], references: [id]) 
   authorID Int

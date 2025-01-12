@@ -8,6 +8,7 @@ type Blog = {
   id: number;
   title: string;
   length: number;
+  thumbnail: string | null;
   description: string | null;
   content: string;
   authorID: number;
@@ -24,7 +25,7 @@ const BlogCardPreview = (blog: Blog) => {
       className="flex w-full mb-5 lg:mb-10 border bg-item p-6 
       gap-4 lg:gap-20 rounded-[5px] "
     >
-      <div className="w-[70%] md:w-[80%]">
+      <div className="w-[70%] md:w-[80%] xl:w-[77%]">
         <Link href={`/blog/${blog.id}`}>
           <h1 className="font-sans text-xl lg:text-2xl mb-2 md:mb-4 font-extrabold hover:underline">
             {blog.title}
@@ -51,17 +52,17 @@ const BlogCardPreview = (blog: Blog) => {
         </div>
       </div>
 
-      <div className="w-[30%] md:w-[20%]">
-        <Image />
+      <div className="w-[30%] md:w-[20%] xl:w-[23%]">
+        {blog.thumbnail && <Image src={blog.thumbnail} />}
       </div>
     </div>
   );
 };
 
-const Image = () => {
-  return (
-    <div className="w-full aspect-[1.5] rounded-[12px] bg-green-800"></div>
-  );
+const Image = ({ src }) => {
+  console.log(src);
+
+  return <img src={src} className="w-full aspect-[1.5] rounded-[6px]" />;
 };
 
 export default BlogCardPreview;

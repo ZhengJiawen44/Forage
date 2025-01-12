@@ -167,7 +167,11 @@ const index = () => {
       }
       // toast({ title: "image uploaded" });
       const html = upload.html;
-      const formData = { ...Object.fromEntries(data), content: html };
+      const formData = {
+        ...Object.fromEntries(data),
+        content: html,
+        thumbnail: upload.thumbnail,
+      };
       console.log(formData);
       const parseResult = blogSchema.safeParse(formData);
       if (!parseResult.success) {
