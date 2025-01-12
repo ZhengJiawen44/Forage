@@ -1,7 +1,10 @@
+import { randomUUID } from "crypto";
+
 export function canvasToFile(canvas: HTMLCanvasElement): Promise<File> {
   return new Promise((resolve) => {
     canvas.toBlob(
       (blob) => {
+        const UUID = randomUUID();
         const cImage = new File([blob!], "compressed", { type: "image/jpg" });
         resolve(cImage);
       },

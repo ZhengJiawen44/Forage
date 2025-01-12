@@ -7,8 +7,6 @@ export async function POST(req: NextRequest) {
   try {
     const { imageSize, imageType, checksum } = await req.json();
 
-    console.log(imageSize);
-
     //check if image is of valid size and type
     if (imageSize > SIZE || !FORMAT.includes(imageType)) {
       console.log("toolarge");
