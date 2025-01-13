@@ -65,7 +65,7 @@ const page = async ({ params }: PageProps) => {
           dangerouslySetInnerHTML={{ __html: blog!.content }}
         />
       </div>
-      <Link href={`/blog/${id}/update`}>edit</Link>
+      <Link href={`/blog/update/${id}`}>edit</Link>
       <Link href={`/blog/new`}>create</Link>
       <BlogDeleteDialog id={id} />
     </>

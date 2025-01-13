@@ -13,24 +13,37 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 interface FileContextType {
   files: React.RefObject<File[]>;
 }
-
+//this is the context for the domImage file
 export const fileContext = createContext<FileContextType | undefined>(
   undefined
 );
-const index = () => {
+
+interface blogFormProps {
+  title: string;
+  length: number;
+  description?: string;
+  content: string;
+  thumbnail: string | null;
+}
+
+const index = (blogContents?: blogFormProps) => {
   const { toast } = useToast();
   const router = useRouter();
   const [titleError, setTitleError] = useState<string | null>(null);
   const [lengthError, setLengthError] = useState<string | null>(null);
   const [descError, setDescError] = useState<string | null>(null);
   const [contentError, setContentError] = useState<string | null>(null);
+  //ref to auto focus on error
   const titleRef = useRef<HTMLInputElement | null>(null);
   const lengthRef = useRef<HTMLInputElement | null>(null);
   const descRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
-  const richText = useRef<string>(`<p>how is your day</p>`);
+
+  //ref to set the initial content of the Editor component
+  const richText = useRef<string>(blogContents?.content);
+  //ref to record all files to diff against domImage
   const files = useRef<File[]>([]);
 
   return (
@@ -61,6 +74,7 @@ const index = () => {
                   setTitleError(error.message);
                 }
               }}
+              defaultValue={blogContents?.title}
               type="text"
               name="title"
               id="title"
@@ -87,6 +101,7 @@ const index = () => {
                   setLengthError(error.message);
                 }
               }}
+              defaultValue={blogContents?.length}
               type="number"
               name="length"
               id="length"
@@ -114,6 +129,7 @@ const index = () => {
                 setDescError(error.message);
               }
             }}
+            defaultValue={blogContents?.description}
             name="description"
             id="description"
             className="w-full bg-transparent border-2 p-2 rounded-md"
@@ -170,10 +186,13 @@ const index = () => {
       const formData = {
         ...Object.fromEntries(data),
         content: html,
-        thumbnail: upload.thumbnail,
+        thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
       };
-      console.log(formData);
+      // console.log(formData);
+
       const parseResult = blogSchema.safeParse(formData);
+      console.log(parseResult);
+
       if (!parseResult.success) {
         const { errors } = parseResult.error;
         let focus = false;
@@ -207,6 +226,7 @@ const index = () => {
               break;
           }
         });
+        console.log("here");
         return;
       }
 
