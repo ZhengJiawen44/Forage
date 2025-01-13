@@ -14,6 +14,21 @@ pnpm dev
 bun dev
 ```
 
+## home page
+
+Home page is inspired by medium, and is responsive on all devices
+![homepage image](images/home.png)
+
+## rich text feature
+
+a blazingly fast rich text editor implemented using tiptap, and aws s3 to host images
+![rich text image](images/rt.png)
+
+## User Authentication
+
+secure user login and registration, following industry best practices.
+![authentication image](images/auth.png)
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
