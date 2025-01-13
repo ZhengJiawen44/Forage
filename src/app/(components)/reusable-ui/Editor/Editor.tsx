@@ -38,7 +38,7 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
     listItem,
     Italic,
     Strikethrough,
-    Image.configure({ HTMLAttributes: { class: "w-full" } }),
+    Image.configure({ HTMLAttributes: { class: "w-full mb-4 mt-4" } }),
     Code.configure({ HTMLAttributes: { class: "bg-item p-4 rounded-[5px]" } }),
     BulletList.configure({ HTMLAttributes: { class: "list-disc pl-[3rem]" } }),
     OrderedList.configure({
