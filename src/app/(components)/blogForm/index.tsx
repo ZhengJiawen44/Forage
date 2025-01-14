@@ -9,14 +9,16 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/lib/image-upload/uploadImage";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useValidate } from "@/app/hooks/useValidate";
+import { ZodIssue } from "zod";
 
-interface FileContextType {
-  files: React.RefObject<File[]>;
-}
-//this is the context for the domImage file
-export const fileContext = createContext<FileContextType | undefined>(
-  undefined
-);
+// interface FileContextType {
+//   files: React.RefObject<File[]>;
+// }
+// //this is the context for the domImage file
+// export const fileContext = createContext<FileContextType | undefined>(
+//   undefined
+// );
 
 interface blogFormProps {
   title: string;
@@ -29,22 +31,26 @@ interface blogFormProps {
 const index = (blogContents?: blogFormProps) => {
   const { toast } = useToast();
   const router = useRouter();
-  const [titleError, setTitleError] = useState<string | null>(null);
-  const [lengthError, setLengthError] = useState<string | null>(null);
-  const [descError, setDescError] = useState<string | null>(null);
-  const [contentError, setContentError] = useState<string | null>(null);
-  //ref to auto focus on error
-  const titleRef = useRef<HTMLInputElement | null>(null);
-  const lengthRef = useRef<HTMLInputElement | null>(null);
-  const descRef = useRef<HTMLTextAreaElement | null>(null);
+  const [errors, setError] = useState<ZodIssue[] | undefined>(undefined);
+  const { ref, title, length, description, content } = useValidate(errors);
+
+  // const [titleError, setTitleError] = useState<string | null>(null);
+  // const [lengthError, setLengthError] = useState<string | null>(null);
+  // const [descError, setDescError] = useState<string | null>(null);
+  // const [contentError, setContentError] = useState<string | null>(null);
+  // //ref to auto focus on error
+  // const titleRef = useRef<HTMLInputElement | null>(null);
+  // const lengthRef = useRef<HTMLInputElement | null>(null);
+  // const descRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
 
   //ref to set the initial content of the Editor component
   const richText = useRef<string>(blogContents?.content);
-  //ref to record all files to diff against domImage
-  const files = useRef<File[]>([]);
+
+  //context ref to record all files to diff against domImage
+  // const files = useRef<File[]>([]);
 
   return (
     <>
@@ -59,7 +65,7 @@ const index = (blogContents?: blogFormProps) => {
               title*
             </label>
             <input
-              ref={titleRef}
+              ref={ref.titleRef}
               onChange={(e) => {
                 if (isSubmit) {
                   const error = blogSchema.shape.title.safeParse(
@@ -67,11 +73,11 @@ const index = (blogContents?: blogFormProps) => {
                   ).error?.errors[0];
 
                   if (!error) {
-                    setTitleError(null);
+                    title.setTitleError(null);
                     return;
                   }
 
-                  setTitleError(error.message);
+                  title.setTitleError(error.message);
                 }
               }}
               defaultValue={blogContents?.title}
@@ -80,14 +86,14 @@ const index = (blogContents?: blogFormProps) => {
               id="title"
               className="w-full bg-transparent border-2 p-1 rounded-md"
             />
-            <p>{titleError}</p>
+            <p>{title.titleError}</p>
           </div>
           <div className="grow-[1] ">
             <label htmlFor="length" className="block text-item-foreground">
               length*
             </label>
             <input
-              ref={lengthRef}
+              ref={ref.lengthRef}
               onChange={(e) => {
                 if (isSubmit) {
                   const error = blogSchema.shape.length.safeParse(
@@ -95,10 +101,10 @@ const index = (blogContents?: blogFormProps) => {
                   ).error?.errors[0];
 
                   if (!error) {
-                    setLengthError(null);
+                    length.setLengthError(null);
                     return;
                   }
-                  setLengthError(error.message);
+                  length.setLengthError(error.message);
                 }
               }}
               defaultValue={blogContents?.length}
@@ -107,7 +113,7 @@ const index = (blogContents?: blogFormProps) => {
               id="length"
               className="w-full bg-transparent border-2 p-1 rounded-md"
             />
-            <p>{lengthError}</p>
+            <p>{length.lengthError}</p>
           </div>
         </div>
         <div className="mb-10">
@@ -115,7 +121,7 @@ const index = (blogContents?: blogFormProps) => {
             description/subtitle
           </label>
           <textarea
-            ref={descRef}
+            ref={ref.descRef}
             onChange={(e) => {
               if (isSubmit) {
                 const error = blogSchema.shape.description.safeParse(
@@ -123,10 +129,10 @@ const index = (blogContents?: blogFormProps) => {
                 ).error?.errors[0];
 
                 if (!error) {
-                  setDescError(null);
+                  description.setDescError(null);
                   return;
                 }
-                setDescError(error.message);
+                description.setDescError(error.message);
               }
             }}
             defaultValue={blogContents?.description}
@@ -134,11 +140,11 @@ const index = (blogContents?: blogFormProps) => {
             id="description"
             className="w-full bg-transparent border-2 p-2 rounded-md"
           />
-          <p>{descError}</p>
+          <p>{description.descError}</p>
         </div>
-        <fileContext.Provider value={{ files }}>
-          <Editor richText={richText} error={contentError} />
-        </fileContext.Provider>
+        {/* <fileContext.Provider value={{ files }}> */}
+        <Editor richText={richText} error={content.contentError} />
+        {/* </fileContext.Provider> */}
 
         <div className="flex gap-4 mt-4 justify-end">
           <Button
@@ -167,95 +173,111 @@ const index = (blogContents?: blogFormProps) => {
   async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     //error handling for form data validation
     event.preventDefault();
+
     setSubmit(true);
-    const data = new FormData(event.currentTarget);
-    try {
-      setLoading(true);
-      //first Post image to AWS S3
-      //upload all images in the editor to aws S3 bucket
-      const upload = await uploadImage(richText.current, files.current);
+    //collect the form data and validate data
+    const formData = new FormData(event.currentTarget);
+    formData.append("content", richText.current ?? "");
 
-      if (!upload?.success) {
-        console.log("not success");
-        console.log(upload?.message);
-        toast({ title: upload!.message });
-        return;
-      }
-      // toast({ title: "image uploaded" });
-      const html = upload.html;
-      const formData = {
-        ...Object.fromEntries(data),
-        content: html,
-        thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
-      };
-      // console.log(formData);
+    const parseResult = blogSchema.safeParse(Object.fromEntries(formData));
+    console.log(parseResult.error);
 
-      const parseResult = blogSchema.safeParse(formData);
-      console.log(parseResult);
-
-      if (!parseResult.success) {
-        const { errors } = parseResult.error;
-        let focus = false;
-        errors.forEach(({ message, path }) => {
-          switch (path[0]) {
-            case "title":
-              setTitleError(message);
-              if (focus === false) {
-                titleRef.current?.focus();
-                focus = true;
-              }
-
-              break;
-            case "length":
-              setLengthError(message);
-              if (focus === false) {
-                lengthRef.current?.focus();
-                focus = true;
-              }
-
-              break;
-            case "description":
-              descRef.current?.focus();
-
-              if (focus === false) {
-                setDescError(message);
-              }
-              break;
-            case "content":
-              setContentError(message);
-              break;
-          }
-        });
-        console.log("here");
-        return;
-      }
-
-      if (parseResult.success) {
-        //POST form data to blog api endpoint
-        const res = await fetch("/api/blog", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-        if (!res.ok) {
-          const { error } = await res.json();
-          toast({ title: `server responded with ${res.status} error` });
-          console.log(error);
-          return;
-        }
-        toast({
-          title: "Blog created",
-          description: "you blog has been created and uploaded succesfully!",
-        });
-        router.push("/");
-      }
-    } catch (error) {
-      toast({ title: "unable to submit blog" });
-      console.log(error);
+    if (!parseResult.success) {
+      const { errors } = parseResult.error;
+      //trigger custom useValidate hook to revalidate inputs
+      setError(errors);
       return;
-    } finally {
-      setLoading(false);
     }
+
+    // setSubmit(true);
+    // const data = new FormData(event.currentTarget);
+    // try {
+    //   setLoading(true);
+    //   //first Post image to AWS S3
+    //   //upload all images in the editor to aws S3 bucket
+    //   const upload = await uploadImage(richText.current, files.current);
+
+    //   if (!upload?.success) {
+    //     console.log("not success");
+    //     console.log(upload?.message);
+    //     toast({ title: upload!.message });
+    //     return;
+    //   }
+    //   // toast({ title: "image uploaded" });
+    //   const html = upload.html;
+    //   const formData = {
+    //     ...Object.fromEntries(data),
+    //     content: html,
+    //     thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
+    //   };
+    //   // console.log(formData);
+
+    //   const parseResult = blogSchema.safeParse(formData);
+    //   console.log(parseResult);
+
+    //   if (!parseResult.success) {
+    //     const { errors } = parseResult.error;
+    //     let focus = false;
+    //     errors.forEach(({ message, path }) => {
+    //       switch (path[0]) {
+    //         case "title":
+    //           setTitleError(message);
+    //           if (focus === false) {
+    //             titleRef.current?.focus();
+    //             focus = true;
+    //           }
+
+    //           break;
+    //         case "length":
+    //           setLengthError(message);
+    //           if (focus === false) {
+    //             lengthRef.current?.focus();
+    //             focus = true;
+    //           }
+
+    //           break;
+    //         case "description":
+    //           descRef.current?.focus();
+
+    //           if (focus === false) {
+    //             setDescError(message);
+    //           }
+    //           break;
+    //         case "content":
+    //           setContentError(message);
+    //           break;
+    //       }
+    //     });
+    //     console.log("here");
+    //     return;
+    //   }
+
+    //   if (parseResult.success) {
+    //     //POST form data to blog api endpoint
+    //     const res = await fetch("/api/blog", {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify(formData),
+    //     });
+    //     if (!res.ok) {
+    //       const { error } = await res.json();
+    //       toast({ title: `server responded with ${res.status} error` });
+    //       console.log(error);
+    //       return;
+    //     }
+    //     toast({
+    //       title: "Blog created",
+    //       description: "you blog has been created and uploaded succesfully!",
+    //     });
+    //     router.push("/");
+    //   }
+    // } catch (error) {
+    //   toast({ title: "unable to submit blog" });
+    //   console.log(error);
+    //   return;
+    // } finally {
+    //   setLoading(false);
+    // }
   }
 };
 
