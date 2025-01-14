@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Editor } from "@/app/(components)";
 import { useRef } from "react";
 import { Button } from "../reusable-ui/button";
@@ -11,14 +11,6 @@ import { uploadImage } from "@/lib/image-upload/uploadImage";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useValidate } from "@/app/hooks/useValidate";
 import { ZodIssue } from "zod";
-
-// interface FileContextType {
-//   files: React.RefObject<File[]>;
-// }
-// //this is the context for the domImage file
-// export const fileContext = createContext<FileContextType | undefined>(
-//   undefined
-// );
 
 interface blogFormProps {
   title: string;
@@ -34,23 +26,11 @@ const index = (blogContents?: blogFormProps) => {
   const [errors, setError] = useState<ZodIssue[] | undefined>(undefined);
   const { ref, title, length, description, content } = useValidate(errors);
 
-  // const [titleError, setTitleError] = useState<string | null>(null);
-  // const [lengthError, setLengthError] = useState<string | null>(null);
-  // const [descError, setDescError] = useState<string | null>(null);
-  // const [contentError, setContentError] = useState<string | null>(null);
-  // //ref to auto focus on error
-  // const titleRef = useRef<HTMLInputElement | null>(null);
-  // const lengthRef = useRef<HTMLInputElement | null>(null);
-  // const descRef = useRef<HTMLTextAreaElement | null>(null);
-
   const [loading, setLoading] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
 
   //ref to set the initial content of the Editor component
   const richText = useRef<string>(blogContents?.content);
-
-  //context ref to record all files to diff against domImage
-  // const files = useRef<File[]>([]);
 
   return (
     <>
@@ -178,16 +158,23 @@ const index = (blogContents?: blogFormProps) => {
     //collect the form data and validate data
     const formData = new FormData(event.currentTarget);
     formData.append("content", richText.current ?? "");
-
     const parseResult = blogSchema.safeParse(Object.fromEntries(formData));
-    console.log(parseResult.error);
-
     if (!parseResult.success) {
       const { errors } = parseResult.error;
       //trigger custom useValidate hook to revalidate inputs
       setError(errors);
       return;
     }
+
+    //if validation success, upload all images to aws s3
+    const upload = await uploadImage(richText.current!);
+    if (!upload.success) {
+      console.log(upload?.message);
+      toast({ title: upload.message });
+      return;
+    }
+    toast({ title: "image uploaded" });
+    console.log(upload.html);
 
     // setSubmit(true);
     // const data = new FormData(event.currentTarget);
