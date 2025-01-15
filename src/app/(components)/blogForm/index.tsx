@@ -152,7 +152,11 @@ const index = (blogContents?: blogFormProps) => {
             Next
           </Button>
         </div>
-        <BlogPreview display={displayPreview} />
+        <BlogPreview
+          display={!displayPreview}
+          description="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque autem, laboriosam a officiis non quaerat quia corporis illo! Ratione adipisci eveniet suscipit debitis dolorem impedit? Minima quis itaque vel velit."
+          thumbnail="https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/17997722-e807-4cb0-a0e2-20b415b113bf"
+        />
       </form>
     </>
   );
