@@ -13,17 +13,22 @@ const SanitizedContent = ({ content }: SanitizedContentProps) => {
     const dom = new DOMParser();
     const body = dom.parseFromString(content, "text/html");
     const paragraph = Array.from(body.getElementsByTagName("p"))[0];
-    setSanitizedContent(paragraph.innerHTML);
+    if (paragraph) {
+      setSanitizedContent(paragraph?.innerHTML);
+    } else {
+      setSanitizedContent(" ");
+    }
   }, []);
 
-  return sanitizedContent ? (
+  if (!sanitizedContent) {
+    return <ContentLoadingSkeleton />;
+  }
+  return (
     <div
       dangerouslySetInnerHTML={{
         __html: sanitizedContent!,
       }}
     />
-  ) : (
-    <ContentLoadingSkeleton />
   );
 };
 

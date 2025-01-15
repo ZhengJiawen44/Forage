@@ -153,28 +153,56 @@ const index = (blogContents?: blogFormProps) => {
   async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     //error handling for form data validation
     event.preventDefault();
+    const currTarget = event.currentTarget;
+    try {
+      setLoading(true);
+      setSubmit(true);
+      //collect the form data and validate data
+      const formData = new FormData(currTarget);
+      formData.append("content", richText.current ?? "");
+      const parseResult = blogSchema.safeParse(Object.fromEntries(formData));
+      if (!parseResult.success) {
+        const { errors } = parseResult.error;
+        //trigger custom useValidate hook to revalidate inputs
+        setError(errors);
+        return;
+      }
 
-    setSubmit(true);
-    //collect the form data and validate data
-    const formData = new FormData(event.currentTarget);
-    formData.append("content", richText.current ?? "");
-    const parseResult = blogSchema.safeParse(Object.fromEntries(formData));
-    if (!parseResult.success) {
-      const { errors } = parseResult.error;
-      //trigger custom useValidate hook to revalidate inputs
-      setError(errors);
-      return;
-    }
+      //if validation success, upload all images to aws s3
+      const upload = await uploadImage(richText.current!);
 
-    //if validation success, upload all images to aws s3
-    const upload = await uploadImage(richText.current!);
-    if (!upload.success) {
-      console.log(upload?.message);
-      toast({ title: upload.message });
-      return;
+      if (!upload.success) {
+        console.log(upload?.message);
+        toast({ title: upload.message });
+        return;
+      }
+      console.log(upload.message);
+
+      //if image is uploaded, construct new form data with the new content
+      const html = upload.html;
+      const formDataObject = {
+        ...Object.fromEntries(new FormData(currTarget)),
+        content: html,
+        thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
+      };
+      // POST form data to blog api endpoint
+      const res = await fetch("/api/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formDataObject),
+      });
+      if (!res.ok) {
+        const { error } = await res.json();
+        toast({ title: `server responded with ${res.status} error` });
+        console.log(error);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      toast({ title: "could not upload your blog" });
+    } finally {
+      setLoading(false);
     }
-    toast({ title: "image uploaded" });
-    console.log(upload.html);
 
     // setSubmit(true);
     // const data = new FormData(event.currentTarget);
@@ -183,7 +211,6 @@ const index = (blogContents?: blogFormProps) => {
     //   //first Post image to AWS S3
     //   //upload all images in the editor to aws S3 bucket
     //   const upload = await uploadImage(richText.current, files.current);
-
     //   if (!upload?.success) {
     //     console.log("not success");
     //     console.log(upload?.message);
