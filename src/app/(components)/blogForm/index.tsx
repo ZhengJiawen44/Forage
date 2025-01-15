@@ -13,6 +13,7 @@ import { useValidate } from "@/app/hooks/useValidate";
 import { ZodIssue } from "zod";
 import { BlogPreview } from "@/app/(components)";
 import truncateParagraph from "@/lib/truncateParagraph";
+import getThumbnail from "@/lib/getThumbnail";
 interface blogFormProps {
   title: string;
   length: number;
@@ -140,7 +141,7 @@ const index = (blogContents?: blogFormProps) => {
           description={
             blogContents?.description ?? truncateParagraph(richText.current)
           }
-          thumbnail="https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/17997722-e807-4cb0-a0e2-20b415b113bf"
+          thumbnail={blogContents?.thumbnail ?? getThumbnail(richText.current)}
         />
       </form>
     </>
