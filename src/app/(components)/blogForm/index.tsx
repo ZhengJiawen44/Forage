@@ -12,6 +12,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useValidate } from "@/app/hooks/useValidate";
 import { ZodIssue } from "zod";
 import { BlogPreview } from "@/app/(components)";
+import truncateParagraph from "@/lib/truncateParagraph";
 interface blogFormProps {
   title: string;
   length: number;
@@ -26,7 +27,7 @@ const index = (blogContents?: blogFormProps) => {
 
   //error states and validation hook
   const [errors, setError] = useState<ZodIssue[] | undefined>(undefined);
-  const { ref, title, length, description, content } = useValidate(errors);
+  const { ref, title, length, content } = useValidate(errors);
 
   //preview visibillity
   const [displayPreview, setDisplayPreview] = useState<Boolean>(false);
@@ -44,12 +45,13 @@ const index = (blogContents?: blogFormProps) => {
       </h1>
 
       <form onSubmit={formSubmitHandler} className="relative">
-        <div className="w-full flex gap-10 mb-6">
+        <div className="w-full flex gap-10 mb-10">
           <div className="grow-[10]">
             <label htmlFor="title" className="block text-item-foreground">
               title*
             </label>
             <input
+              tabIndex={displayPreview ? -1 : 0}
               ref={ref.titleRef}
               onChange={(e) => {
                 if (isSubmit) {
@@ -78,6 +80,7 @@ const index = (blogContents?: blogFormProps) => {
               length*
             </label>
             <input
+              tabIndex={displayPreview ? -1 : 0}
               ref={ref.lengthRef}
               onChange={(e) => {
                 if (isSubmit) {
@@ -101,38 +104,16 @@ const index = (blogContents?: blogFormProps) => {
             <p>{length.lengthError}</p>
           </div>
         </div>
-        <div className="mb-10">
-          <label htmlFor="description" className="block text-item-foreground">
-            description/subtitle
-          </label>
-          <textarea
-            ref={ref.descRef}
-            onChange={(e) => {
-              if (isSubmit) {
-                const error = blogSchema.shape.description.safeParse(
-                  e.currentTarget.value
-                ).error?.errors[0];
 
-                if (!error) {
-                  description.setDescError(null);
-                  return;
-                }
-                description.setDescError(error.message);
-              }
-            }}
-            defaultValue={blogContents?.description}
-            name="description"
-            id="description"
-            className="w-full bg-transparent border-2 p-2 rounded-md"
-          />
-          <p>{description.descError}</p>
-        </div>
-        {/* <fileContext.Provider value={{ files }}> */}
-        <Editor richText={richText} error={content.contentError} />
-        {/* </fileContext.Provider> */}
+        <Editor
+          richText={richText}
+          error={content.contentError}
+          tab={displayPreview ? -1 : 0}
+        />
 
         <div className="flex gap-4 mt-4 justify-end">
           <Button
+            tabIndex={displayPreview ? -1 : 0}
             type="button"
             asChild
             className="text-[1rem] font-sans font-bold"
@@ -141,6 +122,7 @@ const index = (blogContents?: blogFormProps) => {
             <Link href={"/"}>Cancel</Link>
           </Button>
           <Button
+            tabIndex={displayPreview ? -1 : 0}
             type="submit"
             // onClick={() => setDisplayPreview(!displayPreview)}
             className="text-[1rem] bg-[#84f4c1] text-[#000000] 
@@ -153,8 +135,11 @@ const index = (blogContents?: blogFormProps) => {
           </Button>
         </div>
         <BlogPreview
-          display={!displayPreview}
-          description="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque autem, laboriosam a officiis non quaerat quia corporis illo! Ratione adipisci eveniet suscipit debitis dolorem impedit? Minima quis itaque vel velit."
+          display={displayPreview}
+          setDisplay={setDisplayPreview}
+          description={
+            blogContents?.description ?? truncateParagraph(richText.current)
+          }
           thumbnail="https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/17997722-e807-4cb0-a0e2-20b415b113bf"
         />
       </form>
@@ -169,45 +154,48 @@ const index = (blogContents?: blogFormProps) => {
       setLoading(true);
       setSubmit(true);
 
-      const isValid = validate(currTarget);
+      const isValid = await validate(currTarget);
       if (!isValid) {
         return;
       }
 
+      //if validation success, open preview panel
+      setDisplayPreview(true);
+
       //if validation success, upload all images to aws s3
-      const upload = await uploadImage(richText.current!);
+      // const upload = await uploadImage(richText.current!);
 
-      if (!upload.success) {
-        console.log(upload?.message);
-        toast({ title: upload.message });
-        return;
-      }
-      console.log(upload.message);
+      // if (!upload.success) {
+      //   console.log(upload?.message);
+      //   toast({ title: upload.message });
+      //   return;
+      // }
+      // console.log(upload.message);
 
-      //if image is uploaded, construct new form data with the new content
-      const html = upload.html;
-      const formDataObject = {
-        ...Object.fromEntries(new FormData(currTarget)),
-        content: html,
-        thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
-      };
-      // POST form data to blog api endpoint
-      const res = await fetch("/api/blog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formDataObject),
-      });
-      if (!res.ok) {
-        const { error } = await res.json();
-        toast({ title: `server responded with ${res.status} error` });
-        console.log(error);
-        return;
-      }
-      toast({
-        title: "Blog created",
-        description: "you blog has been created and uploaded succesfully!",
-      });
-      router.push("/");
+      // //if image is uploaded, construct new form data with the new content
+      // const html = upload.html;
+      // const formDataObject = {
+      //   ...Object.fromEntries(new FormData(currTarget)),
+      //   content: html,
+      //   thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
+      // };
+      // // POST form data to blog api endpoint
+      // const res = await fetch("/api/blog", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formDataObject),
+      // });
+      // if (!res.ok) {
+      //   const { error } = await res.json();
+      //   toast({ title: `server responded with ${res.status} error` });
+      //   console.log(error);
+      //   return;
+      // }
+      // toast({
+      //   title: "Blog created",
+      //   description: "you blog has been created and uploaded succesfully!",
+      // });
+      // router.push("/");
     } catch (error) {
       console.log(error);
       toast({ title: "could not upload your blog" });

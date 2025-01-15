@@ -21,8 +21,11 @@ import MenuBar from "./MenuBar";
 interface EditorProps {
   richText?: React.RefObject<string>;
   error?: string | null;
+  tab: number;
 }
-const Editor: React.FC<EditorProps> = ({ richText, error }) => {
+const Editor: React.FC<EditorProps> = ({ richText, error, tab }) => {
+  console.log(tab);
+
   type Levels = 1 | 2 | 3;
 
   const classes: Record<Levels, string> = {
@@ -77,6 +80,7 @@ const Editor: React.FC<EditorProps> = ({ richText, error }) => {
         editorProps={{
           attributes: {
             class: "p-4 border-2 rounded-[5px] min-h-[50vh]",
+            tabindex: tab.toString(),
           },
         }}
       ></EditorProvider>

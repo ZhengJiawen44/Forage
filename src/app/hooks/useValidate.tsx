@@ -5,7 +5,6 @@ export const useValidate = (errors: any[] | undefined) => {
   // error states to guide user
   const [titleError, setTitleError] = useState<string | null>(null);
   const [lengthError, setLengthError] = useState<string | null>(null);
-  const [descError, setDescError] = useState<string | null>(null);
   const [contentError, setContentError] = useState<string | null>(null);
   //ref to auto focus on error
   const titleRef = useRef<HTMLInputElement>(null);
@@ -34,13 +33,6 @@ export const useValidate = (errors: any[] | undefined) => {
             }
 
             break;
-          case "description":
-            descRef.current?.focus();
-
-            if (focus === false) {
-              setDescError(message);
-            }
-            break;
           case "content":
             setContentError(message);
             break;
@@ -52,8 +44,7 @@ export const useValidate = (errors: any[] | undefined) => {
   //return necessary states and refs
   const title = { titleError, setTitleError };
   const length = { lengthError, setLengthError };
-  const description = { descError, setDescError };
   const content = { contentError, setContentError };
   const ref = { titleRef, lengthRef, descRef };
-  return { ref, title, length, description, content };
+  return { ref, title, length, content };
 };

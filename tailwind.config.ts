@@ -8,6 +8,7 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  plugins: [require("tailwind-scrollbar")],
   theme: {
     fontSize: {
       xs: "0.75rem",

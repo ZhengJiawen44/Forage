@@ -7,7 +7,7 @@ export const blogSchema = z.object({
     .max(50, { message: "title cannot be less than 5 characters!" }),
   description: z
     .string()
-    .max(200, { message: "description cannot be longer than 200 words" })
+    .max(203, { message: "description cannot be longer than 200 words" })
     .optional(),
   length: z.coerce
     .number({ message: "length should be a!" })
