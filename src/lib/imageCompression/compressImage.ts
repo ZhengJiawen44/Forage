@@ -19,7 +19,7 @@ export function CompressImage(file: File): Promise<File> {
 
         //export canvas as compressed image
         const cImage = await canvasToFile(ctx!.canvas!);
-        URL.revokeObjectURL(url);
+        // URL.revokeObjectURL(url);
         resolve(cImage);
       };
     } catch (error) {

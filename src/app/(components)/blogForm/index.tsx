@@ -11,7 +11,7 @@ import { uploadImage } from "@/lib/image-upload/uploadImage";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useValidate } from "@/app/hooks/useValidate";
 import { ZodIssue } from "zod";
-
+import { BlogPreview } from "@/app/(components)";
 interface blogFormProps {
   title: string;
   length: number;
@@ -23,8 +23,13 @@ interface blogFormProps {
 const index = (blogContents?: blogFormProps) => {
   const { toast } = useToast();
   const router = useRouter();
+
+  //error states and validation hook
   const [errors, setError] = useState<ZodIssue[] | undefined>(undefined);
   const { ref, title, length, description, content } = useValidate(errors);
+
+  //preview visibillity
+  const [displayPreview, setDisplayPreview] = useState<Boolean>(false);
 
   const [loading, setLoading] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
@@ -38,7 +43,7 @@ const index = (blogContents?: blogFormProps) => {
         write blog
       </h1>
 
-      <form onSubmit={formSubmitHandler}>
+      <form onSubmit={formSubmitHandler} className="relative">
         <div className="w-full flex gap-10 mb-6">
           <div className="grow-[10]">
             <label htmlFor="title" className="block text-item-foreground">
@@ -137,15 +142,17 @@ const index = (blogContents?: blogFormProps) => {
           </Button>
           <Button
             type="submit"
+            // onClick={() => setDisplayPreview(!displayPreview)}
             className="text-[1rem] bg-[#84f4c1] text-[#000000] 
             font-sans font-bold border-none hover:bg-[#b5ffdd] flex items-center justify-center"
           >
             <AiOutlineLoading3Quarters
               className={loading ? "animate-spin" : "hidden"}
             />
-            Submit
+            Next
           </Button>
         </div>
+        <BlogPreview display={displayPreview} />
       </form>
     </>
   );
@@ -157,14 +164,9 @@ const index = (blogContents?: blogFormProps) => {
     try {
       setLoading(true);
       setSubmit(true);
-      //collect the form data and validate data
-      const formData = new FormData(currTarget);
-      formData.append("content", richText.current ?? "");
-      const parseResult = blogSchema.safeParse(Object.fromEntries(formData));
-      if (!parseResult.success) {
-        const { errors } = parseResult.error;
-        //trigger custom useValidate hook to revalidate inputs
-        setError(errors);
+
+      const isValid = validate(currTarget);
+      if (!isValid) {
         return;
       }
 
@@ -197,101 +199,31 @@ const index = (blogContents?: blogFormProps) => {
         console.log(error);
         return;
       }
+      toast({
+        title: "Blog created",
+        description: "you blog has been created and uploaded succesfully!",
+      });
+      router.push("/");
     } catch (error) {
       console.log(error);
       toast({ title: "could not upload your blog" });
     } finally {
       setLoading(false);
     }
+  }
 
-    // setSubmit(true);
-    // const data = new FormData(event.currentTarget);
-    // try {
-    //   setLoading(true);
-    //   //first Post image to AWS S3
-    //   //upload all images in the editor to aws S3 bucket
-    //   const upload = await uploadImage(richText.current, files.current);
-    //   if (!upload?.success) {
-    //     console.log("not success");
-    //     console.log(upload?.message);
-    //     toast({ title: upload!.message });
-    //     return;
-    //   }
-    //   // toast({ title: "image uploaded" });
-    //   const html = upload.html;
-    //   const formData = {
-    //     ...Object.fromEntries(data),
-    //     content: html,
-    //     thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
-    //   };
-    //   // console.log(formData);
-
-    //   const parseResult = blogSchema.safeParse(formData);
-    //   console.log(parseResult);
-
-    //   if (!parseResult.success) {
-    //     const { errors } = parseResult.error;
-    //     let focus = false;
-    //     errors.forEach(({ message, path }) => {
-    //       switch (path[0]) {
-    //         case "title":
-    //           setTitleError(message);
-    //           if (focus === false) {
-    //             titleRef.current?.focus();
-    //             focus = true;
-    //           }
-
-    //           break;
-    //         case "length":
-    //           setLengthError(message);
-    //           if (focus === false) {
-    //             lengthRef.current?.focus();
-    //             focus = true;
-    //           }
-
-    //           break;
-    //         case "description":
-    //           descRef.current?.focus();
-
-    //           if (focus === false) {
-    //             setDescError(message);
-    //           }
-    //           break;
-    //         case "content":
-    //           setContentError(message);
-    //           break;
-    //       }
-    //     });
-    //     console.log("here");
-    //     return;
-    //   }
-
-    //   if (parseResult.success) {
-    //     //POST form data to blog api endpoint
-    //     const res = await fetch("/api/blog", {
-    //       method: "POST",
-    //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify(formData),
-    //     });
-    //     if (!res.ok) {
-    //       const { error } = await res.json();
-    //       toast({ title: `server responded with ${res.status} error` });
-    //       console.log(error);
-    //       return;
-    //     }
-    //     toast({
-    //       title: "Blog created",
-    //       description: "you blog has been created and uploaded succesfully!",
-    //     });
-    //     router.push("/");
-    //   }
-    // } catch (error) {
-    //   toast({ title: "unable to submit blog" });
-    //   console.log(error);
-    //   return;
-    // } finally {
-    //   setLoading(false);
-    // }
+  async function validate(currTarget: HTMLFormElement | undefined) {
+    //collect the form data and validate data
+    const formData = new FormData(currTarget);
+    formData.append("content", richText.current ?? "");
+    const parseResult = blogSchema.safeParse(Object.fromEntries(formData));
+    if (!parseResult.success) {
+      const { errors } = parseResult.error;
+      //trigger custom useValidate hook to revalidate inputs
+      setError(errors);
+      return false;
+    }
+    return true;
   }
 };
 

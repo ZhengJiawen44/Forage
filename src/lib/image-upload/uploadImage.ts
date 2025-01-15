@@ -22,7 +22,8 @@ export async function uploadImage(richText: string) {
       //get the signed URL for the image
       const res = await fetch(image.src);
       const blob = await res.blob();
-      const file = await new File([blob], image.alt, { type: blob.type });
+      let file = await new File([blob], image.alt, { type: blob.type });
+      file = await CompressImage(file);
       const url = await getSignedURL(file);
       if (!url) {
         return {
