@@ -19,7 +19,7 @@ import { mergeAttributes } from "@tiptap/core";
 import MenuBar from "./MenuBar";
 
 interface EditorProps {
-  richText?: React.RefObject<string>;
+  richText?: React.RefObject<string | undefined>;
   error?: string | null;
   tab: number;
 }

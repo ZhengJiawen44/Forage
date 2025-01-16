@@ -1,6 +1,6 @@
 "use client";
 import React, { FormEvent, useState } from "react";
-import { Editor } from "@/app/(components)";
+import { BlogPreview, Editor } from "@/app/(components)";
 import { useRef } from "react";
 import { Button } from "../reusable-ui/button";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { uploadImage } from "@/lib/image-upload/uploadImage";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useValidate } from "@/app/hooks/useValidate";
 import { ZodIssue } from "zod";
-import { BlogPreview } from "@/app/(components)";
+import clsx from "clsx";
 import truncateParagraph from "@/lib/truncateParagraph";
 import getThumbnail from "@/lib/getThumbnail";
 interface blogFormProps {
@@ -19,19 +19,33 @@ interface blogFormProps {
   length: number;
   description?: string;
   content: string;
-  thumbnail: string | null;
+  thumbnail: string | undefined;
 }
 
 const index = (blogContents?: blogFormProps) => {
   const { toast } = useToast();
   const router = useRouter();
 
+  //form event state
+  const [canPublish, setCanPublish] = useState<Boolean>(false);
+
   //error states and validation hook
   const [errors, setError] = useState<ZodIssue[] | undefined>(undefined);
   const { ref, title, length, content } = useValidate(errors);
 
-  //preview visibillity
+  //preview visibillity and controlled form inputs
   const [displayPreview, setDisplayPreview] = useState<Boolean>(false);
+
+  const [editorForm, setEditorForm] = useState<
+    { [k: string]: FormDataEntryValue } | undefined
+  >(undefined);
+
+  const [description, setDescription] = useState<string | undefined>(
+    blogContents?.description
+  );
+  const [thumbnail, setThumbnail] = useState<string | undefined>(
+    blogContents?.thumbnail
+  );
 
   const [loading, setLoading] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
@@ -39,13 +53,15 @@ const index = (blogContents?: blogFormProps) => {
   //ref to set the initial content of the Editor component
   const richText = useRef<string>(blogContents?.content);
 
+  console.log(displayPreview);
+
   return (
-    <>
+    <div className="relative">
       <h1 className="font-extralight  m-auto text-[2rem] w-fit mb-10">
         write blog
       </h1>
 
-      <form onSubmit={formSubmitHandler} className="relative">
+      <form onSubmit={formSubmitHandler}>
         <div className="w-full flex gap-10 mb-10">
           <div className="grow-[10]">
             <label htmlFor="title" className="block text-item-foreground">
@@ -105,13 +121,11 @@ const index = (blogContents?: blogFormProps) => {
             <p>{length.lengthError}</p>
           </div>
         </div>
-
         <Editor
           richText={richText}
           error={content.contentError}
           tab={displayPreview ? -1 : 0}
         />
-
         <div className="flex gap-4 mt-4 justify-end">
           <Button
             tabIndex={displayPreview ? -1 : 0}
@@ -125,7 +139,7 @@ const index = (blogContents?: blogFormProps) => {
           <Button
             tabIndex={displayPreview ? -1 : 0}
             type="submit"
-            // onClick={() => setDisplayPreview(!displayPreview)}
+            // onClick={(event) => formSubmitHandler(event)}
             className="text-[1rem] bg-[#84f4c1] text-[#000000] 
             font-sans font-bold border-none hover:bg-[#b5ffdd] flex items-center justify-center"
           >
@@ -135,16 +149,17 @@ const index = (blogContents?: blogFormProps) => {
             Next
           </Button>
         </div>
-        <BlogPreview
-          display={displayPreview}
-          setDisplay={setDisplayPreview}
-          description={
-            blogContents?.description ?? truncateParagraph(richText.current)
-          }
-          thumbnail={blogContents?.thumbnail ?? getThumbnail(richText.current)}
-        />
       </form>
-    </>
+      <BlogPreview
+        display={displayPreview}
+        setDisplay={setDisplayPreview}
+        editorForm={editorForm!}
+        description={description}
+        setDesc={setDescription}
+        thumbnail={thumbnail}
+        setThumbnail={setThumbnail}
+      />
+    </div>
   );
 
   async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
@@ -160,43 +175,24 @@ const index = (blogContents?: blogFormProps) => {
         return;
       }
 
+      //set the description
+      if (!description) {
+        setDescription(
+          blogContents?.description ?? truncateParagraph(richText.current)
+        );
+      }
+
+      //set the thumbnail
+      if (!thumbnail) {
+        setThumbnail(blogContents?.thumbnail ?? getThumbnail(richText.current));
+      }
+
+      setEditorForm({
+        ...Object.fromEntries(new FormData(currTarget)),
+        content: richText.current!,
+      });
       //if validation success, open preview panel
       setDisplayPreview(true);
-
-      //if validation success, upload all images to aws s3
-      // const upload = await uploadImage(richText.current!);
-
-      // if (!upload.success) {
-      //   console.log(upload?.message);
-      //   toast({ title: upload.message });
-      //   return;
-      // }
-      // console.log(upload.message);
-
-      // //if image is uploaded, construct new form data with the new content
-      // const html = upload.html;
-      // const formDataObject = {
-      //   ...Object.fromEntries(new FormData(currTarget)),
-      //   content: html,
-      //   thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
-      // };
-      // // POST form data to blog api endpoint
-      // const res = await fetch("/api/blog", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formDataObject),
-      // });
-      // if (!res.ok) {
-      //   const { error } = await res.json();
-      //   toast({ title: `server responded with ${res.status} error` });
-      //   console.log(error);
-      //   return;
-      // }
-      // toast({
-      //   title: "Blog created",
-      //   description: "you blog has been created and uploaded succesfully!",
-      // });
-      // router.push("/");
     } catch (error) {
       console.log(error);
       toast({ title: "could not upload your blog" });

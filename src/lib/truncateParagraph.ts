@@ -8,7 +8,7 @@ const truncateParagraph = (html: string | undefined): string => {
   if (pList.length === 0) {
     return "";
   }
-  return pList[0].innerHTML.slice(0, 200).concat("...");
+  return pList[0].innerHTML.slice(0, 200);
 };
 
 export default truncateParagraph;
