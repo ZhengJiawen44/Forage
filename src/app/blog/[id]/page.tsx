@@ -17,7 +17,12 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <>
-      <LastRead id={blog!.id.toString()} title={blog!.title} />
+      <LastRead
+        id={blog!.id.toString()}
+        title={blog!.title}
+        thumbnail={blog!.thumbnail}
+        description={blog?.description}
+      />
       <div
         className="md:w-[80%] m-auto  h-fit pb-10 mb-10 rounded-[5px] 
        p-10 font-lora"

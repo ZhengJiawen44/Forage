@@ -1,41 +1,75 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RecommendationCard from "./RecommendationCard";
 import Link from "next/link";
 import { useSidebar } from "@/app/hooks/useSidebar";
-
-// import LoadingForm from "@/components/Loading/LoadingForm";
+import { RxCaretDown } from "react-icons/rx";
 const Recommendation = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
-  const [lastRead, setLastRead] = useState<Record<string, string>>({});
-  const [display, setDisplay] = useState(true);
   //get last read article from local storage
-  const title = localStorage.getItem("last-read-title") ?? "";
-  const ID = localStorage.getItem("last-read-ID") ?? "";
+  const [title, setTitle] = useState<string>();
+  const [ID, setID] = useState<string>();
+  const [thumbnail, setThumbnail] = useState<string>();
+  const [description, setDescription] = useState<string>();
 
   const visibility = useSidebar();
 
-  return (
-    <div
-      className={
-        visibility
-          ? "lg:w-[20%] xl:w-[30%] pt-16 pl-[2.5rem] bg-item"
-          : "hidden"
-      }
-    >
-      <h1 className="mb-8 text-xl font-sans">Recommended</h1>
+  useEffect(() => {
+    setTitle(localStorage.getItem("last-read-title") ?? "");
+    setID(localStorage.getItem("last-read-ID") ?? "");
+    setThumbnail(localStorage.getItem("last-read-thumbnail") ?? "");
+    setDescription(localStorage.getItem("last-read-description") ?? "");
+    const fetchData = async () => {
+      const res = await fetch("/api/blog");
+      const { formattedBlogs } = await res.json();
+      setRecommendations(formattedBlogs);
+      console.log(formattedBlogs);
+    };
+    fetchData();
+  }, []);
 
-      {recommendations?.length > 0
-        ? recommendations.map(({ id, title, date }) => (
-            <RecommendationCard key={id} id={id} title={title} date={date} />
-          ))
-        : ""}
-      <h1 className="mt-20 mb-8 text-xl font-sans">Continue reading</h1>
-      <Link href={`/blog/${ID}`}>
-        <p className=" font-bold font-grotesk w-[95%] mb-2 tracking-tighter text-xl">
-          {title}
-        </p>
-      </Link>
+  return (
+    <div className={visibility ? "lg:w-[20%] xl:w-[30%] h-fit" : "hidden"}>
+      <div className="h-fit bg-item border rounded-md pt-8 pb-2 px-3 ">
+        <h1 className="mb-8 text-xl font-sans">Recommended</h1>
+        {recommendations?.length > 0
+          ? recommendations.map(
+              ({ id, title, createdAt, description, thumbnail }) => (
+                <RecommendationCard
+                  key={id}
+                  id={id}
+                  title={title}
+                  date={createdAt}
+                  description={description}
+                  thumbnail={thumbnail}
+                />
+              )
+            )
+          : ""}
+        <RxCaretDown className="m-auto w-8 h-8 mt-0" />
+      </div>
+      <div className="h-fit bg-item border rounded-md mt-8 pt-8 pb-5 px-3">
+        <h1 className="mb-8 text-xl font-sans">Continue reading</h1>
+        <Link
+          href={`/blog/${ID})}`}
+          className="flex flex-col h-fit border p-8 gap-2 rounded-md 
+          hover:bg-[hsl(0,0%,19%)] transition-all duration-[200ms]"
+        >
+          <img className=" rounded-md aspect-video" src={thumbnail} />
+          <div>
+            <p
+              className="overflow-hidden text-ellipsis line-clamp-1 font-bold 
+          font-grotesk w-[95%] mb-2 tracking-tighter text-xl "
+            >
+              {title}
+            </p>
+
+            <p className="overflow-hidden text-ellipsis line-clamp-2">
+              {description}
+            </p>
+          </div>
+        </Link>
+      </div>
     </div>
   );
 };

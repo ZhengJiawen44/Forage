@@ -4,20 +4,31 @@ import React from "react";
 interface CardProps {
   id: string;
   title: string;
+  thumbnail: string;
+  description: string;
   date: string;
 }
-const RecommendationCard = ({ id, title, date }: CardProps) => {
+const RecommendationCard = ({
+  id,
+  title,
+  date,
+  thumbnail,
+  description,
+}: CardProps) => {
   return (
     <>
       <Link
         href={`/Blog/${id}`}
-        className="text-foreground relative block h-fit mb-8"
+        className="text-foreground h-fit mb-3 flex gap-4 border rounded-md p-4 hover:bg-[hsl(0,0%,19%)] "
       >
-        <h1 className=" font-bold font-grotesk w-[95%] mb-2 tracking-tighter text-xl">
-          {title}
-        </h1>
-        <div className=" flex w-[95%] ">
-          <p className="text-item-foreground">{date}</p>
+        <img src={thumbnail} className="h-12 aspect-video" />
+        <div className="w-full">
+          <h1 className="font-grotesk w-[95%] tracking-tighter text-lg">
+            {title}
+          </h1>
+          <div className=" flex w-[95%] ">
+            <p className="text-item-foreground text-sm">{date}</p>
+          </div>
         </div>
       </Link>
     </>
