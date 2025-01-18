@@ -1,17 +1,14 @@
 "use client";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useReducer, useState } from "react";
 import { BlogPreview, Editor } from "@/app/(components)";
 import { useRef } from "react";
 import { Button } from "../reusable-ui/button";
 import Link from "next/link";
 import { blogSchema } from "@/schemas/blogSchema";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { uploadImage } from "@/lib/image-upload/uploadImage";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useValidate } from "@/app/hooks/useValidate";
 import { ZodIssue } from "zod";
-import clsx from "clsx";
 import truncateParagraph from "@/lib/truncateParagraph";
 import getThumbnail from "@/lib/getThumbnail";
 interface blogFormProps {
@@ -24,10 +21,6 @@ interface blogFormProps {
 
 const index = (blogContents?: blogFormProps) => {
   const { toast } = useToast();
-  const router = useRouter();
-
-  //form event state
-  const [canPublish, setCanPublish] = useState<Boolean>(false);
 
   //error states and validation hook
   const [errors, setError] = useState<ZodIssue[] | undefined>(undefined);
@@ -37,23 +30,45 @@ const index = (blogContents?: blogFormProps) => {
   const [displayPreview, setDisplayPreview] = useState<Boolean>(false);
 
   const [editorForm, setEditorForm] = useState<
-    { [k: string]: FormDataEntryValue } | undefined
+    { title: string; length: string; content: string } | undefined
   >(undefined);
 
   const [description, setDescription] = useState<string | undefined>(
     blogContents?.description
   );
-  const [thumbnail, setThumbnail] = useState<string | undefined>(
-    blogContents?.thumbnail
-  );
+
+  interface State {
+    url: string | undefined;
+  }
+  interface Action {
+    type: "changeURLRevoke" | "changeURL";
+    newURL: string | undefined;
+  }
+
+  const [thumbnail, dispatchThumbnail] = useReducer(changeThumbnail, {
+    url: blogContents?.thumbnail,
+  });
+
+  function changeThumbnail(state: State, action: Action) {
+    switch (action.type) {
+      case "changeURLRevoke":
+        if (state.url && state.url.startsWith("blob:", 0)) {
+          URL.revokeObjectURL(state.url);
+        }
+        break;
+      case "changeURL":
+        //do nothing
+        break;
+    }
+
+    return { url: action.newURL };
+  }
 
   const [loading, setLoading] = useState(false);
   const [isSubmit, setSubmit] = useState(false);
 
   //ref to set the initial content of the Editor component
   const richText = useRef<string>(blogContents?.content);
-
-  console.log(displayPreview);
 
   return (
     <div className="relative">
@@ -127,27 +142,26 @@ const index = (blogContents?: blogFormProps) => {
           tab={displayPreview ? -1 : 0}
         />
         <div className="flex gap-4 mt-4 justify-end">
-          <Button
+          <button
             tabIndex={displayPreview ? -1 : 0}
             type="button"
-            asChild
-            className="text-[1rem] font-sans font-bold"
-            variant={"outline"}
+            className=" bg-transparent px-3 py-1 rounded-3xl font-sans
+            border flex items-center justify-center"
           >
-            <Link href={"/"}>Cancel</Link>
-          </Button>
-          <Button
+            <Link href={"/"}>cancel</Link>
+          </button>
+          <button
             tabIndex={displayPreview ? -1 : 0}
             type="submit"
             // onClick={(event) => formSubmitHandler(event)}
-            className="text-[1rem] bg-[#84f4c1] text-[#000000] 
-            font-sans font-bold border-none hover:bg-[#b5ffdd] flex items-center justify-center"
+            className=" bg-[#285000] px-3 py-1 rounded-3xl font-sans
+            border-none flex items-center justify-center"
           >
             <AiOutlineLoading3Quarters
               className={loading ? "animate-spin" : "hidden"}
             />
-            Next
-          </Button>
+            preview
+          </button>
         </div>
       </form>
       <BlogPreview
@@ -157,7 +171,7 @@ const index = (blogContents?: blogFormProps) => {
         description={description}
         setDesc={setDescription}
         thumbnail={thumbnail}
-        setThumbnail={setThumbnail}
+        setThumbnail={dispatchThumbnail}
       />
     </div>
   );
@@ -183,12 +197,17 @@ const index = (blogContents?: blogFormProps) => {
       }
 
       //set the thumbnail
-      if (!thumbnail) {
-        setThumbnail(blogContents?.thumbnail ?? getThumbnail(richText.current));
+      if (!thumbnail.url) {
+        dispatchThumbnail({
+          type: "changeURL",
+          newURL: blogContents?.thumbnail ?? getThumbnail(richText.current),
+        });
       }
 
+      const formData = new FormData(currTarget);
       setEditorForm({
-        ...Object.fromEntries(new FormData(currTarget)),
+        title: formData.get("title") as string,
+        length: formData.get("length") as string,
         content: richText.current!,
       });
       //if validation success, open preview panel

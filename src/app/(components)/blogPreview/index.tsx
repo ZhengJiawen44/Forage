@@ -1,14 +1,24 @@
 "use client";
 import React, { FormEvent, useState } from "react";
-
+import uploadThumbnail from "@/lib/image-upload/uploadThumbnail";
+import { CompressImage } from "@/lib/imageCompression/compressImage";
+import { uploadToS3 } from "@/lib/image-upload/S3upload";
+import { uploadImage } from "@/lib/image-upload/uploadImage";
+import { BsXLg } from "react-icons/bs";
+import { useToast } from "@/hooks/use-toast";
+import { ImSpinner8 } from "react-icons/im";
+interface Action {
+  type: "changeURL";
+  newURL: string | undefined;
+}
 interface blogPreviewProps {
   display: Boolean;
   setDisplay: React.Dispatch<React.SetStateAction<Boolean>>;
-  editorForm: { [k: string]: FormDataEntryValue };
+  editorForm: { title: string; length: string; content: string };
   description?: string;
   setDesc: React.Dispatch<React.SetStateAction<string | undefined>>;
-  thumbnail?: string;
-  setThumbnail: React.Dispatch<React.SetStateAction<string | undefined>>;
+  thumbnail: { url: string | undefined };
+  setThumbnail: React.ActionDispatch<[action: Action]>;
 }
 const index = ({
   display,
@@ -22,8 +32,10 @@ const index = ({
   if (!display) {
     return;
   }
-
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
   const [wordCount, setWordCount] = useState(description?.length);
+
   return (
     <div className="absolute inset-0 top-0 left-0 z-10 bg-item lg:bg-background">
       <form onSubmit={handlePublish}>
@@ -48,7 +60,21 @@ const index = ({
           </div>
 
           <div className="w-[30%] md:w-[20%] xl:w-[23%] relative">
-            <img className="rounded-lg" src={thumbnail} />
+            <img
+              className="rounded-lg object-cover aspect-video"
+              src={thumbnail.url}
+            />
+            <BsXLg
+              strokeWidth={1.5}
+              className={
+                thumbnail.url
+                  ? "absolute top-1 right-1 hover:cursor-pointer hover:text-white hover:rotate-90 transition-all duration-[400ms]"
+                  : "hidden"
+              }
+              onClick={() =>
+                setThumbnail({ type: "changeURL", newURL: undefined })
+              }
+            />
             <div
               className="absolute bottom-[50%] right-[50%] translate-x-1/2 translate-y-1/2
            bg-black bg-opacity-80 w-fit py-1 px-4 rounded-3xl"
@@ -67,8 +93,8 @@ const index = ({
                 name="thumbnail"
                 onChange={(e) => {
                   if (e.target.files) {
-                    console.log(e.target.files[0].name);
-                    setThumbnail(URL.createObjectURL(e.target.files![0]));
+                    const url = URL.createObjectURL(e.target.files![0]);
+                    setThumbnail({ type: "changeURL", newURL: url });
                   }
                 }}
               />
@@ -78,17 +104,20 @@ const index = ({
 
         <div className="flex gap-4 justify-end">
           <button
-            className="border-item border p-4 px-4 py-1  rounded-3xl font-sans"
+            className="border-item border p-4 px-3 py-1  rounded-3xl font-sans"
             type="button"
             onClick={() => setDisplay((display) => !display)}
           >
             Back
           </button>
           <button
-            className="bg-[#285000] px-4 py-1 rounded-3xl font-sans"
+            className="bg-[#285000] px-3 py-1 rounded-3xl font-sans flex items-center justify-between "
             type="submit"
           >
-            publish
+            <ImSpinner8
+              className={submitting ? "animate-spin mr-3" : "hidden"}
+            />
+            <p>publish</p>
           </button>
         </div>
       </form>
@@ -96,15 +125,50 @@ const index = ({
   );
   async function handlePublish(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    try {
+      //first upload the thumbnail to aws s3 (if any)
+      let formThumbnail = null;
+      if (thumbnail.url && thumbnail.url.startsWith("blob:")) {
+        const thumbnailRes = await uploadThumbnail(thumbnail.url);
+        if (thumbnailRes?.URL) {
+          const thumbnailFile = await fetch(thumbnail.url);
+          const blob = await thumbnailFile.blob();
+          const file = new File([blob], "thumbnail", { type: blob.type });
+          const cFile = await CompressImage(file);
+          const body = await uploadToS3(thumbnailRes.URL, cFile);
+          if (!body) {
+            console.log("thumbnail could not be uploaded");
+            return;
+          }
+          formThumbnail = `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${thumbnailRes.UUID}`;
+          console.log(formThumbnail);
+        }
+      }
+      //upload all images in editor to aws s3
+      const upload = await uploadImage(editorForm.content.toString());
 
-    // const { description, thumbnail } = Object.fromEntries(
-    //   new FormData(event.currentTarget)
-    // );
+      if (!upload.success) {
+        console.log(upload?.message);
+        toast({ title: upload.message });
+        return;
+      }
+      console.log(upload.message);
 
-    // const requestBody = { description, thumbnail, ...editorForm };
-    // console.log(requestBody);
-
-    // console.log(Object.fromEntries(new FormData(currTarget)));
+      // collect all data into a form
+      editorForm.content;
+      const finalForm = {
+        title: editorForm.title,
+        length: editorForm.length,
+        content: upload.html,
+        thumbnail: formThumbnail,
+        description,
+      };
+      console.log(finalForm);
+      setSubmitting(true);
+    } catch (error) {
+    } finally {
+      setSubmitting(false);
+    }
 
     //if validation success, upload all images to aws s3
     // const upload = await uploadImage(richText.current!);

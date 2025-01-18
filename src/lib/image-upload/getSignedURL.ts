@@ -1,8 +1,8 @@
-export async function getSignedURL(Blob: File) {
-  //send the Blob's metadata to the server (not sending the Blob buffer)
+export async function getSignedURL(file: File) {
+  //send the file's metadata to the server (not sending the file buffer)
   const form = {
-    imageSize: String(Blob.size),
-    imageType: Blob.type,
+    imageSize: String(file.size),
+    imageType: file.type,
   };
   const res = await fetch("/api/image", {
     method: "POST",
@@ -14,7 +14,7 @@ export async function getSignedURL(Blob: File) {
     console.log(error);
     return null;
   }
-  //recieve a signed URL for uploading the Blob
+  //recieve a signed URL for uploading the file
   const { url, uuID } = await res.json();
   //send the URL to frontend so it can send the Bob itself (server does not upload images, it just provides a signed URL)
   return { url, uuID };

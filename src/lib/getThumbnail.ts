@@ -9,6 +9,7 @@ const getThumbnail = (html: string | undefined): string | undefined => {
   if (images.length === 0) {
     return undefined;
   }
+
   return images[0].src;
 };
 
