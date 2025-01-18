@@ -7,6 +7,7 @@ import { uploadImage } from "@/lib/image-upload/uploadImage";
 import { BsXLg } from "react-icons/bs";
 import { useToast } from "@/hooks/use-toast";
 import { ImSpinner8 } from "react-icons/im";
+import { useRouter } from "next/navigation";
 interface Action {
   type: "changeURL";
   newURL: string | undefined;
@@ -32,6 +33,7 @@ const index = ({
   if (!display) {
     return;
   }
+  const router = useRouter();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [wordCount, setWordCount] = useState(description?.length);
@@ -59,7 +61,7 @@ const index = ({
             </p>
           </div>
 
-          <div className="w-[30%] md:w-[20%] xl:w-[23%] relative">
+          <div className="w-[30%] md:w-[20%] xl:w-[23%] relative hover:scale-110 transition-all duration-300">
             <img
               className="rounded-lg object-cover aspect-video"
               src={thumbnail.url}
@@ -125,9 +127,10 @@ const index = ({
   );
   async function handlePublish(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSubmitting(true);
     try {
       //first upload the thumbnail to aws s3 (if any)
-      let formThumbnail = null;
+      let formThumbnail = undefined;
       if (thumbnail.url && thumbnail.url.startsWith("blob:")) {
         const thumbnailRes = await uploadThumbnail(thumbnail.url);
         if (thumbnailRes?.URL) {
@@ -163,47 +166,32 @@ const index = ({
         thumbnail: formThumbnail,
         description,
       };
-      console.log(finalForm);
-      setSubmitting(true);
+
+      // POST form data to blog api endpoint
+      const res = await fetch("/api/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalForm),
+      });
+      if (!res.ok) {
+        const { error } = await res.json();
+        toast({ title: `server responded with ${res.status} error` });
+        console.log(error);
+        return;
+      }
+      toast({
+        title: "Blog created",
+        description: "you blog has been created and uploaded succesfully!",
+      });
+      router.push("/");
     } catch (error) {
+      console.log(error);
+      if (error instanceof Error) {
+        toast({ title: error.message });
+      }
     } finally {
       setSubmitting(false);
     }
-
-    //if validation success, upload all images to aws s3
-    // const upload = await uploadImage(richText.current!);
-
-    // if (!upload.success) {
-    //   console.log(upload?.message);
-    //   toast({ title: upload.message });
-    //   return;
-    // }
-    // console.log(upload.message);
-
-    // //if image is uploaded, construct new form data with the new content
-    // const html = upload.html;
-    // const formDataObject = {
-    //   ...Object.fromEntries(new FormData(currTarget)),
-    //   content: html,
-    //   thumbnail: upload.thumbnail ?? blogContents?.thumbnail,
-    // };
-    // // POST form data to blog api endpoint
-    // const res = await fetch("/api/blog", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(formDataObject),
-    // });
-    // if (!res.ok) {
-    //   const { error } = await res.json();
-    //   toast({ title: `server responded with ${res.status} error` });
-    //   console.log(error);
-    //   return;
-    // }
-    // toast({
-    //   title: "Blog created",
-    //   description: "you blog has been created and uploaded succesfully!",
-    // });
-    // router.push("/");
   }
 };
 

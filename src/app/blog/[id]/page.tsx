@@ -4,6 +4,7 @@ import { format } from "@/lib/getFormattedDay";
 import OptionsBar from "../../(components)/reusable-ui/OptionsBar";
 import Link from "next/link";
 import { BlogDeleteDialog } from "@/app/(components)";
+import { LastRead } from "@/app/(components)";
 interface PageProps {
   params: {
     id: string;
@@ -16,9 +17,10 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <>
+      <LastRead id={blog!.id.toString()} title={blog!.title} />
       <div
         className="md:w-[80%] m-auto  h-fit pb-10 mb-10 rounded-[5px] 
-      bg-item p-10 font-lora"
+       p-10 font-lora"
       >
         <div className="flex items-center justify-between mb-5 gap-48 ">
           <h1 className=" text-foreground tracking-tighter text-xl md:text-[2.5rem] font-semibold">

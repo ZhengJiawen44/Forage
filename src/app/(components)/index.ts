@@ -7,3 +7,4 @@ export { default as FormToast } from "./auth/FormToast";
 export { default as Oauth } from "./auth/Oauth";
 export { default as BlogDeleteDialog } from "./BlogDeleteDialog/index";
 export { default as BlogPreview } from "./blogPreview/index";
+export { default as LastRead } from "./sidebar/LastRead";

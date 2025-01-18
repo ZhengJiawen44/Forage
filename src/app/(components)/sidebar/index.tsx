@@ -9,24 +9,10 @@ const Recommendation = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [lastRead, setLastRead] = useState<Record<string, string>>({});
   const [display, setDisplay] = useState(true);
-  // useEffect(() => {
-  //   async function getRecommendations() {
-  //     try {
-  //       //get recommendations from api
-  //       const response = await fetch("/api/Blog", { method: "GET" });
-  //       const { formattedBlogs } = await response.json();
-  //       setRecommendations(formattedBlogs);
+  //get last read article from local storage
+  const title = localStorage.getItem("last-read-title") ?? "";
+  const ID = localStorage.getItem("last-read-ID") ?? "";
 
-  //       //get last read article from local storage
-  //       const title = localStorage.getItem("lastReadTitle") ?? "";
-  //       const ID = localStorage.getItem("lastReadID") ?? "";
-  //       setLastRead({ title, ID });
-  //     } catch (error) {
-  //       console.error("Failed to fetch recommendations");
-  //     }
-  //   }
-  //   getRecommendations();
-  // }, []);
   const visibility = useSidebar();
 
   return (
@@ -45,9 +31,9 @@ const Recommendation = () => {
           ))
         : ""}
       <h1 className="mt-20 mb-8 text-xl font-sans">Continue reading</h1>
-      <Link href={`/Blog/${lastRead.ID}`}>
+      <Link href={`/blog/${ID}`}>
         <p className=" font-bold font-grotesk w-[95%] mb-2 tracking-tighter text-xl">
-          {lastRead.title}
+          {title}
         </p>
       </Link>
     </div>

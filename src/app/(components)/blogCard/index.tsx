@@ -62,7 +62,9 @@ const BlogCardPreview = (blog: Blog) => {
 const Image = ({ src }) => {
   console.log(src);
 
-  return <img src={src} className="w-full aspect-[1.5] rounded-[6px]" />;
+  return (
+    <img src={src} className="w-full rounded-[6px] aspect-video object-cover" />
+  );
 };
 
 export default BlogCardPreview;
