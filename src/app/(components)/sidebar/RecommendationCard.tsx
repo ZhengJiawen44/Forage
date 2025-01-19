@@ -5,21 +5,15 @@ interface CardProps {
   id: string;
   title: string;
   thumbnail: string;
-  description: string;
   date: string;
 }
-const RecommendationCard = ({
-  id,
-  title,
-  date,
-  thumbnail,
-  description,
-}: CardProps) => {
+const RecommendationCard = ({ id, title, date, thumbnail }: CardProps) => {
   return (
     <>
       <Link
-        href={`/Blog/${id}`}
-        className="text-foreground h-fit mb-3 flex gap-4 border rounded-md p-4 hover:bg-[hsl(0,0%,19%)] "
+        href={`/blog/${id}`}
+        className=" text-foreground h-fit mb-3 flex gap-4 border rounded-md p-4 hover:bg-[hsl(0,0%,19%)] "
+        id={id}
       >
         <img src={thumbnail} className="h-12 aspect-video" />
         <div className="w-full">

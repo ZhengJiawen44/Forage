@@ -3,7 +3,6 @@ import React from "react";
 const RecommendationsLoading = () => {
   return (
     <>
-      {" "}
       <div className="text-foreground h-fit mb-3 flex gap-4 border rounded-md p-4 hover:bg-[hsl(0,0%,19%)] ">
         <div
           className="h-12 aspect-video rounded-md bg-[hsl(0,0%,19%)] animate-pulse"
@@ -21,7 +20,7 @@ const RecommendationsLoading = () => {
             ></div>
           </div>
         </div>
-      </div>{" "}
+      </div>
       <div className="text-foreground h-fit mb-3 flex gap-4 border rounded-md p-4 hover:bg-[hsl(0,0%,19%)] ">
         <div
           className="h-12 aspect-video rounded-md bg-[hsl(0,0%,19%)] animate-pulse"
