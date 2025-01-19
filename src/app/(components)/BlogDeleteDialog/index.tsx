@@ -14,7 +14,10 @@ import {
 import { Button } from "@/app/(components)/reusable-ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-export function index({ id }) {
+interface indexProps {
+  id: string;
+}
+export function index({ id }: indexProps) {
   const { toast } = useToast();
   const router = useRouter();
   async function handleDelete() {

@@ -3,7 +3,6 @@ import { format } from "@/lib/getFormattedDay";
 import OptionsBar from "../reusable-ui/OptionsBar";
 import Link from "next/link";
 
-import SanitizedContent from "./extractedContent";
 type Blog = {
   id: number;
   title: string;
@@ -16,10 +15,6 @@ type Blog = {
 };
 
 const BlogCardPreview = (blog: Blog) => {
-  //extract first image (if any)
-
-  //extract content without image
-
   return (
     <div
       className="flex w-full mb-5 lg:mb-10 border bg-item p-6 
@@ -36,11 +31,7 @@ const BlogCardPreview = (blog: Blog) => {
           className="font-lora font-thin text-item-foreground mb-8 md:mb-10
           overflow-hidden text-ellipsis line-clamp-2"
         >
-          {blog.description?.length === 0 ? (
-            <SanitizedContent content={blog.content} />
-          ) : (
-            blog.description
-          )}
+          {blog.description}
         </div>
 
         <div className=" flex font-lora font-thin text-item-foreground justify-between text-[0.8rem] md:text-[1rem]">
@@ -53,17 +44,14 @@ const BlogCardPreview = (blog: Blog) => {
       </div>
 
       <div className="w-[30%] md:w-[20%] xl:w-[23%]">
-        {blog.thumbnail && <Image src={blog.thumbnail} />}
+        {blog.thumbnail && (
+          <img
+            src={blog.thumbnail}
+            className="w-full rounded-[6px] aspect-video object-cover"
+          />
+        )}
       </div>
     </div>
-  );
-};
-
-const Image = ({ src }) => {
-  console.log(src);
-
-  return (
-    <img src={src} className="w-full rounded-[6px] aspect-video object-cover" />
   );
 };
 
