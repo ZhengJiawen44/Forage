@@ -13,14 +13,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid data!" }, { status: 400 });
   }
 
-  const emailTaken =
-    (await prisma.user.findUnique({
-      where: { email: body.email },
-    })) !== null;
-  if (emailTaken) {
+  const account = await prisma.user.findUnique({
+    where: { email: body.email },
+  });
+  if (account) {
     return NextResponse.json(
       { error: "this email is already taken" },
-      { status: 403 } //forbidden
+      { status: 400 } //bad request
     );
   }
 
