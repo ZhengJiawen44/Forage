@@ -2,7 +2,6 @@
 import React, { FormEvent, useReducer, useState } from "react";
 import { BlogPreview, Editor } from "@/app/(components)";
 import { useRef } from "react";
-import { Button } from "../reusable-ui/button";
 import Link from "next/link";
 import { blogSchema } from "@/schemas/blogSchema";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +11,7 @@ import { ZodIssue } from "zod";
 import truncateParagraph from "@/lib/truncateParagraph";
 import getThumbnail from "@/lib/getThumbnail";
 interface blogFormProps {
+  ID: string | undefined;
   title: string;
   length: number;
   description?: string;
@@ -20,6 +20,14 @@ interface blogFormProps {
 }
 
 const index = (blogContents?: blogFormProps) => {
+  interface State {
+    url: string | undefined;
+  }
+  interface Action {
+    type: "changeURLRevoke" | "changeURL";
+    newURL: string | undefined;
+  }
+
   const { toast } = useToast();
 
   //error states and validation hook
@@ -37,35 +45,12 @@ const index = (blogContents?: blogFormProps) => {
     blogContents?.description
   );
 
-  interface State {
-    url: string | undefined;
-  }
-  interface Action {
-    type: "changeURLRevoke" | "changeURL";
-    newURL: string | undefined;
-  }
+  const [loading, setLoading] = useState(false);
+  const [isSubmit, setSubmit] = useState(false);
 
   const [thumbnail, dispatchThumbnail] = useReducer(changeThumbnail, {
     url: blogContents?.thumbnail,
   });
-
-  function changeThumbnail(state: State, action: Action) {
-    switch (action.type) {
-      case "changeURLRevoke":
-        if (state.url && state.url.startsWith("blob:", 0)) {
-          URL.revokeObjectURL(state.url);
-        }
-        break;
-      case "changeURL":
-        //do nothing
-        break;
-    }
-
-    return { url: action.newURL };
-  }
-
-  const [loading, setLoading] = useState(false);
-  const [isSubmit, setSubmit] = useState(false);
 
   //ref to set the initial content of the Editor component
   const richText = useRef<string>(blogContents?.content);
@@ -172,9 +157,25 @@ const index = (blogContents?: blogFormProps) => {
         setDesc={setDescription}
         thumbnail={thumbnail}
         setThumbnail={dispatchThumbnail}
+        ID={blogContents?.ID}
       />
     </div>
   );
+
+  function changeThumbnail(state: State, action: Action) {
+    switch (action.type) {
+      case "changeURLRevoke":
+        if (state.url && state.url.startsWith("blob:", 0)) {
+          URL.revokeObjectURL(state.url);
+        }
+        break;
+      case "changeURL":
+        //do nothing
+        break;
+    }
+
+    return { url: action.newURL };
+  }
 
   async function formSubmitHandler(event: FormEvent<HTMLFormElement>) {
     //error handling for form data validation

@@ -4,6 +4,7 @@ import RecommendationCard from "./RecommendationCard";
 import Link from "next/link";
 import { useSidebar } from "@/app/hooks/useSidebar";
 import { RxCaretDown } from "react-icons/rx";
+import { RxCaretUp } from "react-icons/rx";
 import LastReadLoading from "./LastReadLoading";
 import RecommendationsLoading from "./RecommendationsLoading";
 import { usePathname } from "next/navigation";
@@ -23,6 +24,7 @@ const Recommendation = () => {
   const [loadingRecommendation, setLoadingRec] = useState(true);
 
   const [isExpandRecommend, setExpandRec] = useState(false);
+  const Icon = isExpandRecommend ? RxCaretUp : RxCaretDown;
 
   const visibility = useSidebar();
 
@@ -84,14 +86,12 @@ const Recommendation = () => {
           </div>
         )}
 
-        <RxCaretDown
+        <Icon
           onClick={() => {
             setExpandRec(!isExpandRecommend);
           }}
           className={
-            recommendations.length > 0
-              ? "m-auto w-8 h-8 mt-0 hover:bg-[hsl(0,0%,19%)] transition-all duration-200 rounded-full hover:cursor-pointer"
-              : "hidden"
+            "m-auto w-8 h-8 mt-0 hover:bg-[hsl(0,0%,19%)] transition-all duration-200 rounded-full hover:cursor-pointer"
           }
         />
       </div>

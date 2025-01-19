@@ -19,31 +19,33 @@ export async function uploadImage(richText: string) {
   try {
     for (let image of DOMImages) {
       //get the signed URL for the image
-      const res = await fetch(image.src);
-      const blob = await res.blob();
-      let file = await new File([blob], image.alt, { type: blob.type });
-      file = await CompressImage(file);
-      const url = await getSignedURL(file);
-      if (!url) {
-        return {
-          success: false,
-          message: "server could not process your image",
-        };
-      }
-      console.log("uploading: ", url.url);
+      if (image.src.startsWith("blob:", 0)) {
+        const res = await fetch(image.src);
+        const blob = await res.blob();
+        let file = await new File([blob], image.alt, { type: blob.type });
+        file = await CompressImage(file);
+        const url = await getSignedURL(file);
+        if (!url) {
+          return {
+            success: false,
+            message: "server could not process your image",
+          };
+        }
+        console.log("uploading: ", url.url);
 
-      //store the image using the signed URL
-      const uploadRes = await uploadToS3(url.url, file);
-      if (!uploadRes) {
-        return { success: false, message: "image failed to upload" };
+        //store the image using the signed URL
+        const uploadRes = await uploadToS3(url.url, file);
+        if (!uploadRes) {
+          return { success: false, message: "image failed to upload" };
+        }
+        //if image is succefully uploaded to s3, we swap out the img src with the s3 image Link
+        image.setAttribute(
+          "src",
+          `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${url.uuID}`
+        );
+        //we then revoke the temporary url assigned to that image
+        URL.revokeObjectURL(image.src);
       }
-      //if image is succefully uploaded to s3, we swap out the img src with the s3 image Link
-      image.setAttribute(
-        "src",
-        `https://aws-blogs-images.s3.ap-southeast-1.amazonaws.com/${url.uuID}`
-      );
-      //we then revoke the temporary url assigned to that image
-      URL.revokeObjectURL(image.src);
     }
   } catch (error) {
     console.log(error);
