@@ -2,46 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 import dayjs from "dayjs";
 import { blogSchema } from "@/schemas/blogSchema";
 import { prisma } from "@/lib/prismaClient";
-import { verifyToken } from "@/lib/token/verifyToken";
 
 export async function POST(req: NextRequest) {
   try {
-    // //access the request header for user ID passed from middleware
+    //access the request header for user ID
     const userID = req.headers.get("x-user-ID");
+    if (!userID) {
+      return NextResponse.json({ error: "not authorized" }, { status: 403 });
+    }
 
+    //validate req body
     const body = await req.json();
-
-    //zod validate
     const parsedBody = blogSchema.safeParse(body);
-
     if (!parsedBody.success) {
       return NextResponse.json({ error: "invalid data" }, { status: 400 });
     }
 
-    type DecodedPayload = {
-      id: string;
-    };
-
-    //get cookie
-    const cookie = req.cookies.get("token");
-    //verify cookie
-    const { errorMessage, decodedPayload } = await verifyToken(
-      cookie?.value ?? ""
-    );
-
-    if (errorMessage) {
-      return NextResponse.json(
-        { error: "invalid user token" },
-        { status: 403 }
-      );
-    }
-
+    //construct blog object
     const blogData = {
       ...parsedBody.data,
-      authorID: (decodedPayload as DecodedPayload).id,
+      authorID: +userID,
     };
 
-    //create blog
+    //insert blog into db
     const blog = await prisma.blog.create({ data: blogData });
 
     if (!blog) {
