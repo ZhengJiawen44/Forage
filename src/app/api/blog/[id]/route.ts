@@ -66,6 +66,12 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   try {
+    //access the request header for user ID
+    const userID = req.headers.get("X-user-ID");
+    if (!userID) {
+      return NextResponse.json({ error: "not authorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: "invalid URL" }, { status: 400 });
@@ -81,12 +87,24 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const blog = await prisma.blog.update({
+    //is user creater of the blog?
+    const blog = await prisma.blog.findUnique({ where: { id: +id } });
+    if (!blog) {
+      return NextResponse.json(
+        { message: "could not find blog" },
+        { status: 404 }
+      );
+    }
+    if (+userID !== blog.authorID) {
+      return NextResponse.json({ message: "not authorized" }, { status: 401 });
+    }
+
+    const updatedBlog = await prisma.blog.update({
       where: { id: Number(id) },
       data: parsedBody.data,
     });
 
-    if (!blog) {
+    if (!updatedBlog) {
       return NextResponse.json({ error: "blog not found" }, { status: 404 });
     }
 

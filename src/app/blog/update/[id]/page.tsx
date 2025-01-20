@@ -43,6 +43,7 @@ const page = async ({ params }: { params: { id: number } }) => {
     console.log(error);
     notFound();
   }
+
   //is The blog created by the user?
   if (formattedBlog.authorID === decodedPayload.id) {
     return <BlogForm ID={id} {...formattedBlog} />;
