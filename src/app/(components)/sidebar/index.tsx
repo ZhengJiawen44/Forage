@@ -7,12 +7,13 @@ import { RxCaretDown } from "react-icons/rx";
 import { RxCaretUp } from "react-icons/rx";
 import LastReadLoading from "./LastReadLoading";
 import RecommendationsLoading from "./RecommendationsLoading";
+import { CiImageOff } from "react-icons/ci";
 import { usePathname } from "next/navigation";
 interface lastRead {
   title: string;
   ID: number;
-  thumbnail: string;
-  description: string;
+  thumbnail: string | undefined | null;
+  description: string | undefined | null;
 }
 
 const Recommendation = () => {
@@ -50,7 +51,7 @@ const Recommendation = () => {
       const thumbnail = localStorage.getItem("last-read-thumbnail");
       const description = localStorage.getItem("last-read-description");
       console.log(ID);
-      if (ID && title && thumbnail && description) {
+      if (ID && title) {
         console.log(ID);
 
         setLastRead({ title, ID, thumbnail, description });
@@ -106,14 +107,21 @@ const Recommendation = () => {
             className="flex flex-col h-fit border p-8 gap-2 rounded-md 
           hover:bg-[hsl(0,0%,19%)] transition-all duration-[200ms]"
           >
-            <img
-              className=" rounded-md aspect-video"
-              src={lastRead.thumbnail}
-            />
+            {lastRead.thumbnail ? (
+              <img
+                className=" rounded-md aspect-video"
+                src={lastRead.thumbnail}
+              />
+            ) : (
+              <div className="rounded-md aspect-video flex items-center border justify-center">
+                <CiImageOff className="w-24 h-24" />
+              </div>
+            )}
+
             <div>
               <p
                 className="overflow-hidden text-ellipsis line-clamp-1 font-bold 
-          font-grotesk w-[95%] mb-2 tracking-tighter text-xl "
+          font-grotesk w-[95%] mb-2 tracking-tighter text-xl mt-4"
               >
                 {lastRead.title}
               </p>
