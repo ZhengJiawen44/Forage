@@ -7,8 +7,7 @@ import { verifyToken } from "@/lib/token/verifyToken";
 export async function POST(req: NextRequest) {
   try {
     // //access the request header for user ID passed from middleware
-    // const userID = req.headers.get("x-user-ID");
-    // console.log(userID);
+    const userID = req.headers.get("x-user-ID");
 
     const body = await req.json();
 

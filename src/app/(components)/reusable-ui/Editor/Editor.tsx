@@ -42,7 +42,12 @@ const Editor: React.FC<EditorProps> = ({ richText, error, tab }) => {
     Italic,
     Strikethrough,
     Image.configure({ HTMLAttributes: { class: "w-full mb-4 mt-4" } }),
-    Code.configure({ HTMLAttributes: { class: "bg-item p-4 rounded-[5px]" } }),
+    Code.configure({
+      HTMLAttributes: {
+        class:
+          "bg-item p-4 rounded-[5px] overflow-scroll scrollbar-track-transparent scrollbar-thumb-item-foreground scrollbar-thin",
+      },
+    }),
     BulletList.configure({ HTMLAttributes: { class: "list-disc pl-[3rem]" } }),
     OrderedList.configure({
       HTMLAttributes: { class: "list-decimal pl-[3rem]" },

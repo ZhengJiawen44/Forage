@@ -11,12 +11,12 @@ import { ZodIssue } from "zod";
 import truncateParagraph from "@/lib/truncateParagraph";
 import getThumbnail from "@/lib/getThumbnail";
 interface blogFormProps {
-  ID: string | undefined;
-  title: string;
-  length: number;
+  ID?: string | undefined;
+  title?: string;
+  length?: number;
   description?: string;
-  content: string;
-  thumbnail: string | undefined;
+  content?: string;
+  thumbnail?: string | undefined;
 }
 
 const index = (blogContents?: blogFormProps) => {

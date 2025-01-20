@@ -5,6 +5,7 @@ import OptionsBar from "../../(components)/reusable-ui/OptionsBar";
 import Link from "next/link";
 import { BlogDeleteDialog } from "@/app/(components)";
 import { LastRead } from "@/app/(components)";
+import { notFound } from "next/navigation";
 interface PageProps {
   params: {
     id: string;
@@ -12,8 +13,11 @@ interface PageProps {
 }
 
 const page = async ({ params }: PageProps) => {
-  const { id } = await params;
-  const blog = await prisma.blog.findUnique({ where: { id: Number(id) } });
+  var { id } = await params;
+  var blog = await prisma.blog.findUnique({ where: { id: Number(id) } });
+  if (!blog) {
+    notFound();
+  }
 
   return (
     <>
@@ -68,7 +72,7 @@ const page = async ({ params }: PageProps) => {
           </div>
         </div>
         <p
-          className="text-gray-300 text-[1.3rem] pt-10"
+          className="text-gray-300 text-[1.3rem] pt-10 w-full "
           dangerouslySetInnerHTML={{ __html: blog!.content }}
         />
       </div>
