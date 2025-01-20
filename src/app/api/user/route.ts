@@ -2,28 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/token/verifyToken";
 import { prisma } from "@/lib/prismaClient";
 
-//gets the user information about the current user
+//PROTECTED ROUTE
 export async function GET(req: NextRequest) {
+  //gets the user information about the current user
   try {
-    //get token
-    const token = req.cookies.get("token")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-    //verify token
-    const { errorMessage, decodedPayload } = await verifyToken(String(token));
-
-    if (errorMessage || !decodedPayload.id) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 403 });
+    const userID = req.headers.get("x-user-ID");
+    if (!userID) {
+      return NextResponse.json({ error: "not authorized" }, { status: 403 });
     }
 
     //query database
     const user = await prisma.user.findUnique({
-      where: { id: decodedPayload.id },
+      where: { id: +userID },
       select: { id: true, email: true, name: true, role: true },
     });
 
@@ -32,7 +22,7 @@ export async function GET(req: NextRequest) {
     }
 
     //return user object
-    return NextResponse.json(user);
+    return NextResponse.json(user, { status: 200 });
   } catch (error) {
     console.error((error as Error).message);
     console.error((error as Error).stack);

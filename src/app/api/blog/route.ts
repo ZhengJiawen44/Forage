@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { blogSchema } from "@/schemas/blogSchema";
 import { prisma } from "@/lib/prismaClient";
 
+//PROTECTED ROUTE
 export async function POST(req: NextRequest) {
   try {
     //access the request header for user ID
