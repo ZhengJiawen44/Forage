@@ -1,9 +1,9 @@
-import { Lora } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import { Roboto_Mono } from "next/font/google";
 import { Amita } from "next/font/google";
-export const lora = Lora({
+export const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-Lora",
+  variable: "--font-Montserrat",
 });
 export const roboto_mono = Roboto_Mono({
   subsets: ["latin"],

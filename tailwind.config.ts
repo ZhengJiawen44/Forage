@@ -1,3 +1,4 @@
+import { montserrat } from "@/app/ui/fonts";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
@@ -24,7 +25,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        lora: '"Lora"',
+        montserrat: '"Montserrat"',
         mono: '"Roboto Mono"',
         amita: '"Amita"',
       },

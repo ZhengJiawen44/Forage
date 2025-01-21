@@ -37,7 +37,7 @@ html {
     --chart-5: 340 75% 55%;
 
     /* fonts */
-    --font-lora: "Lora", monospace;
+    --font-montserrat: "Montserrat", monospace;
     --font-mono: "Roboto Mono", monospace;
     --font-amita: "Amita", monospace;
     --title: 3rem;

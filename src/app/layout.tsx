@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import { lora } from "@/app/ui/fonts";
+import { montserrat } from "@/app/ui/fonts";
 import { Sidebar } from "@/app/(components)";
 import { Dashboard } from "@/app/(components)";
 import { Toaster } from "./(components)/reusable-ui/toaster";
@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${lora.className}  antialiased bg-item lg:bg-background`}
+        className={`${montserrat.className}  antialiased bg-item lg:bg-background`}
       >
         <Dashboard />
         <div className="block content-center lg:flex h-screen lg:gap-[2rem] md:p-5 xl:px-28 2xl:px-64 min-h-screen mt-10 2xl:mt-20">

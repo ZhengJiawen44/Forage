@@ -1,6 +1,7 @@
 import React from "react";
 import SearchBar from "@/app/(components)/dashboard/SearchBar";
-import { TbUserCircle, TbPencil } from "react-icons/tb";
+import { TbPencil } from "react-icons/tb";
+import Menu from "./Menu";
 import Link from "next/link";
 const Index = () => {
   return (
@@ -25,12 +26,8 @@ const Index = () => {
           <TbPencil />
           <p className="hidden sm:block m-0 p-0">write</p>
         </Link>
-        <Link href="/auth/login">
-          <TbUserCircle
-            className="text-item-foreground h-[2rem] w-[2rem] sm:h-[2.5rem] sm:w-[2.5rem]
-    hover:text-white hover:cursor-pointer transition-all duration-300"
-          />
-        </Link>
+
+        <Menu />
       </div>
     </div>
   );

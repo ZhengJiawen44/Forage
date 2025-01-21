@@ -22,22 +22,26 @@ const BlogCardPreview = (blog: Blog) => {
     >
       <div className="w-[70%] md:w-[80%] xl:w-[77%]">
         <Link href={`/blog/${blog.id}`}>
-          <h1 className="font-sans text-xl lg:text-2xl mb-2 md:mb-4 font-extrabold hover:underline">
+          <h1 className="font-sans text-lg lg:text-2xl mb-2 md:mb-4 font-normal hover:underline">
             {blog.title}
           </h1>
         </Link>
 
-        <div
-          className="font-lora font-thin text-item-foreground mb-8 md:mb-10
+        <p
+          className="text-[0.9rem]  text-item-foreground mb-8 md:mb-10
           overflow-hidden text-ellipsis line-clamp-2"
         >
           {blog.description}
-        </div>
+        </p>
 
-        <div className=" flex font-lora font-thin text-item-foreground justify-between text-[0.8rem] md:text-[1rem]">
+        <div className=" flex font-montserrat  text-item-foreground justify-between text-[0.8rem] md:text-[1rem]">
           <div className="flex gap-4 items-center">
-            <p className="font-lora">{blog.length} min read</p>
-            <p className="font-lora">{format(blog.createdAt)}</p>
+            <p className="font-montserrat text-[0.8rem]">
+              {blog.length} min read
+            </p>
+            <p className="font-montserrat text-[0.8rem]">
+              {format(blog.createdAt)}
+            </p>
           </div>
           <OptionsBar />
         </div>
