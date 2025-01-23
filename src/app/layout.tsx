@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { montserrat } from "@/app/ui/fonts";
 import { Sidebar } from "@/app/(components)";
-import { Dashboard } from "@/app/(components)";
+import Dashboard from "@/app/(components)/dashboard/index";
 import { Toaster } from "./(components)/reusable-ui/toaster";
 export const metadata: Metadata = {
   title: "forage",
@@ -21,7 +21,7 @@ export default function RootLayout({
       >
         <Dashboard />
         <div className="block content-center lg:flex h-screen lg:gap-[2rem] md:p-5 xl:px-28 2xl:px-64 min-h-screen mt-10 2xl:mt-20">
-          <div className="m-auto  lg:w-[80%] xl:w-[70%] min-h-screen">
+          <div className="m-auto  lg:w-[70%] xl:w-[70%] min-h-screen">
             {children}
           </div>
 

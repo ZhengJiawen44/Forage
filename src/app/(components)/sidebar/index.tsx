@@ -66,7 +66,7 @@ const Recommendation = () => {
   return (
     <div
       className={
-        visibility ? "lg:w-[20%] xl:w-[30%] h-fit sticky top-4" : "hidden"
+        visibility ? "lg:w-[30%] xl:w-[30%] h-fit sticky top-4" : "hidden"
       }
     >
       <div className={"h-fit bg-item border rounded-md pt-8  pb-2 px-3"}>

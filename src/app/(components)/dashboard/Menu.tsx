@@ -13,6 +13,9 @@ import { TbLibrary } from "react-icons/tb";
 import { TbChartLine } from "react-icons/tb";
 
 const Menu = () => {
+  // const user = await fetch("/api/user");
+  // const body = await user.json();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -42,9 +45,7 @@ const Menu = () => {
         <DropdownMenuItem className="focus:bg-[#383838]">
           <p className="text-[0.9rem]">Sign Out</p>
         </DropdownMenuItem>
-        <p className="text-[.7rem] text-muted-foreground pl-2 pb-2 ">
-          zh******@gmail.com
-        </p>
+        <p className="text-[.7rem] text-muted-foreground pl-2 pb-2 "></p>
       </DropdownMenuContent>
     </DropdownMenu>
   );

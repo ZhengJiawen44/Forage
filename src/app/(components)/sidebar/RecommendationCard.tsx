@@ -17,7 +17,7 @@ const RecommendationCard = ({ id, title, date, thumbnail }: CardProps) => {
       >
         <img src={thumbnail} className="h-12 aspect-video" />
         <div className="w-full">
-          <h1 className="font-grotesk w-[95%] tracking-tighter text-lg">
+          <h1 className="font-grotesk w-[95%] tracking-tighter  text-md xl:text-lg overflow-ellipsis">
             {title}
           </h1>
           <div className=" flex w-[95%] ">
