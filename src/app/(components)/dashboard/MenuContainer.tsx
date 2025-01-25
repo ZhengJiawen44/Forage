@@ -1,26 +1,20 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import Menu from "./Menu";
+import Link from "next/link";
+const MenuContainer = async () => {
+  const res = await fetch("/api/user");
+  if (!res.ok) {
+    return (
+      <Link
+        href="/auth/login"
+        className="flex gap-2 items-center mt-1 text-item-foreground hover:text-white"
+      >
+        <p>Login</p>
+      </Link>
+    );
+  }
+  const user = await res.json();
 
-const MenuContainer = () => {
-  const [user, setUser] = useState<string>();
-  const params = useSearchParams();
-
-  useEffect(() => {
-    const refresh = params.get("refresh");
-    if (refresh) {
-      console.log("user fetch");
-      fetchUser().then((user) => {
-        setUser(user);
-      });
-    }
-  }, [useSearchParams]);
-
-  return <div>MenuContainer</div>;
+  return <Menu userName={user.name} userEmail={user.email} />;
 };
-const fetchUser = async () => {
-  const data = await fetch("/api/user");
-  const user = await data.json();
-  return user;
-};
+
 export default MenuContainer;

@@ -9,6 +9,7 @@ export async function middleware(req: NextRequest) {
     try {
       //verify token from cookie
       const cookie = req.cookies.get("token");
+      console.log("cookie");
 
       if (!cookie?.value) {
         throw Error("unauthorized access");

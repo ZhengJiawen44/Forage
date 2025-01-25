@@ -44,7 +44,7 @@ const Login = () => {
         toggleIsError(false);
         setMessage(body.success);
         console.log(body.success);
-        router.push("/?refresh=true");
+        router.push("/");
       } else {
         toggleIsError(true);
         setMessage(body.error);

@@ -6,20 +6,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/(components)/reusable-ui/dropdown-menu";
-import { TbUserCircle } from "react-icons/tb";
+import { HiOutlineUserCircle } from "react-icons/hi2";
 import { TbHistory } from "react-icons/tb";
 import { TbUser } from "react-icons/tb";
 import { TbLibrary } from "react-icons/tb";
 import { TbChartLine } from "react-icons/tb";
 
-const Menu = () => {
-  // const user = await fetch("/api/user");
-  // const body = await user.json();
-
+interface menuProps {
+  userName: string;
+  userEmail: string;
+}
+const Menu = ({ userEmail, userName }: menuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <TbUserCircle className="w-8 h-8" />
+        <HiOutlineUserCircle className="w-8 h-8" strokeWidth={1} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-[#252525] border-[#575757] min-w-[16rem]">
         <DropdownMenuItem className="flex justify-start items-center gap-2 h-fit focus:bg-[#383838] mb-1">
@@ -44,6 +45,7 @@ const Menu = () => {
         </DropdownMenuItem>
         <DropdownMenuItem className="focus:bg-[#383838]">
           <p className="text-[0.9rem]">Sign Out</p>
+          <p>{userName}</p>
         </DropdownMenuItem>
         <p className="text-[.7rem] text-muted-foreground pl-2 pb-2 "></p>
       </DropdownMenuContent>

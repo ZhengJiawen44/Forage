@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prismaClient";
 //PROTECTED ROUTE
 export async function GET(req: NextRequest) {
   //gets the user information about the current user
+
   try {
     const userID = req.headers.get("x-user-ID");
     if (!userID) {

@@ -50,10 +50,7 @@ const Recommendation = () => {
       const ID = Number(localStorage.getItem("last-read-ID"));
       const thumbnail = localStorage.getItem("last-read-thumbnail");
       const description = localStorage.getItem("last-read-description");
-      console.log(ID);
       if (ID && title) {
-        console.log(ID);
-
         setLastRead({ title, ID, thumbnail, description });
       } else {
         setLastRead(undefined);

@@ -1,10 +1,8 @@
 import React from "react";
 import SearchBar from "@/app/(components)/dashboard/SearchBar";
 import { RiPenNibLine } from "react-icons/ri";
-import Menu from "./Menu";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { TbUserCircle } from "react-icons/tb";
 import MenuContainer from "./MenuContainer";
 const Index = async () => {
   //is user logged in?
@@ -24,27 +22,27 @@ const Index = async () => {
         </h1>
         <SearchBar />
       </div>
-      <div className="flex items-center gap-7 w-fit ">
+      <div className="flex items-center gap-7  md:gap-20 w-fit ">
         <Link
           aria-label="create a new blog"
           className="flex gap-2 items-center mt-1 text-item-foreground hover:text-white"
           href={token ? "/blog/new" : "/auth/login"}
         >
           <RiPenNibLine className="h-5 w-5" />
-          <p className="text-[0.9rem]">write</p>
+          <p className="">write</p>
         </Link>
+
         {token ? (
-          <Menu />
+          <MenuContainer />
         ) : (
-          <Link href="/auth/login">
-            <TbUserCircle
-              className="h-8 w-8 hover:text-item-foreground"
-              strokeWidth={1}
-            />
+          <Link
+            href="/auth/login"
+            className="flex gap-2 items-center mt-1 text-item-foreground hover:text-white"
+          >
+            <p>Login</p>
           </Link>
         )}
       </div>
-      <MenuContainer token={token?.value} />
     </div>
   );
 };
