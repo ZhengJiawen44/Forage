@@ -43,7 +43,10 @@ export async function POST(req: NextRequest) {
       path: "/",
     });
 
-    return NextResponse.json({ success: "logged in" });
+    return NextResponse.json({
+      success: "logged in",
+      user: { name: user.name, id: user.id, email: user.email },
+    });
   } catch (error) {
     console.error((error as Error).message);
     console.error((error as Error).stack);

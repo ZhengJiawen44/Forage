@@ -7,6 +7,7 @@ import { loginSchema } from "@/schemas/loginSchema";
 import { Button } from "@/app/(components)/reusable-ui/button";
 import { Oauth } from "@/app/(components)";
 import { FormToast } from "@/app/(components)";
+import { useUser } from "@/app/providers/UserProvider";
 
 import {
   Form,
@@ -22,6 +23,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const currentUser = useUser();
+  console.log(currentUser.user);
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isError, toggleIsError] = useState(false);
@@ -41,6 +44,11 @@ const Login = () => {
 
       const body = await response.json();
       if (body.success) {
+        const { user } = body;
+        currentUser.updateUser("name", user.name);
+        currentUser.updateUser("email", user.email);
+        console.log(currentUser);
+
         toggleIsError(false);
         setMessage(body.success);
         console.log(body.success);

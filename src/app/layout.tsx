@@ -4,6 +4,7 @@ import { montserrat } from "@/app/ui/fonts";
 import { Sidebar } from "@/app/(components)";
 import Dashboard from "@/app/(components)/dashboard/index";
 import { Toaster } from "./(components)/reusable-ui/toaster";
+import { UserProvider } from "./providers/UserProvider";
 export const metadata: Metadata = {
   title: "forage",
   description: "forage is a blog site dedicated to developers",
@@ -19,14 +20,16 @@ export default function RootLayout({
       <body
         className={`${montserrat.className}  antialiased bg-item lg:bg-background`}
       >
-        <Dashboard />
-        <div className="block content-center lg:flex h-screen lg:gap-[2rem] md:p-5 xl:px-28 2xl:px-64 min-h-screen mt-10 2xl:mt-20">
-          <div className="m-auto  lg:w-[70%] xl:w-[70%] min-h-screen">
-            {children}
-          </div>
+        <UserProvider>
+          <Dashboard />
+          <div className="block content-center lg:flex h-screen lg:gap-[2rem] md:p-5 xl:px-28 2xl:px-64 min-h-screen mt-10 2xl:mt-20">
+            <div className="m-auto  lg:w-[70%] xl:w-[70%] min-h-screen">
+              {children}
+            </div>
 
-          <Sidebar />
-        </div>
+            <Sidebar />
+          </div>
+        </UserProvider>
         <Toaster />
       </body>
     </html>

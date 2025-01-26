@@ -32,7 +32,7 @@ const Index = async () => {
           <p className="">write</p>
         </Link>
 
-        {token ? (
+        {/* {token ? (
           <MenuContainer />
         ) : (
           <Link
@@ -41,7 +41,7 @@ const Index = async () => {
           >
             <p>Login</p>
           </Link>
-        )}
+        )} */}
       </div>
     </div>
   );
