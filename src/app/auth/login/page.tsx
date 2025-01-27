@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 
 const Login = () => {
   const currentUser = useUser();
-  console.log(currentUser.user);
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isError, toggleIsError] = useState(false);
@@ -43,15 +42,15 @@ const Login = () => {
       });
 
       const body = await response.json();
+
       if (body.success) {
         const { user } = body;
-        currentUser.updateUser("name", user.name);
-        currentUser.updateUser("email", user.email);
-        console.log(currentUser);
+        currentUser.refreshUser();
 
         toggleIsError(false);
         setMessage(body.success);
         console.log(body.success);
+
         router.push("/");
       } else {
         toggleIsError(true);
@@ -67,8 +66,8 @@ const Login = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-[90%] sm:w-[60%] md:w-[60%] bg-item m-auto
-             px-5 md:px-16 py-9 rounded-2xl grid gap-y-2 md:gap-y-7 border-item-foreground
-              border-[1px] shadow-2xl shadow-black mb-6 sm:mb-0"
+              px-5 md:px-16 py-9 rounded-2xl grid gap-y-2 md:gap-y-7 border-item-foreground
+                border-[1px] shadow-2xl shadow-black mb-6 sm:mb-0"
       >
         <h1 className="m-auto text-2xl sm:text-4xl">Login</h1>
         <p className="m-auto opacity-55 text-md">Welcome back</p>

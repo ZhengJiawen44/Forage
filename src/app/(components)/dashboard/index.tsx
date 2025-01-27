@@ -4,6 +4,7 @@ import { RiPenNibLine } from "react-icons/ri";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import MenuContainer from "./MenuContainer";
+
 const Index = async () => {
   //is user logged in?
   const cookieStore = await cookies();
@@ -32,6 +33,7 @@ const Index = async () => {
           <p className="">write</p>
         </Link>
 
+        <MenuContainer />
         {/* {token ? (
           <MenuContainer />
         ) : (

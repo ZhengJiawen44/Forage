@@ -4,26 +4,30 @@ export async function middleware(req: NextRequest) {
   if (
     (req.nextUrl.pathname === "/api/user" && req.method === "GET") ||
     (req.nextUrl.pathname.startsWith("/api/blog") && req.method === "POST") ||
-    req.method === "PATCH"
+    req.method === "PATCH" ||
+    req.method === "DELETE"
   ) {
     try {
+      console.log("middleware begin");
+
       //verify token from cookie
       const cookie = req.cookies.get("token");
-      console.log("cookie");
+      cookie && console.log("token recieved");
 
       if (!cookie?.value) {
-        throw Error("unauthorized access");
+        throw Error("unauthorized access: token missing");
       }
       const { errorMessage, decodedPayload } = await verifyToken(cookie?.value);
       if (errorMessage) {
         console.log(errorMessage);
-        throw Error("unauthorized access");
+        throw Error("unauthorized access: malformed token");
       }
       const res = NextResponse.next();
 
       //set user ID in res header
       res.headers.set("X-user-ID", decodedPayload.id);
 
+      console.log("middleware end");
       return res;
     } catch (error) {
       if (error instanceof Error) {

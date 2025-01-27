@@ -1,37 +1,54 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { createContext, useState } from "react";
 
 interface userProps {
-  name: string;
-  email: string;
-  avatar?: string;
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
 }
 interface userContextProps {
   user: userProps | undefined;
-  updateUser: (key: keyof userProps, value: string) => void;
+  refreshUser: (user?: userProps) => void;
 }
 //context
 const userContext = createContext<userContextProps | undefined>(undefined);
 
-//context provider
+//context provider component
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  //user State
   const [user, setUser] = useState<userProps | undefined>({
-    name: "",
-    email: "",
+    id: undefined,
+    name: undefined,
+    email: undefined,
   });
 
-  function updateUser(key: keyof userProps, value: string) {
-    setUser((prev) => {
-      if (!prev) {
-        console.log("user is not initialized");
-        return prev;
-      }
-      return { ...prev, [key]: value };
-    });
-  }
+  //get user from server on initial page load/ page refresh
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  const fetchUser = async () => {
+    try {
+      const res = await fetch("/api/user");
+      const user = await res.json();
+      setUser(user);
+      console.log("fetched user: ", user);
+    } catch (error) {}
+  };
+
+  //call this to update user state
+  const refreshUser = async (user?: userProps) => {
+    if (user) {
+      setUser(user);
+      console.log("user: ", user);
+    } else {
+      await fetchUser();
+    }
+  };
+
   return (
-    <userContext.Provider value={{ user, updateUser }}>
+    <userContext.Provider value={{ user, refreshUser }}>
       {children}
     </userContext.Provider>
   );

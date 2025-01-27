@@ -44,6 +44,7 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     //access the request header for user ID
     const userID = req.headers.get("X-user-ID");
+
     if (!userID) {
       return NextResponse.json({ error: "not authorized" }, { status: 401 });
     }
