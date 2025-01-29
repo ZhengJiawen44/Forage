@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +30,9 @@ const Menu = ({ userEmail, userName }: menuProps) => {
         </DropdownMenuItem>
         <DropdownMenuItem className="flex justify-start items-center gap-2 h-fit focus:bg-[#383838] mb-1">
           <TbUser className="w-[1.2rem] h-[1.2rem]" strokeWidth="1" />
-          <p className="text-[0.9rem]">Profile</p>
+          <Link href="/profile" className="text-[0.9rem]">
+            Profile
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="flex justify-start items-center gap-2 h-fit focus:bg-[#383838] mb-1">
           <TbLibrary className="w-[1.2rem] h-[1.2rem]" strokeWidth="0.8" />
@@ -45,7 +48,7 @@ const Menu = ({ userEmail, userName }: menuProps) => {
         </DropdownMenuItem>
         <DropdownMenuItem className="focus:bg-[#383838]">
           <p className="text-[0.9rem]">Sign Out</p>
-          <p>{userName}</p>
+          <p>{userEmail}</p>
         </DropdownMenuItem>
         <p className="text-[.7rem] text-muted-foreground pl-2 pb-2 "></p>
       </DropdownMenuContent>
