@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, FormEvent } from "react";
 
 interface AboutProps {
   id?: string;
@@ -10,6 +10,9 @@ interface AboutProps {
 const About = ({ user }: { user: AboutProps }) => {
   const [isEdit, setEdit] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const submitHandler = async (event: FormEvent) => {
+    event.preventDefault();
+  };
   useEffect(() => {
     if (isEdit) {
       textAreaRef.current?.focus();
@@ -20,7 +23,7 @@ const About = ({ user }: { user: AboutProps }) => {
   return (
     <>
       {isEdit ? (
-        <form className="flex flex-col w-full gap-4">
+        <form className="flex flex-col w-full gap-4" onSubmit={submitHandler}>
           <textarea
             ref={textAreaRef}
             defaultValue={user.about}

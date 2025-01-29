@@ -1,40 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/token/verifyToken";
 export async function middleware(req: NextRequest) {
-  if (
-    (req.nextUrl.pathname === "/api/user" && req.method === "GET") ||
-    (req.nextUrl.pathname.startsWith("/api/blog") && req.method === "POST") ||
-    req.method === "PATCH" ||
-    req.method === "DELETE"
-  ) {
-    try {
-      console.log("middleware begin");
+  const protectedRoute = [
+    { path: "/api/user", methods: ["POST", "PATCH"] },
+    { path: "/api/blog", methods: ["POST"] },
+    { path: "/api/blog/[slug]", methods: ["PATCH", "DELETE"] },
+  ];
+  const isProtectedRoute = protectedRoute.some((route) => {
+    const routePattern = route.path.replace(/\[.*?\]/g, "[^/]+");
+    const regex = new RegExp(`^${routePattern}$`);
 
-      //verify token from cookie
-      const cookie = req.cookies.get("token");
-      cookie && console.log("token recieved");
+    return (
+      regex.test(req.nextUrl.pathname) && route.methods.includes(req.method)
+    );
+  });
+  if (!isProtectedRoute) return NextResponse.next();
 
-      if (!cookie?.value) {
-        throw Error("unauthorized access: token missing");
-      }
-      const { errorMessage, decodedPayload } = await verifyToken(cookie?.value);
-      if (errorMessage) {
-        console.log(errorMessage);
-        throw Error("unauthorized access: malformed token");
-      }
-      const res = NextResponse.next();
+  try {
+    console.log("middleware begin");
 
-      //set user ID in res header
-      res.headers.set("X-user-ID", decodedPayload.id);
+    //verify token from cookie
+    const cookie = req.cookies.get("token");
+    cookie && console.log("token recieved");
 
-      console.log("middleware end");
-      return res;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error);
-        return NextResponse.json({ error: error.message }, { status: 403 });
-      }
+    if (!cookie?.value) {
+      throw Error("unauthorized access: token missing");
+    }
+    const { errorMessage, decodedPayload } = await verifyToken(cookie?.value);
+    if (errorMessage) {
+      console.log(errorMessage);
+      throw Error("unauthorized access: malformed token");
+    }
+    const res = NextResponse.next();
+
+    //set user ID in res header
+    res.headers.set("X-user-ID", decodedPayload.id);
+
+    console.log("middleware end");
+    return res;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error);
+      return NextResponse.json({ error: error.message }, { status: 403 });
     }
   }
+  // catch-all case
+  return NextResponse.json(
+    { error: "An unknown error occurred" },
+    { status: 403 }
+  );
 }
 export const config = { matcher: ["/api/blog/:id*", "/api/user"] };
