@@ -9,3 +9,4 @@ export { default as BlogDeleteDialog } from "./BlogDeleteDialog/index";
 export { default as BlogPreview } from "./blogPreview/index";
 export { default as LastRead } from "./sidebar/LastRead";
 export { default as FailedVerification } from "./auth/FailedVerification";
+export { default as ProfileContent } from "./profileContents/index";

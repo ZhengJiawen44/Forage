@@ -45,7 +45,7 @@ const Login = () => {
 
       if (body.success) {
         const { user } = body;
-        currentUser.refreshUser();
+        currentUser.refreshUser(user);
 
         toggleIsError(false);
         setMessage(body.success);

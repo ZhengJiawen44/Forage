@@ -1,6 +1,6 @@
 import React from "react";
 import SearchBar from "@/app/(components)/dashboard/SearchBar";
-import { RiPenNibLine } from "react-icons/ri";
+
 import Link from "next/link";
 import { cookies } from "next/headers";
 import MenuContainer from "./MenuContainer";
@@ -23,27 +23,8 @@ const Index = async () => {
         </h1>
         <SearchBar />
       </div>
-      <div className="flex items-center gap-7  md:gap-20 w-fit ">
-        <Link
-          aria-label="create a new blog"
-          className="flex gap-2 items-center mt-1 text-item-foreground hover:text-white"
-          href={token ? "/blog/new" : "/auth/login"}
-        >
-          <RiPenNibLine className="h-5 w-5" />
-          <p className="">write</p>
-        </Link>
-
+      <div className="flex items-center gap-3  md:gap-7 w-fit ">
         <MenuContainer />
-        {/* {token ? (
-          <MenuContainer />
-        ) : (
-          <Link
-            href="/auth/login"
-            className="flex gap-2 items-center mt-1 text-item-foreground hover:text-white"
-          >
-            <p>Login</p>
-          </Link>
-        )} */}
       </div>
     </div>
   );

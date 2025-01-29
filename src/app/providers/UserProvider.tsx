@@ -13,7 +13,10 @@ interface userContextProps {
   refreshUser: (user?: userProps) => void;
 }
 //context
-const userContext = createContext<userContextProps | undefined>(undefined);
+const userContext = createContext<userContextProps>({
+  user: undefined,
+  refreshUser: () => {},
+});
 
 //context provider component
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
