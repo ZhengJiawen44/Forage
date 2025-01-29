@@ -24,6 +24,7 @@ model User {
   role Role @default(User)
   email String @unique
   emailVerified Boolean @default(false)
+  about String?
   password String
   createdAt DateTime @default(now())
   blogs Blog[]

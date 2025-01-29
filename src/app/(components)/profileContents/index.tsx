@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import MenuBar from "./MenuBar";
+import MenuBar from "../reusable-ui/MenuBar";
+import { BlogCard } from "..";
 interface Blog {
   length: number;
   id: number;
@@ -28,14 +29,25 @@ const Index = ({ blogs }: BlogContentProps) => {
           setActiveTab(tab);
         }}
       />
-
-      <div>
-        {blogs.map((blog) => (
-          <p key={blog.id}>{blog.title}</p>
-        ))}
-      </div>
-
-      <p>About</p>
+      {activeTab === "Stories" ? (
+        <div>
+          {blogs.map((blog) => (
+            <BlogCard
+              key={blog.id}
+              id={blog.id}
+              title={blog.title}
+              createdAt={blog.createdAt}
+              length={blog.length}
+              description={blog.description}
+              content={blog.content}
+              thumbnail={blog.thumbnail}
+              authorID={blog.authorID}
+            />
+          ))}
+        </div>
+      ) : (
+        <p>about</p>
+      )}
     </>
   );
 };

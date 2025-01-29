@@ -39,6 +39,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ---
 
+## location
+
+/src/app/reusable-ui
+
 ## Installation
 
 Ensure you have React and Tailwind CSS set up in your project.
