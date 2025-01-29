@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/token/verifyToken";
 export async function middleware(req: NextRequest) {
   const protectedRoute = [
-    { path: "/api/user", methods: ["POST", "PATCH"] },
+    { path: "/api/user", methods: ["GET"] },
+    { path: "/api/user/[slug]", methods: ["PATCH"] },
     { path: "/api/blog", methods: ["POST"] },
     { path: "/api/blog/[slug]", methods: ["PATCH", "DELETE"] },
   ];
@@ -14,6 +15,7 @@ export async function middleware(req: NextRequest) {
       regex.test(req.nextUrl.pathname) && route.methods.includes(req.method)
     );
   });
+
   if (!isProtectedRoute) return NextResponse.next();
 
   try {
@@ -50,4 +52,6 @@ export async function middleware(req: NextRequest) {
     { status: 403 }
   );
 }
-export const config = { matcher: ["/api/blog/:id*", "/api/user"] };
+export const config = {
+  matcher: ["/api/blog/:id*", "/api/user", "/api/user/:id*"],
+};

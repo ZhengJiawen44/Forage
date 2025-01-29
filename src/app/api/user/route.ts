@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   try {
     const userID = req.headers.get("x-user-ID");
     if (!userID) {
-      return NextResponse.json({ error: "not authorized" }, { status: 403 });
+      return NextResponse.json({ error: "not authorized" }, { status: 401 });
     }
 
     //query database

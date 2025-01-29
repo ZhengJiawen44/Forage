@@ -10,8 +10,20 @@ interface AboutProps {
 const About = ({ user }: { user: AboutProps }) => {
   const [isEdit, setEdit] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const submitHandler = async (event: FormEvent) => {
+  const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const formValues = Object.fromEntries(new FormData(event.currentTarget));
+    const res = await fetch(`/api/user/${user.id}`, {
+      method: "PATCH",
+      body: JSON.stringify(formValues),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    await res.json().then((value) => {
+      console.log(value);
+    });
   };
   useEffect(() => {
     if (isEdit) {
@@ -26,6 +38,7 @@ const About = ({ user }: { user: AboutProps }) => {
         <form className="flex flex-col w-full gap-4" onSubmit={submitHandler}>
           <textarea
             ref={textAreaRef}
+            name="about"
             defaultValue={user.about}
             className="text-lg bg-item lg:bg-background h-fit scrollbar-none resize-none focus:outline-none"
           ></textarea>
