@@ -3,8 +3,8 @@ import { useState } from "react";
 import MenuBar from "../reusable-ui/MenuBar";
 import { BlogCard } from "..";
 import About from "./About";
-import { useUser } from "@/app/providers/UserProvider";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+
 interface Blog {
   length: number;
   id: number;
@@ -20,10 +20,7 @@ interface BlogContentProps {
 }
 
 const Index = ({ blogs }: BlogContentProps) => {
-  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<string>("Stories");
-  const router = useRouter();
-
   return (
     <>
       <MenuBar
@@ -33,7 +30,8 @@ const Index = ({ blogs }: BlogContentProps) => {
           setActiveTab(tab);
         }}
       />
-      {activeTab === "Stories" ? (
+
+      {activeTab === "Stories" && blogs.length > 0 ? (
         <div>
           {blogs.map((blog) => (
             <BlogCard
@@ -49,8 +47,19 @@ const Index = ({ blogs }: BlogContentProps) => {
             />
           ))}
         </div>
+      ) : activeTab === "Stories" && blogs.length <= 0 ? (
+        <div className="flex flex-col justify-center items-center gap-2">
+          <Image
+            src="/SnowmanFallingApart.svg"
+            alt="Snowman falling apart"
+            width={0}
+            height={0}
+            style={{ filter: "invert(0.5)", width: "50%", height: "auto" }}
+          />
+          <p className="lg:text-xl">it looks a bit empty here right now...</p>
+        </div>
       ) : (
-        <About user={user!} />
+        <About />
       )}
     </>
   );

@@ -1,29 +1,38 @@
 import React, { useState, useRef, useEffect, FormEvent } from "react";
-
-interface AboutProps {
-  id?: string;
-  name?: string;
-  about?: string;
-  email?: string;
-  role?: string;
-}
-const About = ({ user }: { user: AboutProps }) => {
+import { useUser } from "@/app/providers/UserProvider";
+import { useToast } from "@/hooks/use-toast";
+const About = () => {
+  const { user, refreshUser } = useUser();
   const [isEdit, setEdit] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const { toast } = useToast();
   const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    const formValues = Object.fromEntries(new FormData(event.currentTarget));
-    const res = await fetch(`/api/user/${user.id}`, {
-      method: "PATCH",
-      body: JSON.stringify(formValues),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    await res.json().then((value) => {
-      console.log(value);
-    });
+    try {
+      const formValues = Object.fromEntries(new FormData(event.currentTarget));
+      const res = await fetch(`/api/user/${user!.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(formValues),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        toast({ title: `${res.status} error`, content: body.error });
+        console.log(res);
+        return;
+      }
+      toast({ title: `update success`, content: body.message });
+    } catch (error) {
+      console.log(error);
+      if (error instanceof Error) {
+        toast({ title: error.name, content: error.message });
+      }
+    } finally {
+      setEdit(false);
+      refreshUser();
+    }
   };
   useEffect(() => {
     if (isEdit) {
@@ -39,7 +48,7 @@ const About = ({ user }: { user: AboutProps }) => {
           <textarea
             ref={textAreaRef}
             name="about"
-            defaultValue={user.about}
+            defaultValue={user?.about || ""}
             className="text-lg bg-item lg:bg-background h-fit scrollbar-none resize-none focus:outline-none"
           ></textarea>
           <div className="flex gap-4 ml-auto mr-0">
@@ -56,7 +65,9 @@ const About = ({ user }: { user: AboutProps }) => {
         </form>
       ) : (
         <div className="flex flex-col">
-          <p className="text-lg min-h-fit mb-10">{user.about}</p>
+          <pre className="text-lg min-h-fit mb-10 font-montserrat">
+            {user?.about}
+          </pre>
           <button
             className="text-lg hover:bg-white hover:text-black w-fit py-1 p-4 ml-auto mr-0 border rounded-full transition-all duration-300"
             onClick={() => {

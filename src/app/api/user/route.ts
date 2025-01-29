@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/token/verifyToken";
 import { prisma } from "@/lib/prismaClient";
 
 //PROTECTED ROUTE
