@@ -48,7 +48,7 @@ const MenuBar = ({ items, defaultItem, onTabChange }: MenuBarProps) => {
   }, [isActive]);
 
   return (
-    <div className="flex relative gap-6 pb-2 mb-10">
+    <div className="flex relative gap-6 pb-2 mb-20">
       {items.map((item) => {
         return (
           <button

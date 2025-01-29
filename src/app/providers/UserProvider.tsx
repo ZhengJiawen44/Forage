@@ -5,6 +5,7 @@ import { createContext, useState } from "react";
 interface userProps {
   id?: string;
   name?: string;
+  about?: string;
   email?: string;
   role?: string;
 }

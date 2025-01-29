@@ -2,6 +2,9 @@
 import { useState } from "react";
 import MenuBar from "../reusable-ui/MenuBar";
 import { BlogCard } from "..";
+import About from "./About";
+import { useUser } from "@/app/providers/UserProvider";
+import { useRouter } from "next/navigation";
 interface Blog {
   length: number;
   id: number;
@@ -17,14 +20,15 @@ interface BlogContentProps {
 }
 
 const Index = ({ blogs }: BlogContentProps) => {
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<string>("Stories");
-  console.log(activeTab);
+  const router = useRouter();
 
   return (
     <>
       <MenuBar
         items={["Stories", "About"]}
-        defaultItem="About"
+        defaultItem="Stories"
         onTabChange={(tab: string) => {
           setActiveTab(tab);
         }}
@@ -46,7 +50,7 @@ const Index = ({ blogs }: BlogContentProps) => {
           ))}
         </div>
       ) : (
-        <p>about</p>
+        <About user={user!} />
       )}
     </>
   );
