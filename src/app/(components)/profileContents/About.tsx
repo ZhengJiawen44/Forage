@@ -41,6 +41,7 @@ const About = () => {
       textAreaRef.current?.setSelectionRange(length, length, "forward");
     }
   }, [isEdit]);
+
   return (
     <>
       {isEdit ? (

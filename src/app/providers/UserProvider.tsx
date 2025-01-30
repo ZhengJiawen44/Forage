@@ -26,6 +26,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     id: undefined,
     name: undefined,
     email: undefined,
+    about: undefined,
   });
 
   //get user from server on initial page load/ page refresh

@@ -28,6 +28,7 @@ model User {
   password String
   createdAt DateTime @default(now())
   blogs Blog[]
+  history History[]
 }
 
 model Blog {
@@ -40,4 +41,14 @@ model Blog {
   createdAt DateTime @default(now())
   author User @relation(fields:[authorID], references: [id]) 
   authorID Int
+  history History[]
+}
+
+model History {
+  id Int @id @default(autoincrement())
+  blog Blog @relation(fields: [blogID], references:[id])
+  blogID Int
+  reader User @relation(fields:[authorID], references: [id]) 
+  authorID Int
+  readAt DateTime
 }
