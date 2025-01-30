@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { IoTrashBinOutline } from "react-icons/io5";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +16,7 @@ import { Button } from "@/app/(components)/reusable-ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 interface indexProps {
-  id: string;
+  id: number;
 }
 export function index({ id }: indexProps) {
   const { toast } = useToast();
@@ -34,7 +35,10 @@ export function index({ id }: indexProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild className="font-sans">
-        <Button variant="outline">Delete</Button>
+        <div className="flex gap-2 items-center cursor-pointer text-[1rem] text-red-500 py-1 pl-2 w-full hover:bg-[#27272a] rounded-[7px]">
+          <IoTrashBinOutline className="w-5 h-5" />
+          <p>Delete</p>
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

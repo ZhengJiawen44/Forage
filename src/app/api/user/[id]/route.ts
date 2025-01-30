@@ -12,13 +12,12 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const { about } = await req.json();
+    let { about } = await req.json();
+
+    console.log("about: ", about.length);
 
     if (!about || typeof about !== "string") {
-      return NextResponse.json(
-        { error: "Bad request: 'about' field must be a non-empty string" },
-        { status: 400 }
-      );
+      about = "";
     }
 
     const user = await prisma.user.update({

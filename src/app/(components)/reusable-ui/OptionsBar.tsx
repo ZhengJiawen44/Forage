@@ -2,6 +2,9 @@
 import React from "react";
 import { LuBookmarkPlus } from "react-icons/lu";
 import { SlOptions } from "react-icons/sl";
+import Link from "next/link";
+import { useUser } from "@/app/providers/UserProvider";
+import { BlogDeleteDialog } from "..";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,8 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/(components)/reusable-ui/dropdown-menu";
+interface OptionsBarProps {
+  authorID: number;
+  blogID: number;
+}
+const OptionsBar = ({ blogID, authorID }: OptionsBarProps) => {
+  const { user } = useUser();
 
-const OptionsBar = () => {
   return (
     <div className="flex items-center gap-4 ">
       <button
@@ -31,16 +39,36 @@ const OptionsBar = () => {
             className="w-5 h-5 md:w-6 md:h-6 hover:text-white"
           />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="min-w-[140px] font-mono font-thin">
-          <DropdownMenuItem className="cursor-pointer">Follow</DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer whitespace-nowrap">
+        <DropdownMenuContent className="min-w-[170px] bg-black">
+          {+user?.id! === authorID && (
+            <DropdownMenuItem className="cursor-pointer text-[1rem]" asChild>
+              <Link href={`/blog/update/${blogID}`}>Edit</Link>
+            </DropdownMenuItem>
+          )}
+
+          <DropdownMenuItem
+            className="cursor-pointer text-[1rem]"
+            disabled={+user?.id! === authorID}
+          >
+            Follow
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer text-[1rem] "
+            disabled={+user?.id! === authorID}
+          >
             Mute author
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">Hide</DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer text-[1rem]">
+            Hide
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="cursor-pointer text-red-500">
+          <DropdownMenuItem
+            className="cursor-pointer text-[1rem] text-red-500"
+            disabled={+user?.id! === authorID}
+          >
             Report...
           </DropdownMenuItem>
+          {+user?.id! === authorID && <BlogDeleteDialog id={blogID} />}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

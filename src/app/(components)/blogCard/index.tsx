@@ -43,7 +43,7 @@ const BlogCardPreview = (blog: Blog) => {
               {format(blog.createdAt)}
             </p>
           </div>
-          <OptionsBar />
+          <OptionsBar blogID={blog.id} authorID={blog.authorID} />
         </div>
       </div>
 

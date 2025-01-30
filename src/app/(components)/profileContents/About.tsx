@@ -48,7 +48,7 @@ const About = () => {
           <textarea
             ref={textAreaRef}
             name="about"
-            defaultValue={user?.about || ""}
+            defaultValue={user?.about || "preview Lorem Ipsum"}
             className="text-lg bg-item lg:bg-background h-fit scrollbar-none resize-none focus:outline-none"
           ></textarea>
           <div className="flex gap-4 ml-auto mr-0">
@@ -66,7 +66,7 @@ const About = () => {
       ) : (
         <div className="flex flex-col">
           <pre className="text-lg min-h-fit mb-10 font-montserrat">
-            {user?.about}
+            {user?.about || "preview Lorem Ipsum"}
           </pre>
           <button
             className="text-lg hover:bg-white hover:text-black w-fit py-1 p-4 ml-auto mr-0 border rounded-full transition-all duration-300"
