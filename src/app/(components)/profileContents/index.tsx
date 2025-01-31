@@ -1,9 +1,19 @@
 "use client";
 import { useState } from "react";
 import MenuBar from "../reusable-ui/MenuBar";
-import { BlogCard } from "..";
 import About from "./About";
 import Image from "next/image";
+import { IllustratedMessage } from "@/app/(components)/index";
+import { format } from "@/lib/getFormattedDay";
+import OptionsBar from "../reusable-ui/OptionsBar";
+import {
+  CardContainer,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardPane,
+  CardTitle,
+} from "@/app/(components)/index";
 
 interface Blog {
   length: number;
@@ -30,34 +40,43 @@ const Index = ({ blogs }: BlogContentProps) => {
           setActiveTab(tab);
         }}
       />
-
+      <IllustratedMessage src="/SnowmanFallingApart.svg">
+        it looks a bit empty here right now...
+      </IllustratedMessage>
       {activeTab === "Stories" && blogs.length > 0 ? (
         <div>
           {blogs.map((blog) => (
-            <BlogCard
-              key={blog.id}
-              id={blog.id}
-              title={blog.title}
-              createdAt={blog.createdAt}
-              length={blog.length}
-              description={blog.description}
-              content={blog.content}
-              thumbnail={blog.thumbnail}
-              authorID={blog.authorID}
-            />
+            <CardContainer key={blog.id}>
+              <CardPane className="flex-[3]">
+                <CardHeader>
+                  <CardTitle href={`/blog/${blog.id}`}>{blog.title}</CardTitle>
+                </CardHeader>
+                <CardBody>{blog.description}</CardBody>
+                <CardFooter className="flex justify-between">
+                  <div className="flex gap-4 items-center">
+                    <p className="font-montserrat text-[0.8rem]">{`${blog.length} min read`}</p>
+                    <p className="font-montserrat text-[0.8rem]">
+                      {format(blog.createdAt)}
+                    </p>
+                  </div>
+                  <OptionsBar blogID={blog.id} authorID={blog.authorID} />
+                </CardFooter>
+              </CardPane>
+              <CardPane className="flex-[1]">
+                {blog.thumbnail && (
+                  <img
+                    src={blog.thumbnail}
+                    className="w-full rounded-[6px] aspect-video object-cover"
+                  />
+                )}
+              </CardPane>
+            </CardContainer>
           ))}
         </div>
       ) : activeTab === "Stories" && blogs.length <= 0 ? (
-        <div className="flex flex-col justify-center items-center gap-2">
-          <Image
-            src="/SnowmanFallingApart.svg"
-            alt="Snowman falling apart"
-            width={0}
-            height={0}
-            style={{ filter: "invert(0.5)", width: "50%", height: "auto" }}
-          />
-          <p className="lg:text-xl">it looks a bit empty here right now...</p>
-        </div>
+        <IllustratedMessage src="/SnowmanFallingApart.svg">
+          it looks a bit empty here right now...
+        </IllustratedMessage>
       ) : (
         <About />
       )}

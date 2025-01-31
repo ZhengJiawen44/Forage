@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, FormEvent } from "react";
 import { useUser } from "@/app/providers/UserProvider";
 import { useToast } from "@/hooks/use-toast";
+
 const About = () => {
   const { user, refreshUser } = useUser();
   const [isEdit, setEdit] = useState(false);

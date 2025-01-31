@@ -5,6 +5,7 @@ import { SlOptions } from "react-icons/sl";
 import Link from "next/link";
 import { useUser } from "@/app/providers/UserProvider";
 import { BlogDeleteDialog } from "..";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,12 +16,13 @@ import {
 interface OptionsBarProps {
   authorID: number;
   blogID: number;
+  className?: string;
 }
-const OptionsBar = ({ blogID, authorID }: OptionsBarProps) => {
+const OptionsBar = ({ blogID, authorID, className }: OptionsBarProps) => {
   const { user } = useUser();
 
   return (
-    <div className="flex items-center gap-4 ">
+    <div className={cn("flex items-center gap-4", className)}>
       <button
         onClick={(event) => {
           event.preventDefault();

@@ -26,8 +26,13 @@ const Menu = ({ userEmail, userName }: menuProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-[#252525] border-[#575757] min-w-[16rem]">
           <DropdownMenuItem className="flex justify-start items-center gap-2 h-fit focus:bg-[#383838] mb-1">
-            <TbHistory className="w-[1.2rem] h-[1.2rem]" strokeWidth="1" />
-            <p className="text-[0.9rem]">History</p>
+            <Link
+              href="/history"
+              className="text-[0.9rem] flex justify-start items-center gap-2 w-full h-full"
+            >
+              <TbHistory className="w-[1.2rem] h-[1.2rem]" strokeWidth="1" />
+              History
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className=" h-auto w-full focus:bg-[#383838] mb-1">
             <Link
