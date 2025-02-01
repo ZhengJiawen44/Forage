@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 interface IllustratedMessageProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   src: string;
 }

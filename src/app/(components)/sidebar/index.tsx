@@ -9,6 +9,7 @@ import LastReadLoading from "./LastReadLoading";
 import RecommendationsLoading from "./RecommendationsLoading";
 import { CiImageOff } from "react-icons/ci";
 import { usePathname } from "next/navigation";
+import IllustratedMessage from "../reusable-ui/IllustratedMessage";
 interface lastRead {
   title: string;
   ID: number;
@@ -98,7 +99,7 @@ const Recommendation = () => {
         />
       </div>
       {/* last read section */}
-      <div className="h-fit bg-item border rounded-md mt-8 pt-8 pb-5 px-3">
+      <div className="h-fit bg-item border rounded-md mt-8 pt-8 pb-12 px-3">
         <h1 className="mb-8 text-xl font-sans">Continue reading</h1>
         {loadingLastRead ? (
           <LastReadLoading />
@@ -133,9 +134,15 @@ const Recommendation = () => {
             </div>
           </Link>
         ) : (
-          <div className="text-center p-4 text-item-foreground">
-            No recently read articles
-          </div>
+          <>
+            <IllustratedMessage
+              src="/SnowmanBrainfood.svg"
+              className="mt-0 w-[13rem] h-[13rem] m-auto"
+            />
+            <p className="lg:text-xl m-auto w-fit mt-4">
+              Read your first article today!
+            </p>
+          </>
         )}
       </div>
     </div>

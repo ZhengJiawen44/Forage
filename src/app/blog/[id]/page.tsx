@@ -17,7 +17,7 @@ interface PageProps {
 }
 
 const page = async ({ params }: PageProps) => {
-  const { id } = params;
+  const { id } = await params;
   let blog;
 
   try {

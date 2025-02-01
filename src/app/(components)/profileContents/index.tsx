@@ -2,7 +2,6 @@
 import { useState } from "react";
 import MenuBar from "../reusable-ui/MenuBar";
 import About from "./About";
-import Image from "next/image";
 import { IllustratedMessage } from "@/app/(components)/index";
 import { format } from "@/lib/getFormattedDay";
 import OptionsBar from "../reusable-ui/OptionsBar";
@@ -40,9 +39,6 @@ const Index = ({ blogs }: BlogContentProps) => {
           setActiveTab(tab);
         }}
       />
-      <IllustratedMessage src="/SnowmanFallingApart.svg">
-        it looks a bit empty here right now...
-      </IllustratedMessage>
       {activeTab === "Stories" && blogs.length > 0 ? (
         <div>
           {blogs.map((blog) => (
@@ -77,8 +73,10 @@ const Index = ({ blogs }: BlogContentProps) => {
         <IllustratedMessage src="/SnowmanFallingApart.svg">
           it looks a bit empty here right now...
         </IllustratedMessage>
-      ) : (
+      ) : activeTab === "About" ? (
         <About />
+      ) : (
+        ""
       )}
     </>
   );

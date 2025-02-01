@@ -26,7 +26,7 @@ const page = async () => {
 
   try {
     const blog: Blog[] = await prisma.blog.findMany({});
-    if (true) {
+    if (!blog || blog.length < 1) {
       return (
         <IllustratedMessage src="/SnowmanPokeTree.svg">
           Hurray! write the first blog for this awesome site!
