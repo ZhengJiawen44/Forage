@@ -74,6 +74,7 @@ const page = async () => {
 
       return {
         blogID: blog.id!,
+        readAt: history.readAt,
         ...blog,
         id: history.id,
       };

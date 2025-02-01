@@ -10,4 +10,6 @@ export { default as FailedVerification } from "./auth/FailedVerification";
 export { default as ProfileContent } from "./profileContents/index";
 export { default as IllustratedMessage } from "./reusable-ui/IllustratedMessage";
 export { default as BlogHistoryList } from "./blogHistory/blogHistoryList";
+export { default as BlogHistorySidebar } from "./blogHistory/blogHistorySidebar";
+
 export * from "./reusable-ui/blogCard";
