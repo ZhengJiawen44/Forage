@@ -43,40 +43,21 @@ const page = async () => {
     authorize = true;
 
     //get the user's history
-    const userHistory: History[] = await prisma.history.findMany({
+    const userHistory = await prisma.history.findMany({
       where: { authorID: +decodedPayload.id },
+      include: { blog: true },
     });
 
-    //extract unique blog id from user's history
-    //e,g [{id:1, blogID:12, authorID:24, readAt:01-12-2002},{id:1, blogID:12, authorID:24, readAt:02-12-2002}] => [12]
-    const userHistoryBlogIDList = [
-      ...new Set(
-        userHistory.map((element) => {
-          return element.blogID;
-        })
-      ),
-    ];
-
-    //get the blogs using the extracted id
-    const blogs: Blog[] = await prisma.blog.findMany({
-      where: { id: { in: userHistoryBlogIDList } },
-    });
-
-    //create a mapping for the blog id
-    const blogMap = new Map(
-      blogs.map((blog) => {
-        return [blog.id, blog];
-      })
-    );
-    //reconstruct the history log with the blog
-    const historyList = userHistory.map((history) => {
-      const blog = blogMap.get(history.blogID)!;
-
+    const historyList = userHistory.map((obj) => {
+      const blog = obj.blog;
       return {
-        blogID: blog.id!,
-        readAt: history.readAt,
-        ...blog,
-        id: history.id,
+        id: obj.id,
+        userID: obj.authorID,
+        blogID: obj.blogID,
+        readAt: obj.readAt,
+        title: blog.title,
+        thumbnail: blog.thumbnail,
+        description: blog.description,
       };
     });
 
@@ -91,7 +72,7 @@ const page = async () => {
     //return history
     return (
       <>
-        <BlogHistoryList historyList={historyList} />
+        <BlogHistoryList historyList={historyList} />{" "}
       </>
     );
   } catch (error) {

@@ -16,15 +16,12 @@ import clsx from "clsx";
 
 interface historyRecord {
   id: number;
-  readAt: Date;
+  userID: number;
   blogID: number;
+  readAt: Date;
   title: string;
-  length: number;
   thumbnail: string | null;
   description: string | null;
-  content: string;
-  authorID: number;
-  createdAt: Date;
 }
 
 interface historyList {

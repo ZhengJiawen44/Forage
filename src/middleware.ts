@@ -6,6 +6,7 @@ export async function middleware(req: NextRequest) {
     { path: "/api/user/[slug]", methods: ["PATCH"] },
     { path: "/api/blog", methods: ["POST"] },
     { path: "/api/blog/[slug]", methods: ["PATCH", "DELETE"] },
+    { path: "/api/history", methods: ["GET"] },
     { path: "/api/history/[slug]", methods: ["DELETE"] },
   ];
   const isProtectedRoute = protectedRoute.some((route) => {
