@@ -118,13 +118,15 @@ const HistoryList = ({ historyList }: historyListProps) => {
               HandleDelete={HandleDelete}
             />
           ))
-        : searchResults.map((record: historyRecord) => (
-            <HistoryCard
-              key={record.id}
-              record={record}
-              HandleDelete={HandleDelete}
-            />
-          ))}
+          ? searchResults && showSearch
+          : searchResults.map((record: historyRecord) => (
+              <HistoryCard
+                key={record.id}
+                record={record}
+                HandleDelete={HandleDelete}
+              />
+            ))
+        : "your search did not yield results"}
     </>
   );
 };

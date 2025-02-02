@@ -38,22 +38,21 @@ const page = async ({ params }: PageProps) => {
         redirect("/auth/login");
       }
 
-      const history = await prisma.history.create({
-        data: {
-          blogID: blog.id,
-          authorID: decodedPayload.id,
-          readAt: new Date(),
-        },
-      });
-      console.log(history);
+      //did user enable history?
+      if (decodedPayload.historyEnabled === true) {
+        await prisma.history.create({
+          data: {
+            blogID: blog.id,
+            authorID: decodedPayload.id,
+            readAt: new Date(),
+          },
+        });
+      }
     }
   } catch (error) {
     console.log(error);
-    // You might want to handle errors more gracefully here
     throw error; // Re-throw the error to be handled by Next.js error boundary
   }
-
-  // Since we're using notFound() if blog doesn't exist, we can safely assert blog is defined here
   if (!blog) {
     notFound();
   }

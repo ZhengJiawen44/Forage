@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "user not found" }, { status: 404 });
     }
-    const { id, name, password, emailVerified } = user;
+    const { id, name, password, emailVerified, historyEnabled } = user;
 
     const passwordValid = await bcrypt.compare(body.password, password);
     if (!passwordValid || !emailVerified) {
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     const cookieStore = await cookies();
     cookieStore.set("token", "", { maxAge: 0, path: "/" });
 
-    //create new jwt with id as payload
-    const token = await signToken({ id, name }, "1h");
+    //create new jwt with id, name, and historyEnabled as payload
+    const token = await signToken({ id, name, historyEnabled }, "1h");
 
     //place new jwt into cookie
     cookieStore.set("token", token, {

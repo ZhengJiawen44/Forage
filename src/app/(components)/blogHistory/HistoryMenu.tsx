@@ -51,6 +51,7 @@ const HistoryMenu = ({
         return;
       }
       const formattedHistory: historyRecord[] = await res.json();
+
       setShowSearch(true);
       setSearchResults(formattedHistory);
     } catch (error) {
