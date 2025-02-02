@@ -7,24 +7,6 @@ import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
 
 const page = async () => {
-  type Blog = {
-    id?: number;
-    title: string;
-    length: number;
-    thumbnail: string | null;
-    description: string | null;
-    content: string;
-    authorID: number;
-    createdAt: Date;
-  };
-
-  type History = {
-    id: number;
-    blogID: number;
-    authorID: number;
-    readAt: Date;
-  };
-
   let authorize = false;
   try {
     //get the current user

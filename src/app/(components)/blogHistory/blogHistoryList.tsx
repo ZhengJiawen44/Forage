@@ -31,6 +31,8 @@ interface historyList {
 const BlogHistoryList = ({ historyList }: historyList) => {
   const { toast } = useToast();
   const [history, setHistory] = useState(historyList);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState<historyRecord[]>([]);
   const [loading, setLoading] = useState(false);
 
   const HandleDelete = async (blogID: number) => {
@@ -59,7 +61,11 @@ const BlogHistoryList = ({ historyList }: historyList) => {
     <>
       <h1 className="text-[2rem] mb-8">History</h1>
 
-      <BlogHistorySidebar />
+      <BlogHistorySidebar
+        setSearchResults={setSearchResults}
+        setLoading={setLoading}
+        setShowSearch={setShowSearch}
+      />
 
       <div className="p-4 sticky top-0">
         <ImSpinner8
@@ -70,29 +76,57 @@ const BlogHistoryList = ({ historyList }: historyList) => {
         />
       </div>
 
-      {history.map((record: historyRecord) => (
-        <CardContainer key={record.id} className="pb-0">
-          <CardPane className="flex-[1]">
-            {record.thumbnail && (
-              <img
-                src={record.thumbnail}
-                className="w-full rounded-[6px] aspect-video object-cover"
-              />
-            )}
-          </CardPane>
-          <CardPane className="flex-[3]">
-            <CardHeader className="justify-between">
-              <CardTitle href={`/blog/${record.id}`}>{record.title}</CardTitle>
-              <RxCross2
-                className="w-6 h-6 mt-1 text-item-foreground 
+      {!showSearch
+        ? history.map((record: historyRecord) => (
+            <CardContainer key={record.id} className="pb-0">
+              <CardPane className="flex-[1]">
+                {record.thumbnail && (
+                  <img
+                    src={record.thumbnail}
+                    className="w-full rounded-[6px] aspect-video object-cover"
+                  />
+                )}
+              </CardPane>
+              <CardPane className="flex-[3]">
+                <CardHeader className="justify-between">
+                  <CardTitle href={`/blog/${record.id}`}>
+                    {record.title}
+                  </CardTitle>
+                  <RxCross2
+                    className="w-6 h-6 mt-1 text-item-foreground 
               hover:text-white hover:cursor-pointer  rounded-full hover:bg-[#27272a]"
-                onClick={() => HandleDelete(record.blogID)}
-              />
-            </CardHeader>
-            <CardBody>{record.description}</CardBody>
-          </CardPane>
-        </CardContainer>
-      ))}
+                    onClick={() => HandleDelete(record.blogID)}
+                  />
+                </CardHeader>
+                <CardBody>{record.description}</CardBody>
+              </CardPane>
+            </CardContainer>
+          ))
+        : searchResults.map((record: historyRecord) => (
+            <CardContainer key={record.id} className="pb-0">
+              <CardPane className="flex-[1]">
+                {record.thumbnail && (
+                  <img
+                    src={record.thumbnail}
+                    className="w-full rounded-[6px] aspect-video object-cover"
+                  />
+                )}
+              </CardPane>
+              <CardPane className="flex-[3]">
+                <CardHeader className="justify-between">
+                  <CardTitle href={`/blog/${record.id}`}>
+                    {record.title}
+                  </CardTitle>
+                  <RxCross2
+                    className="w-6 h-6 mt-1 text-item-foreground 
+              hover:text-white hover:cursor-pointer  rounded-full hover:bg-[#27272a]"
+                    onClick={() => HandleDelete(record.blogID)}
+                  />
+                </CardHeader>
+                <CardBody>{record.description}</CardBody>
+              </CardPane>
+            </CardContainer>
+          ))}
     </>
   );
 };
