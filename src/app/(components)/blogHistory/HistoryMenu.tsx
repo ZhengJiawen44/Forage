@@ -4,19 +4,10 @@ import { IoPause } from "react-icons/io5";
 import { IoTrashOutline } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import { useToast } from "@/hooks/use-toast";
-import { Blog, History } from "@/types";
 import { RxCross2 } from "react-icons/rx";
 import clsx from "clsx";
 
-//this is the data recieved from the server
-interface serverData extends History {
-  blog: Blog;
-}
-interface serverDataList extends History {
-  blogs: serverData[];
-}
-
-//this is the same data recieved from the server, but cleaned and organized for consumption
+//this is the data recieved from the server, but cleaned and organized for consumption
 interface historyRecord {
   id: number;
   userID: number;
@@ -27,12 +18,14 @@ interface historyRecord {
   description: string | null;
 }
 interface HistoryMenuProps {
+  handleDeleteAll: () => Promise<void>;
   setSearchResults: React.Dispatch<React.SetStateAction<historyRecord[]>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const HistoryMenu = ({
+  handleDeleteAll,
   setSearchResults,
   setLoading,
   setShowSearch,
@@ -57,24 +50,9 @@ const HistoryMenu = ({
         toast({ title: "error", description: "an unknown error occured" });
         return;
       }
-      const { blogs }: serverDataList = await res.json();
-      if (blogs.length < 1) {
-        setSearchResults([]);
-      }
-      const searchResult: historyRecord[] = blogs.map((record: serverData) => {
-        const blog = record.blog;
-        return {
-          id: record.id,
-          userID: record.authorID,
-          blogID: record.blogID,
-          readAt: record.readAt,
-          title: blog.title,
-          thumbnail: blog.thumbnail,
-          description: blog.description,
-        };
-      });
+      const formattedHistory: historyRecord[] = await res.json();
       setShowSearch(true);
-      setSearchResults(searchResult);
+      setSearchResults(formattedHistory);
     } catch (error) {
       if (error instanceof Error)
         toast({ title: "error", description: error.message });
@@ -82,6 +60,7 @@ const HistoryMenu = ({
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (searchInput.length < 1 || !searchInput) {
       setShowSearch(false);
@@ -128,7 +107,10 @@ const HistoryMenu = ({
       </form>
 
       <div className="flex flex-col gap-4">
-        <button className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent">
+        <button
+          onClick={handleDeleteAll}
+          className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
+        >
           <IoTrashOutline className="w-5 h-5" />
           Clear all history
         </button>

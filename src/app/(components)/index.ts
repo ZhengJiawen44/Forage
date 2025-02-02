@@ -9,7 +9,6 @@ export { default as LastRead } from "./sidebar/LastRead";
 export { default as FailedVerification } from "./auth/FailedVerification";
 export { default as ProfileContent } from "./profileContents/index";
 export { default as IllustratedMessage } from "./reusable-ui/IllustratedMessage";
-export { default as BlogHistoryList } from "./blogHistory/HistoryList";
-export { default as BlogHistorySidebar } from "./blogHistory/HistoryMenu";
+export { default as HistoryList } from "./blogHistory/HistoryList";
 
 export * from "./reusable-ui/blogCard";

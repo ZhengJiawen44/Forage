@@ -19,11 +19,11 @@ interface historyRecordProps {
 
 interface HistoryCardProp {
   record: historyRecordProps;
-  HandleDelete: Function;
+  HandleDelete: (blogID: number) => Promise<void>;
 }
 const HistoryCard = ({ record, HandleDelete }: HistoryCardProp) => {
   return (
-    <CardContainer key={record.id} className="pb-0">
+    <CardContainer className="pb-0">
       <CardPane className="flex-[1]">
         {record.thumbnail && (
           <img

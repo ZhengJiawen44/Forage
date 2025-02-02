@@ -1,7 +1,6 @@
 import React from "react";
 import { prisma } from "@/lib/prismaClient";
-import { IllustratedMessage } from "@/app/(components)/index";
-import { BlogHistoryList } from "@/app/(components)/index";
+import { HistoryList } from "@/app/(components)/index";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
@@ -45,7 +44,7 @@ const page = async () => {
     //return history
     return (
       <>
-        <BlogHistoryList historyList={historyList} />
+        <HistoryList historyList={historyList} />
       </>
     );
   } catch (error) {

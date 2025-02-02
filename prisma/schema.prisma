@@ -27,6 +27,7 @@ model User {
   about String?
   password String
   createdAt DateTime @default(now())
+  historyEnabled Boolean @default(false)
   blogs Blog[]
   history History[]
 }

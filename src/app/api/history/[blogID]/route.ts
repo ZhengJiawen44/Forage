@@ -16,12 +16,18 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
     //get the route param blogID
     const { blogID } = await params;
-    //delete all history entries where userID and blogID
 
+    //delete all history entries where userID and blogID
     const deletedEntries = await prisma.history.deleteMany({
       where: { blogID: +blogID, authorID: +userID },
     });
 
+    if (deletedEntries.count === 0) {
+      return NextResponse.json(
+        { message: "no history could be found for this blog!" },
+        { status: 400 }
+      );
+    }
     if (!deletedEntries) {
       return NextResponse.json(
         { error: "500 internal server error" },
