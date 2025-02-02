@@ -4,7 +4,6 @@ export async function GET(req: NextRequest) {
   // get the search word query params
   const searchParams = req.nextUrl.searchParams;
   const keyword = searchParams.get("search");
-  console.log(keyword);
 
   if (!keyword) {
     return NextResponse.json({ blogs: [] });
@@ -22,7 +21,6 @@ export async function GET(req: NextRequest) {
     },
     include: { blog: true },
   });
-  console.log(blogs);
 
   return NextResponse.json({ blogs });
 }

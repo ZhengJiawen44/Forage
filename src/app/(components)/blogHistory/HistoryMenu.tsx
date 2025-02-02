@@ -26,17 +26,17 @@ interface historyRecord {
   thumbnail: string | null;
   description: string | null;
 }
-interface SidebarProps {
+interface HistoryMenuProps {
   setSearchResults: React.Dispatch<React.SetStateAction<historyRecord[]>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const blogHistorySidebar = ({
+const HistoryMenu = ({
   setSearchResults,
   setLoading,
   setShowSearch,
-}: SidebarProps) => {
+}: HistoryMenuProps) => {
   const { toast } = useToast();
   const [searchInput, setSearchInput] = useState("");
   //function for when user hits enter on the search bar
@@ -141,4 +141,4 @@ const blogHistorySidebar = ({
   );
 };
 
-export default blogHistorySidebar;
+export default HistoryMenu;

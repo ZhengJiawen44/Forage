@@ -42,19 +42,10 @@ const page = async () => {
         description: blog.description,
       };
     });
-
-    //empty placeholder for empty history
-    if (!userHistory || userHistory.length < 1) {
-      return (
-        <IllustratedMessage src="/SnowmanPokeTree.svg">
-          you did not read anything
-        </IllustratedMessage>
-      );
-    }
     //return history
     return (
       <>
-        <BlogHistoryList historyList={historyList} />{" "}
+        <BlogHistoryList historyList={historyList} />
       </>
     );
   } catch (error) {
