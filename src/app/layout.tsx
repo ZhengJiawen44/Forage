@@ -5,21 +5,15 @@ import { Sidebar } from "@/app/(components)";
 import Dashboard from "@/app/(components)/dashboard/index";
 import { Toaster } from "./(components)/reusable-ui/toaster";
 import { UserProvider } from "./providers/UserProvider";
-import { cookies } from "next/headers";
+import { getUserTokenString } from "@/lib/cookies/getUserTokenString";
 export const metadata: Metadata = {
   title: "forage",
   description: "forage is a blog site dedicated to developers",
 };
 
-async function getUser() {
-  const cookieStore = await cookies();
-  // Construct the Cookie header string from the client's cookies
-  const cookieString = cookieStore
-    .getAll()
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
-    .join("; ");
-
+const getUser = async (cookieString: string) => {
   const res = await fetch("http://localhost:3000/api/user", {
+    next: { tags: ["user"], revalidate: 3600 },
     method: "GET",
     headers: {
       // Include the client's cookies in the request
@@ -33,14 +27,15 @@ async function getUser() {
 
   const user = await res.json();
   return user;
-}
+};
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUser();
+  const cookieString = await getUserTokenString();
+  const user = await getUser(cookieString);
   return (
     <html lang="en">
       <body
