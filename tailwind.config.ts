@@ -9,7 +9,12 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  plugins: [require("tailwind-scrollbar")],
+  plugins: [
+    require("tailwind-scrollbar"),
+    require("tailwindcss/plugin")(({ addVariant }) => {
+      addVariant("search-cancel", "&::-webkit-search-cancel-button");
+    }),
+  ],
   theme: {
     fontSize: {
       xs: "0.75rem",

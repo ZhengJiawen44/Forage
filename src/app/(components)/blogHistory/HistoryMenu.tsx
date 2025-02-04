@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { IoPause } from "react-icons/io5";
-import { IoTrashOutline } from "react-icons/io5";
+import { IoPause, IoPlay, IoTrashOutline } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import { useToast } from "@/hooks/use-toast";
 import { RxCross2 } from "react-icons/rx";
 import clsx from "clsx";
 import { useUser } from "@/app/providers/UserProvider";
+import MenuLoading from "./MenuLoading";
 //this is the data recieved from the server, but cleaned and organized for consumption
-interface historyRecord {
+interface HistoryRecord {
   id: number;
   userID: number;
   blogID: number;
@@ -19,7 +19,7 @@ interface historyRecord {
 }
 interface HistoryMenuProps {
   handleDeleteAll: () => Promise<void>;
-  setSearchResults: React.Dispatch<React.SetStateAction<historyRecord[]>>;
+  setSearchResults: React.Dispatch<React.SetStateAction<HistoryRecord[]>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -34,25 +34,20 @@ const HistoryMenu = ({
   const [searchInput, setSearchInput] = useState("");
   const { user, isLoaded, refreshUser } = useUser();
 
-  //function for when user hits enter on the search bar
-  const handleSearchBarEnter = async (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    event.preventDefault();
+  const handleSearch = async (keyword: string) => {
     try {
       setLoading(true);
-      //obtain the form data that the element is embedded in
-      const { keyword } = Object.fromEntries(
-        new FormData(event.currentTarget.form!)
-      );
       const res = await fetch(`/api/history?search=${keyword}`, {
         method: "GET",
       });
       if (!res.ok) {
-        toast({ title: "error", description: "an unknown error occured" });
+        toast({
+          title: `${res.status} error`,
+          description: "an unknown error occured",
+        });
         return;
       }
-      const formattedHistory: historyRecord[] = await res.json();
+      const formattedHistory: HistoryRecord[] = await res.json();
       setShowSearch(true);
       setSearchResults(formattedHistory);
     } catch (error) {
@@ -63,8 +58,7 @@ const HistoryMenu = ({
     }
   };
 
-  const pauseHistory = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const toggleHistory = async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/pause-history`, {
@@ -73,51 +67,61 @@ const HistoryMenu = ({
       });
       const body = await res.json();
       if (!res.ok) {
-        toast({ title: "error", description: body.error });
+        toast({
+          title: `${res.status} error`,
+          description: "an unknown error occured",
+        });
         return;
       }
       toast({ title: "success", description: body.message });
-      console.log(res);
       refreshUser();
     } catch (error) {
-      if (error instanceof Error)
-        toast({ title: "error", description: error.message });
+      toast({
+        title: "error",
+        description:
+          error instanceof Error ? error.message : "an unknown error occured",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log("mounted history Menu");
-
-    if (searchInput.length < 1 || !searchInput) {
-      setShowSearch(false);
-    }
+    setShowSearch(searchInput?.length > 0);
   }, [searchInput]);
 
-  if (isLoaded && user?.id) {
-    return (
+  if (!isLoaded || !user?.id) {
+    return <MenuLoading />;
+  }
+
+  return (
+    <>
       <div className="flex flex-col gap-8 mb-14">
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearch(searchInput);
+          }}
+        >
           <div className="relative">
             <input
               name="keyword"
-              type="string"
+              type="search"
               placeholder="Search history"
               value={searchInput}
               className="pl-7 w-full outline-none bg-transparent border-b border-b-item-foreground
             pb-1 placeholder-item-foreground focus:placeholder-item-foreground/70 focus:border-b-white 
-            transition-all duration-200 focus:outline-none active:outline-none "
-              onKeyDown={(e) => {
-                e.key === "Enter" && handleSearchBarEnter(e);
-              }}
+            transition-all duration-200 focus:outline-none active:outline-none search-cancel:appearance-none"
               onChange={(e) => {
                 setSearchInput(e.currentTarget.value);
               }}
             />
-            <div className="absolute left-0 top-1/2 -translate-y-[60%]">
+            <button
+              className="absolute left-0 top-1/2 -translate-y-[60%]"
+              type="submit"
+            >
               <FiSearch className="w-7 h-7 hover:text-white hover:cursor-pointer p-1" />
-            </div>
+            </button>
             <div
               className={clsx(
                 "absolute right-0 top-1/2 -translate-y-[60%]",
@@ -128,7 +132,6 @@ const HistoryMenu = ({
                 className="w-7 h-7 hover:text-white hover:cursor-pointer p-1"
                 onClick={() => {
                   setSearchInput("");
-                  setShowSearch(false);
                 }}
               />
             </div>
@@ -136,26 +139,48 @@ const HistoryMenu = ({
         </form>
 
         <div className="flex flex-col gap-4">
-          <button
+          <ActionButton
             onClick={handleDeleteAll}
-            className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
+            icon={<IoTrashOutline className="w-5 h-5" />}
           >
-            <IoTrashOutline className="w-5 h-5" />
             Clear all history
-          </button>
-          <button
-            onClick={pauseHistory}
-            className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
+          </ActionButton>
+
+          <ActionButton
+            onClick={toggleHistory}
+            icon={
+              user.historyEnabled ? (
+                <IoPause className="w-5 h-5" />
+              ) : (
+                <IoPlay className="w-5 h-5" />
+              )
+            }
           >
-            <IoPause className="w-5 h-5" />
-            Pause all history
-          </button>
+            {user.historyEnabled ? "Pause all history" : "Resume all history"}
+          </ActionButton>
         </div>
       </div>
-    );
-  } else {
-    return <div>loading...</div>;
-  }
+    </>
+  );
 };
 
+const ActionButton = ({
+  onClick,
+  icon,
+  children,
+}: {
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center justify-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
+    >
+      <span className="w-5 h-5 flex items-center justify-center">{icon}</span>
+      {children}
+    </button>
+  );
+};
 export default HistoryMenu;

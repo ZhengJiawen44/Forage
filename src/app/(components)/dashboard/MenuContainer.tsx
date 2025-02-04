@@ -17,7 +17,7 @@ const MenuContainer = () => {
         <RiPenNibLine className="h-5 w-5" />
         <p className="">write</p>
       </Link>
-      {user!.id ? (
+      {user?.id ? (
         <Menu userName={user?.name!} userEmail={user?.name!} />
       ) : (
         <Link

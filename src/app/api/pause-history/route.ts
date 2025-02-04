@@ -54,7 +54,7 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json(
     {
-      message: `succesfully ${pauseHistory ? "paused" : "resumed"} history`,
+      message: `succesfully ${pauseHistory ? "resumed" : "paused"} history`,
     },
     { status: 200 }
   );

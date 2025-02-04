@@ -1,14 +1,14 @@
 "use client";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
 
 interface userProps {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   about?: string;
-  email?: string;
-  role?: string;
-  historyEnabled?: boolean;
+  email: string;
+  role: string;
+  historyEnabled: boolean;
 }
 interface userContextProps {
   user: userProps | undefined;
@@ -23,36 +23,52 @@ const userContext = createContext<userContextProps>({
 });
 
 //context provider component
-const UserProvider = ({ children }: { children: React.ReactNode }) => {
+const UserProvider = ({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser?: userProps;
+}) => {
   //user State
-  const [user, setUser] = useState<userProps | undefined>({
-    id: undefined,
-    name: undefined,
-    email: undefined,
-    about: undefined,
-    historyEnabled: undefined,
-  });
+  const [user, setUser] = useState<userProps | undefined>();
   const [isLoaded, setIsLoaded] = useState(false);
 
-  //get user from server on initial page load/ page refresh
+  //get user from server on page load/reload
   useEffect(() => {
-    fetchUser();
+    console.log(initialUser);
+
+    if (initialUser) {
+      setIsLoaded(true);
+      setUser(initialUser);
+      console.log("user loaded from server");
+    } else {
+      fetchUser();
+    }
   }, []);
+
+  //fetchUser Function
   const fetchUser = async () => {
+    console.log("user loaded from client");
     try {
       setIsLoaded(false);
       const res = await fetch("/api/user");
+      if (!res.ok) {
+        setUser(undefined);
+        throw new Error(`Error ${res.status} failed to fetch user`);
+      }
       const user = await res.json();
       setUser(user);
       console.log("fetched user: ", user);
     } catch (error) {
+      setUser(undefined);
       console.log(error);
     } finally {
       setIsLoaded(true);
     }
   };
 
-  //call this to update user state
+  //function to update user state
   const refreshUser = async (user?: userProps) => {
     if (user) {
       setUser(user);
