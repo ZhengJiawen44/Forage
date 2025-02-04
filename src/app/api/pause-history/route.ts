@@ -5,57 +5,80 @@ import { cookies } from "next/headers";
 import { signToken } from "@/lib/token/signToken";
 import { verifyToken } from "@/lib/token/verifyToken";
 export async function PATCH(req: NextRequest) {
-  //get the user ID
-  const userID = req.headers.get("x-user-ID");
-  if (!userID) {
-    return NextResponse.json({ error: "not authorized" }, { status: 401 });
+  try {
+    //get the user ID
+    const userID = req.headers.get("x-user-ID");
+    if (!userID) {
+      return NextResponse.json({ error: "not authorized" }, { status: 401 });
+    }
+
+    //get the request body containing enable History flag
+    const { pauseHistory } = await req.json();
+    if (typeof pauseHistory !== "boolean") {
+      return NextResponse.json(
+        {
+          error: "bad request - pauseHistory is required and must be a boolean",
+        },
+        { status: 400 }
+      );
+    }
+
+    //update the user with the new enable History flag
+    await prisma.user.update({
+      where: { id: +userID },
+      data: { historyEnabled: pauseHistory },
+    });
+
+    //update the cookie with the new enable History flag, and set the expiry as time left
+    //cookie time left
+    const timeLeft = await getTimeLeftSeconds();
+
+    //get previous token information
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+    if (!token) {
+      return NextResponse.json(
+        { error: "no auth token found" },
+        { status: 401 }
+      );
+    }
+    const { decodedPayload, errorMessage } = await verifyToken(token?.value!);
+
+    if (errorMessage || !decodedPayload) {
+      throw new Error("expired or invalid token");
+    }
+    const { id, name, cookieExpiryDate } = decodedPayload;
+
+    //clear previous Auth token from cookie
+    cookieStore.delete("token");
+
+    //create new jwt with id, name, and updated historyEnabled, expiryTime as payload
+    const newToken = await signToken(
+      { id, name, pauseHistory, cookieExpiryDate },
+      cookieExpiryDate
+    );
+
+    //place new jwt into cookie
+    cookieStore.set("token", newToken, {
+      httpOnly: true,
+      maxAge: timeLeft,
+      secure: process.env.NODE_ENV == "production",
+      path: "/",
+    });
+
+    return NextResponse.json(
+      {
+        message: `succesfully ${pauseHistory ? "resumed" : "paused"} history`,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "internal server error",
+      },
+      { status: 500 }
+    );
   }
-
-  //get the request body containing enable History flag
-  const { pauseHistory } = await req.json();
-
-  console.log(pauseHistory);
-
-  if (typeof pauseHistory !== "boolean") {
-    return NextResponse.json({ error: "bad request" }, { status: 400 });
-  }
-
-  //update the user with the new enable History flag
-  const user = await prisma.user.update({
-    where: { id: +userID },
-    data: { historyEnabled: pauseHistory },
-  });
-
-  //update the cookie with the new enable History flag, and set the expiry as time left
-  const timeLeft = await getTimeLeftSeconds();
-
-  //get previous token information
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
-  const { decodedPayload, errorMessage } = await verifyToken(token?.value!);
-  const { id, name, cookieExpiryDate } = decodedPayload;
-
-  //clear previous Auth token from cookie
-  cookieStore.set("token", "", { maxAge: 0, path: "/" });
-
-  //create new jwt with id, name, and updated historyEnabled, expiryTime as payload
-  const newToken = await signToken(
-    { id, name, pauseHistory, cookieExpiryDate },
-    cookieExpiryDate
-  );
-
-  //place new jwt into cookie
-  cookieStore.set("token", newToken, {
-    httpOnly: true,
-    maxAge: timeLeft,
-    secure: process.env.NODE_ENV == "production",
-    path: "/",
-  });
-
-  return NextResponse.json(
-    {
-      message: `succesfully ${pauseHistory ? "resumed" : "paused"} history`,
-    },
-    { status: 200 }
-  );
 }
