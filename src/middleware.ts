@@ -8,6 +8,7 @@ export async function middleware(req: NextRequest) {
     { path: "/api/blog/[slug]", methods: ["PATCH", "DELETE"] },
     { path: "/api/history", methods: ["GET", "DELETE"] },
     { path: "/api/history/[slug]", methods: ["DELETE"] },
+    { path: "/api/pause-history", methods: ["PATCH"] },
   ];
   const isProtectedRoute = protectedRoute.some((route) => {
     const routePattern = route.path.replace(/\[.*?\]/g, "[^/]+");
@@ -60,5 +61,6 @@ export const config = {
     "/api/user",
     "/api/user/:id*",
     "/api/history/:blogID*",
+    "/api/pause-history",
   ],
 };

@@ -8,14 +8,17 @@ interface userProps {
   about?: string;
   email?: string;
   role?: string;
+  historyEnabled?: boolean;
 }
 interface userContextProps {
   user: userProps | undefined;
+  isLoaded: boolean;
   refreshUser: (user?: userProps) => void;
 }
 //context
 const userContext = createContext<userContextProps>({
   user: undefined,
+  isLoaded: false,
   refreshUser: () => {},
 });
 
@@ -27,7 +30,9 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     name: undefined,
     email: undefined,
     about: undefined,
+    historyEnabled: undefined,
   });
+  const [isLoaded, setIsLoaded] = useState(false);
 
   //get user from server on initial page load/ page refresh
   useEffect(() => {
@@ -35,11 +40,16 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
   const fetchUser = async () => {
     try {
+      setIsLoaded(false);
       const res = await fetch("/api/user");
       const user = await res.json();
       setUser(user);
       console.log("fetched user: ", user);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoaded(true);
+    }
   };
 
   //call this to update user state
@@ -53,7 +63,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <userContext.Provider value={{ user, refreshUser }}>
+    <userContext.Provider value={{ user, refreshUser, isLoaded }}>
       {children}
     </userContext.Provider>
   );

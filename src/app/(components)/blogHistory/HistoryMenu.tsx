@@ -6,7 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { useToast } from "@/hooks/use-toast";
 import { RxCross2 } from "react-icons/rx";
 import clsx from "clsx";
-
+import { useUser } from "@/app/providers/UserProvider";
 //this is the data recieved from the server, but cleaned and organized for consumption
 interface historyRecord {
   id: number;
@@ -32,6 +32,8 @@ const HistoryMenu = ({
 }: HistoryMenuProps) => {
   const { toast } = useToast();
   const [searchInput, setSearchInput] = useState("");
+  const { user, isLoaded, refreshUser } = useUser();
+
   //function for when user hits enter on the search bar
   const handleSearchBarEnter = async (
     event: React.KeyboardEvent<HTMLInputElement>
@@ -51,7 +53,6 @@ const HistoryMenu = ({
         return;
       }
       const formattedHistory: historyRecord[] = await res.json();
-
       setShowSearch(true);
       setSearchResults(formattedHistory);
     } catch (error) {
@@ -62,66 +63,99 @@ const HistoryMenu = ({
     }
   };
 
+  const pauseHistory = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/pause-history`, {
+        method: "PATCH",
+        body: JSON.stringify({ pauseHistory: !user?.historyEnabled }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        toast({ title: "error", description: body.error });
+        return;
+      }
+      toast({ title: "success", description: body.message });
+      console.log(res);
+      refreshUser();
+    } catch (error) {
+      if (error instanceof Error)
+        toast({ title: "error", description: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    console.log("mounted history Menu");
+
     if (searchInput.length < 1 || !searchInput) {
       setShowSearch(false);
     }
   }, [searchInput]);
 
-  return (
-    <div className="flex flex-col gap-8 mb-14">
-      <form>
-        <div className="relative">
-          <input
-            name="keyword"
-            type="string"
-            placeholder="Search history"
-            value={searchInput}
-            className="pl-7 w-full outline-none bg-transparent border-b border-b-item-foreground
+  if (isLoaded && user?.id) {
+    return (
+      <div className="flex flex-col gap-8 mb-14">
+        <form>
+          <div className="relative">
+            <input
+              name="keyword"
+              type="string"
+              placeholder="Search history"
+              value={searchInput}
+              className="pl-7 w-full outline-none bg-transparent border-b border-b-item-foreground
             pb-1 placeholder-item-foreground focus:placeholder-item-foreground/70 focus:border-b-white 
             transition-all duration-200 focus:outline-none active:outline-none "
-            onKeyDown={(e) => {
-              e.key === "Enter" && handleSearchBarEnter(e);
-            }}
-            onChange={(e) => {
-              setSearchInput(e.currentTarget.value);
-            }}
-          />
-          <div className="absolute left-0 top-1/2 -translate-y-[60%]">
-            <FiSearch className="w-7 h-7 hover:text-white hover:cursor-pointer p-1" />
-          </div>
-          <div
-            className={clsx(
-              "absolute right-0 top-1/2 -translate-y-[60%]",
-              !searchInput && "hidden"
-            )}
-          >
-            <RxCross2
-              className="w-7 h-7 hover:text-white hover:cursor-pointer p-1"
-              onClick={() => {
-                setSearchInput("");
-                setShowSearch(false);
+              onKeyDown={(e) => {
+                e.key === "Enter" && handleSearchBarEnter(e);
+              }}
+              onChange={(e) => {
+                setSearchInput(e.currentTarget.value);
               }}
             />
+            <div className="absolute left-0 top-1/2 -translate-y-[60%]">
+              <FiSearch className="w-7 h-7 hover:text-white hover:cursor-pointer p-1" />
+            </div>
+            <div
+              className={clsx(
+                "absolute right-0 top-1/2 -translate-y-[60%]",
+                !searchInput && "hidden"
+              )}
+            >
+              <RxCross2
+                className="w-7 h-7 hover:text-white hover:cursor-pointer p-1"
+                onClick={() => {
+                  setSearchInput("");
+                  setShowSearch(false);
+                }}
+              />
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      <div className="flex flex-col gap-4">
-        <button
-          onClick={handleDeleteAll}
-          className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
-        >
-          <IoTrashOutline className="w-5 h-5" />
-          Clear all history
-        </button>
-        <button className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent">
-          <IoPause className="w-5 h-5" />
-          Pause all history
-        </button>
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={handleDeleteAll}
+            className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
+          >
+            <IoTrashOutline className="w-5 h-5" />
+            Clear all history
+          </button>
+          <button
+            onClick={pauseHistory}
+            className="flex items-center align-middle gap-2 w-fit rounded-full p-2 px-4 hover:bg-accent"
+          >
+            <IoPause className="w-5 h-5" />
+            Pause all history
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return <div>loading...</div>;
+  }
 };
 
 export default HistoryMenu;

@@ -32,8 +32,13 @@ export async function POST(req: NextRequest) {
     const cookieStore = await cookies();
     cookieStore.set("token", "", { maxAge: 0, path: "/" });
 
-    //create new jwt with id, name, and historyEnabled as payload
-    const token = await signToken({ id, name, historyEnabled }, "1h");
+    //create new jwt with id, name, and historyEnabled, expiryTime as payload
+    const cookieExpiryDate = new Date();
+    cookieExpiryDate.setHours(cookieExpiryDate.getHours() + 1);
+    const token = await signToken(
+      { id, name, historyEnabled, cookieExpiryDate },
+      cookieExpiryDate
+    );
 
     //place new jwt into cookie
     cookieStore.set("token", token, {

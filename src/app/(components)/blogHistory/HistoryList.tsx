@@ -7,7 +7,7 @@ import HistoryMenu from "./HistoryMenu";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 
-interface historyRecord {
+interface HistoryRecord {
   id: number;
   userID: number;
   blogID: number;
@@ -17,116 +17,126 @@ interface historyRecord {
   description: string | null;
 }
 
-interface historyListProps {
-  historyList: historyRecord[];
+interface HistoryListProps {
+  historyList: HistoryRecord[];
 }
 
-const HistoryList = ({ historyList }: historyListProps) => {
+const HistoryList = ({ historyList }: HistoryListProps) => {
   const { toast } = useToast();
   const [history, setHistory] = useState(historyList);
   const [showSearch, setShowSearch] = useState(false);
-  const [searchResults, setSearchResults] = useState<historyRecord[]>([]);
+  const [searchResults, setSearchResults] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const HandleDelete = async (blogID: number) => {
+  const handleDelete = async (blogID: number) => {
     try {
       setLoading(true);
       const res = await fetch(`/api/history/${blogID}`, { method: "DELETE" });
 
       if (res.status === 400) {
         toast({
-          title: "bad request",
-          description: "could not delete history for this blog!",
+          title: "Bad request",
+          description: "Could not delete history for this blog!",
         });
         return;
       }
       if (!res.ok) {
-        toast({ title: "error", description: "an unexpected error happened" });
+        toast({ title: "Error", description: "An unexpected error happened" });
         return;
       }
 
-      setHistory((records) => {
-        return records.filter((record) => {
-          return record.blogID !== blogID;
-        });
-      });
+      setHistory((records) =>
+        records.filter((record) => record.blogID !== blogID)
+      );
 
       const { message } = await res.json();
-      toast({ title: "history removed", description: message });
+      toast({ title: "History removed", description: message });
     } catch (error) {
       console.log(error);
-      toast({ title: "error", description: "an unexpected error happened" });
+      toast({ title: "Error", description: "An unexpected error happened" });
     } finally {
       setLoading(false);
     }
   };
-  const HandleDeleteAll = async () => {
+
+  const handleDeleteAll = async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/history`, { method: "DELETE" });
+
       if (res.status === 404) {
         toast({
-          title: "no blogs deleted",
-          description: "there are no history left for user",
+          title: "No blogs deleted",
+          description: "There are no history left for user",
         });
         return;
       }
       if (!res.ok) {
-        toast({ title: "error", description: "an unexpected error happened" });
+        toast({ title: "Error", description: "An unexpected error happened" });
         return;
       }
+
       setHistory([]);
       const { message } = await res.json();
-      toast({ title: "history removed", description: message });
+      toast({ title: "History removed", description: message });
     } catch (error) {
       console.log(error);
-      toast({ title: "error", description: "an unexpected error happened" });
+      toast({ title: "Error", description: "An unexpected error happened" });
     } finally {
       setLoading(false);
     }
   };
+
+  const renderHistoryCards = () => {
+    let recordsToShow;
+    if (showSearch && searchResults.length > 0) {
+      recordsToShow = searchResults;
+    } else if (showSearch && !searchResults.length) {
+      return (
+        <div className="w-fit m-auto p-4">no results match your search</div>
+      );
+    } else {
+      recordsToShow = history;
+    }
+    return (
+      <>
+        <IllustratedMessage
+          src="/SnowmanPokeTree.svg"
+          className={clsx("mt-0", historyList.length >= 1 && "hidden")}
+        >
+          You did not read anything
+        </IllustratedMessage>
+
+        {recordsToShow.map((record) => (
+          <HistoryCard
+            key={record.id}
+            record={record}
+            HandleDelete={handleDelete}
+          />
+        ))}
+      </>
+    );
+  };
+
   return (
     <>
-      <h1 className="text-[2rem] mb-8">History</h1>
+      <h1 className="text-2xl mb-8">History</h1>
       <HistoryMenu
-        handleDeleteAll={HandleDeleteAll}
+        handleDeleteAll={handleDeleteAll}
         setSearchResults={setSearchResults}
         setLoading={setLoading}
         setShowSearch={setShowSearch}
       />
+
       <div className="p-4 sticky top-0">
         <ImSpinner8
           className={clsx(
-            "mr-0 ml-auto animate-spin w-7 h-7 ",
+            "mr-0 ml-auto animate-spin w-7 h-7",
             !loading && "hidden"
           )}
         />
       </div>
-
-      <IllustratedMessage
-        src="/SnowmanPokeTree.svg"
-        className={clsx("mt-0", historyList.length >= 1 && "hidden")}
-      >
-        you did not read anything
-      </IllustratedMessage>
-
-      {!showSearch
-        ? history.map((record: historyRecord) => (
-            <HistoryCard
-              key={record.id}
-              record={record}
-              HandleDelete={HandleDelete}
-            />
-          ))
-          ? searchResults && showSearch
-          : searchResults.map((record: historyRecord) => (
-              <HistoryCard
-                key={record.id}
-                record={record}
-                HandleDelete={HandleDelete}
-              />
-            ))
-        : "your search did not yield results"}
+      {renderHistoryCards()}
     </>
   );
 };
