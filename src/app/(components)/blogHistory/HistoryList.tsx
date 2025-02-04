@@ -25,7 +25,7 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
   const { toast } = useToast();
   const [history, setHistory] = useState(historyList);
   const [showSearch, setShowSearch] = useState(false);
-  const [searchResults, setSearchResults] = useState<HistoryRecord[]>([]);
+  const [searchResults, setSearchResults] = useState<HistoryRecord[]>();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async (blogID: number) => {
@@ -47,6 +47,9 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
 
       setHistory((records) =>
         records.filter((record) => record.blogID !== blogID)
+      );
+      setSearchResults((records) =>
+        records?.filter((record) => record.blogID !== blogID)
       );
 
       const { message } = await res.json();
@@ -89,9 +92,12 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
 
   const renderHistoryCards = () => {
     let recordsToShow;
-    if (showSearch && searchResults.length > 0) {
+    if (showSearch) {
+      console.log(searchResults);
+    }
+    if (showSearch && searchResults) {
       recordsToShow = searchResults;
-    } else if (showSearch && !searchResults.length) {
+    } else if (showSearch && !searchResults) {
       return (
         <div className="w-fit m-auto p-4">no results match your search</div>
       );

@@ -34,7 +34,7 @@ const HistoryCard = ({ record, HandleDelete }: HistoryCardProp) => {
       </CardPane>
       <CardPane className="flex-[3]">
         <CardHeader className="justify-between">
-          <CardTitle href={`/blog/${record.id}`}>{record.title}</CardTitle>
+          <CardTitle href={`/blog/${record.blogID}`}>{record.title}</CardTitle>
           <RxCross2
             className="w-6 h-6 mt-1 text-item-foreground 
     hover:text-white hover:cursor-pointer  rounded-full hover:bg-[#27272a]"

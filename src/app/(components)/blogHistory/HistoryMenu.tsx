@@ -19,7 +19,9 @@ interface HistoryRecord {
 }
 interface HistoryMenuProps {
   handleDeleteAll: () => Promise<void>;
-  setSearchResults: React.Dispatch<React.SetStateAction<HistoryRecord[]>>;
+  setSearchResults: React.Dispatch<
+    React.SetStateAction<HistoryRecord[] | undefined>
+  >;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -47,9 +49,14 @@ const HistoryMenu = ({
         });
         return;
       }
-      const formattedHistory: HistoryRecord[] = await res.json();
-      setShowSearch(true);
-      setSearchResults(formattedHistory);
+      const { formattedHistory } = await res.json();
+      if (!formattedHistory) {
+        setShowSearch(true);
+        setSearchResults(undefined);
+      } else {
+        setShowSearch(true);
+        setSearchResults(formattedHistory);
+      }
     } catch (error) {
       if (error instanceof Error)
         toast({ title: "error", description: error.message });
@@ -87,7 +94,9 @@ const HistoryMenu = ({
   };
 
   useEffect(() => {
-    setShowSearch(searchInput?.length > 0);
+    if (searchInput?.length <= 0) {
+      setShowSearch(false);
+    }
   }, [searchInput]);
 
   if (!isLoaded || !user?.id) {
