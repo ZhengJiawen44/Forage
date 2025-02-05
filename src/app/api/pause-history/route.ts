@@ -13,8 +13,8 @@ export async function PATCH(req: NextRequest) {
     }
 
     //get the request body containing enable History flag
-    const { enableHistory } = await req.json();
-    if (typeof enableHistory !== "boolean") {
+    const { historyEnabled } = await req.json();
+    if (typeof historyEnabled !== "boolean") {
       return NextResponse.json(
         {
           error: "bad request - pauseHistory is required and must be a boolean",
@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest) {
     //update the user with the new enable History flag. throws an error when update fails
     await prisma.user.update({
       where: { id: +userID },
-      data: { historyEnabled: enableHistory },
+      data: { historyEnabled: historyEnabled },
     });
 
     //update the cookie with the new enable History flag, and set the expiry as time left
@@ -54,7 +54,7 @@ export async function PATCH(req: NextRequest) {
 
     //create new jwt with id, name, and updated historyEnabled, expiryTime as payload
     const newToken = await signToken(
-      { id, name, enableHistory, cookieExpiryDate },
+      { id, name, historyEnabled, cookieExpiryDate },
       cookieExpiryDate
     );
 
@@ -68,7 +68,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: `succesfully ${enableHistory ? "resumed" : "paused"} history`,
+        message: `succesfully ${historyEnabled ? "resumed" : "paused"} history`,
       },
       { status: 200 }
     );

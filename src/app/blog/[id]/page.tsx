@@ -9,7 +9,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
 import { format } from "@/lib/getFormattedDay";
-
 interface PageProps {
   params: {
     id: string;
@@ -39,13 +38,20 @@ const page = async ({ params }: PageProps) => {
       }
 
       //did user enable history?
-      if (decodedPayload.enableHistory === true) {
+      console.log(decodedPayload);
+
+      if (decodedPayload.historyEnabled === true) {
         await prisma.history.create({
           data: {
             blogID: blog.id,
             authorID: decodedPayload.id,
             readAt: new Date(),
           },
+        });
+
+        // Revalidate cache via API (outside render)
+        fetch("http://localhost:3000/api/revalidateHistory", {
+          method: "POST",
         });
       }
     }

@@ -5,7 +5,6 @@ import { IllustratedMessage } from "@/app/(components)/index";
 import HistoryCard from "./HistoryCard";
 import HistoryMenu from "./HistoryMenu";
 import { useToast } from "@/hooks/use-toast";
-import { useMemo } from "react";
 import clsx from "clsx";
 
 interface HistoryRecord {
@@ -102,14 +101,15 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
     }
     return (
       <>
-        {history.length < 1 ||
-          (showSearch && recordsToShow.length < 1 && (
-            <IllustratedMessage src="/SnowmanPokeTree.svg" className="mt-0">
-              {history.length < 1
-                ? "there are no history available"
-                : "no result that matches your search"}
-            </IllustratedMessage>
-          ))}
+        {history.length < 1 || (showSearch && recordsToShow.length < 1) ? (
+          <IllustratedMessage src="/SnowmanPokeTree.svg" className="mt-0">
+            {history.length < 1
+              ? "there are no history available"
+              : "no result that matches your search"}
+          </IllustratedMessage>
+        ) : (
+          ""
+        )}
 
         {recordsToShow.map((record) => {
           const currDate = record.readAt;
@@ -157,8 +157,7 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
     return searchResults;
   }
   function renderHistory() {
-    const recordsToShow = sortHistory(history);
-    return recordsToShow;
+    return history;
   }
   function getDisplayDate(currDate: Date, duplicateDate: Date) {
     let newDuplicateDate = duplicateDate;
@@ -171,18 +170,6 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
       displayDate = "";
     }
     return { displayDate, newDuplicateDate };
-  }
-  function sortHistory(history: HistoryRecord[]) {
-    console.log("sorting history...");
-
-    return history.sort((a, b) => {
-      if (a.readAt > b.readAt) {
-        return -1;
-      } else if (a.readAt < b.readAt) {
-        return 1;
-      }
-      return 0;
-    });
   }
 };
 

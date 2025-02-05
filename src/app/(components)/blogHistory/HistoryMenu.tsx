@@ -72,7 +72,7 @@ const HistoryMenu = ({
       setLoading(true);
       const res = await fetch(`/api/pause-history`, {
         method: "PATCH",
-        body: JSON.stringify({ enableHistory: !user?.historyEnabled }),
+        body: JSON.stringify({ historyEnabled: !user?.historyEnabled }),
       });
       const body = await res.json();
       if (!res.ok) {

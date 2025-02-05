@@ -4,6 +4,43 @@ import { HistoryList } from "@/app/(components)/index";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
+import { unstable_cache } from "next/cache";
+
+const getUserHistory = unstable_cache(
+  async (userID: number) => {
+    console.log("db queried for history");
+    //query user's history
+    const userHistory = await prisma.history.findMany({
+      where: { authorID: userID },
+      include: { blog: true },
+    });
+    //map the history list
+    const historyList = userHistory.map((obj) => {
+      const blog = obj.blog;
+      return {
+        id: obj.id,
+        userID: obj.authorID,
+        blogID: obj.blogID,
+        readAt: obj.readAt,
+        title: blog.title,
+        thumbnail: blog.thumbnail,
+        description: blog.description,
+      };
+    });
+    //sort the history list
+    historyList.sort((a, b) => {
+      if (a.readAt.getTime() > b.readAt.getTime()) {
+        return -1;
+      } else if (a.readAt.getTime() < b.readAt.getTime()) {
+        return 1;
+      }
+      return 0;
+    });
+    return historyList;
+  },
+  ["historyKey"],
+  { tags: ["history"], revalidate: 3600 }
+);
 
 const page = async () => {
   let authorize = false;
@@ -23,25 +60,8 @@ const page = async () => {
     }
     authorize = true;
 
-    //get the user's history
-    const userHistory = await prisma.history.findMany({
-      where: { authorID: +decodedPayload.id },
-      include: { blog: true },
-    });
-
-    const historyList = userHistory.map((obj) => {
-      const blog = obj.blog;
-      return {
-        id: obj.id,
-        userID: obj.authorID,
-        blogID: obj.blogID,
-        readAt: obj.readAt,
-        title: blog.title,
-        thumbnail: blog.thumbnail,
-        description: blog.description,
-      };
-    });
-    //return history
+    //get the cached user's history
+    const historyList = await getUserHistory(+decodedPayload.id);
     return (
       <>
         <HistoryList historyList={historyList} />
