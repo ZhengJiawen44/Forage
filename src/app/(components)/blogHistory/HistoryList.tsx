@@ -5,6 +5,7 @@ import { IllustratedMessage } from "@/app/(components)/index";
 import HistoryCard from "./HistoryCard";
 import HistoryMenu from "./HistoryMenu";
 import { useToast } from "@/hooks/use-toast";
+import { useMemo } from "react";
 import clsx from "clsx";
 
 interface HistoryRecord {
@@ -89,37 +90,42 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
       setLoading(false);
     }
   };
-
-  const renderHistoryCards = () => {
+  const renderContent = () => {
     let recordsToShow;
-    if (showSearch) {
-      console.log(searchResults);
-    }
+    let duplicateDate = new Date(0);
+    duplicateDate.setHours(0, 0, 0, 0);
+
     if (showSearch && searchResults) {
-      recordsToShow = searchResults;
-    } else if (showSearch && !searchResults) {
-      return (
-        <div className="w-fit m-auto p-4">no results match your search</div>
-      );
+      recordsToShow = renderSearchResults();
     } else {
-      recordsToShow = history;
+      recordsToShow = renderHistory();
     }
     return (
       <>
-        <IllustratedMessage
-          src="/SnowmanPokeTree.svg"
-          className={clsx("mt-0", historyList.length >= 1 && "hidden")}
-        >
-          You did not read anything
-        </IllustratedMessage>
+        {history.length < 1 ||
+          (showSearch && recordsToShow.length < 1 && (
+            <IllustratedMessage src="/SnowmanPokeTree.svg" className="mt-0">
+              {history.length < 1
+                ? "there are no history available"
+                : "no result that matches your search"}
+            </IllustratedMessage>
+          ))}
 
-        {recordsToShow.map((record) => (
-          <HistoryCard
-            key={record.id}
-            record={record}
-            HandleDelete={handleDelete}
-          />
-        ))}
+        {recordsToShow.map((record) => {
+          const currDate = record.readAt;
+
+          const { displayDate, newDuplicateDate } = getDisplayDate(
+            new Date(currDate),
+            duplicateDate
+          );
+          duplicateDate = newDuplicateDate;
+          return (
+            <React.Fragment key={record.id}>
+              <div>{displayDate}</div>
+              <HistoryCard record={record} HandleDelete={handleDelete} />
+            </React.Fragment>
+          );
+        })}
       </>
     );
   };
@@ -142,9 +148,42 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
           )}
         />
       </div>
-      {renderHistoryCards()}
+      {renderContent()}
     </>
   );
+
+  function renderSearchResults() {
+    if (!searchResults) return [];
+    return searchResults;
+  }
+  function renderHistory() {
+    const recordsToShow = sortHistory(history);
+    return recordsToShow;
+  }
+  function getDisplayDate(currDate: Date, duplicateDate: Date) {
+    let newDuplicateDate = duplicateDate;
+    let displayDate;
+    currDate.setHours(0, 0, 0, 0);
+    if (currDate.getTime() !== newDuplicateDate.getTime()) {
+      displayDate = currDate.toDateString();
+      newDuplicateDate = currDate;
+    } else {
+      displayDate = "";
+    }
+    return { displayDate, newDuplicateDate };
+  }
+  function sortHistory(history: HistoryRecord[]) {
+    console.log("sorting history...");
+
+    return history.sort((a, b) => {
+      if (a.readAt > b.readAt) {
+        return -1;
+      } else if (a.readAt < b.readAt) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 };
 
 export default HistoryList;

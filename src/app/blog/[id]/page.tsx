@@ -39,7 +39,7 @@ const page = async ({ params }: PageProps) => {
       }
 
       //did user enable history?
-      if (decodedPayload.pauseHistory === true) {
+      if (decodedPayload.enableHistory === true) {
         await prisma.history.create({
           data: {
             blogID: blog.id,

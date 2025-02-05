@@ -5,6 +5,7 @@ import { Sidebar } from "@/app/(components)";
 import Dashboard from "@/app/(components)/dashboard/index";
 import { Toaster } from "./(components)/reusable-ui/toaster";
 import { UserProvider } from "./providers/UserProvider";
+``;
 import { getUserTokenString } from "@/lib/cookies/getUserTokenString";
 export const metadata: Metadata = {
   title: "forage",

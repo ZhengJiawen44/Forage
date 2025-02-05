@@ -16,11 +16,12 @@ export async function getTimeLeftSeconds(): Promise<number> {
   }
   //get the remaining time
   const currDate = new Date();
-  const expiryDate = new Date(decodedPayload.cookieExpiryTime);
+  const expiryDate = new Date(decodedPayload.cookieExpiryDate);
   if (isNaN(expiryDate.getTime())) {
     throw new Error("Invalid cookie expiry time");
   }
   const timeLeft = Math.abs((currDate.getTime() - expiryDate.getTime()) / 1000);
+  console.log("time left in second: ", timeLeft);
 
   return timeLeft;
 }

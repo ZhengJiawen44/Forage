@@ -49,7 +49,9 @@ const HistoryMenu = ({
         });
         return;
       }
-      const { formattedHistory } = await res.json();
+      const { formattedHistory } = (await res.json()) as {
+        formattedHistory: HistoryRecord[];
+      };
       if (!formattedHistory) {
         setShowSearch(true);
         setSearchResults(undefined);
@@ -70,13 +72,13 @@ const HistoryMenu = ({
       setLoading(true);
       const res = await fetch(`/api/pause-history`, {
         method: "PATCH",
-        body: JSON.stringify({ pauseHistory: !user?.historyEnabled }),
+        body: JSON.stringify({ enableHistory: !user?.historyEnabled }),
       });
       const body = await res.json();
       if (!res.ok) {
         toast({
           title: `${res.status} error`,
-          description: "an unknown error occured",
+          description: body.error,
         });
         return;
       }

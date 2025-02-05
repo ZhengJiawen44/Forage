@@ -13,8 +13,8 @@ export async function PATCH(req: NextRequest) {
     }
 
     //get the request body containing enable History flag
-    const { pauseHistory } = await req.json();
-    if (typeof pauseHistory !== "boolean") {
+    const { enableHistory } = await req.json();
+    if (typeof enableHistory !== "boolean") {
       return NextResponse.json(
         {
           error: "bad request - pauseHistory is required and must be a boolean",
@@ -23,10 +23,10 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    //update the user with the new enable History flag
+    //update the user with the new enable History flag. throws an error when update fails
     await prisma.user.update({
       where: { id: +userID },
-      data: { historyEnabled: pauseHistory },
+      data: { historyEnabled: enableHistory },
     });
 
     //update the cookie with the new enable History flag, and set the expiry as time left
@@ -54,7 +54,7 @@ export async function PATCH(req: NextRequest) {
 
     //create new jwt with id, name, and updated historyEnabled, expiryTime as payload
     const newToken = await signToken(
-      { id, name, pauseHistory, cookieExpiryDate },
+      { id, name, enableHistory, cookieExpiryDate },
       cookieExpiryDate
     );
 
@@ -68,17 +68,19 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: `succesfully ${pauseHistory ? "resumed" : "paused"} history`,
+        message: `succesfully ${enableHistory ? "resumed" : "paused"} history`,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
+    if (error instanceof Error) console.log(error.stack);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "internal server error",
+        error: error instanceof Error ? error.name : "internal server error",
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
   }
 }
