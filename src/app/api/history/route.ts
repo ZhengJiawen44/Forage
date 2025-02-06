@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prismaClient";
 import { NextResponse, NextRequest } from "next/server";
+import { revalidateTag } from "next/cache";
 export async function GET(req: NextRequest) {
   try {
     // get the search word query params
@@ -70,6 +71,7 @@ export async function DELETE(req: NextRequest) {
         { status: 500 }
       );
     }
+    revalidateTag("history");
     return NextResponse.json({ message: "All history cleared" });
   } catch (error) {
     console.log(error);

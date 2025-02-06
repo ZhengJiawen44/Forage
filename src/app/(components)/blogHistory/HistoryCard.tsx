@@ -23,7 +23,7 @@ interface HistoryCardProp {
 }
 const HistoryCard = ({ record, HandleDelete }: HistoryCardProp) => {
   return (
-    <CardContainer className="pb-0">
+    <CardContainer>
       <CardPane className="flex-[1]">
         {record.thumbnail && (
           <img

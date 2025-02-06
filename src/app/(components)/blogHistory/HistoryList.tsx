@@ -121,7 +121,9 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
           duplicateDate = newDuplicateDate;
           return (
             <React.Fragment key={record.id}>
-              <div>{displayDate}</div>
+              <div className={displayDate ? "py-4 pb-7 text-2xl" : ""}>
+                {displayDate}
+              </div>
               <HistoryCard record={record} HandleDelete={handleDelete} />
             </React.Fragment>
           );
@@ -132,7 +134,7 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
 
   return (
     <>
-      <h1 className="text-2xl mb-8">History</h1>
+      <h1 className="text-4xl font-semibold mb-8">History</h1>
       <HistoryMenu
         handleDeleteAll={handleDeleteAll}
         setSearchResults={setSearchResults}
@@ -160,16 +162,82 @@ const HistoryList = ({ historyList }: HistoryListProps) => {
     return history;
   }
   function getDisplayDate(currDate: Date, duplicateDate: Date) {
+    console.log(currDate);
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     let newDuplicateDate = duplicateDate;
     let displayDate;
     currDate.setHours(0, 0, 0, 0);
+
     if (currDate.getTime() !== newDuplicateDate.getTime()) {
-      displayDate = currDate.toDateString();
+      //if date is unique
+      const weekDates = getWeekDates();
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const isThisWeek = weekDates.some((date) => {
+        return date.getTime() === currDate.getTime();
+      });
+      if (isThisWeek) {
+        if (currDate.getDate() === today.getDate()) {
+          displayDate = "Today";
+        } else if (currDate.getDate() === yesterday.getDate()) {
+          displayDate = "Yesterday";
+        } else {
+          displayDate = days[currDate.getDay()];
+        }
+      } else {
+        displayDate = `${
+          monthNames[currDate.getMonth()]
+        } ${currDate.getDate()}, ${currDate.getFullYear()}`;
+      }
+
       newDuplicateDate = currDate;
     } else {
       displayDate = "";
     }
     return { displayDate, newDuplicateDate };
+  }
+
+  function getWeekDates() {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+    // Adjust to get Monday (if Sunday, go back 6 days, if Monday go back 0, etc)
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
+
+    // Create array of 7 days starting from Monday
+    const weekDates = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      //truly timeless date comparison
+      date.setHours(0, 0, 0, 0);
+      return date;
+    });
+
+    return weekDates;
   }
 };
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prismaClient";
+import { revalidateTag } from "next/cache";
 
 interface RouteParams {
   params: {
@@ -21,6 +22,7 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     const deletedEntries = await prisma.history.deleteMany({
       where: { blogID: +blogID, authorID: +userID },
     });
+    revalidateTag("history");
 
     if (deletedEntries.count === 0) {
       return NextResponse.json(
@@ -35,7 +37,7 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       );
     }
     return NextResponse.json(
-      { message: "succesfully deleted all history for this blog" },
+      { message: "All views of this video removed from history" },
       { status: 200 }
     );
   } catch (error) {
