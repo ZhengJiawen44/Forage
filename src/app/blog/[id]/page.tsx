@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
 import { format } from "@/lib/getFormattedDay";
+import { Tracker } from "@/app/(components)";
 interface PageProps {
   params: {
     id: string;
@@ -71,6 +72,7 @@ const page = async ({ params }: PageProps) => {
         thumbnail={blog.thumbnail}
         description={blog.description}
       />
+      <Tracker blogID={+id} />
       <div
         className="md:w-[80%] m-auto h-fit pb-10 mb-10 rounded-[5px] 
        p-10 font-lora"

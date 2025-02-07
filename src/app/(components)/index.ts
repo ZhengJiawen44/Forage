@@ -10,5 +10,5 @@ export { default as FailedVerification } from "./auth/FailedVerification";
 export { default as ProfileContent } from "./profileContents/index";
 export { default as IllustratedMessage } from "./reusable-ui/IllustratedMessage";
 export { default as HistoryList } from "./blogHistory/HistoryList";
-
+export { default as Tracker } from "./blogPage/Tracker";
 export * from "./reusable-ui/blogCard";
