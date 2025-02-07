@@ -23,13 +23,15 @@ export async function POST(req: NextRequest) {
         where: { id: blogID },
         data: { views: { increment: 1 } },
       });
-      console.log("logged has views!");
+      // console.log("logged has views!");
       return NextResponse.json({ status: 200 });
     } else if (read?.hasRead === true) {
+      console.log(read?.hasRead);
       let durationInHours = read?.duration / 3600; //convert to hours
       console.log(durationInHours);
-      durationInHours = Math.round(read.duration * 100) / 100; //round to 2 decimal places
+      durationInHours = +durationInHours.toFixed(2); //round to 2 decimal places
       //debugging purposes
+      console.log(durationInHours);
 
       await prisma.blog.update({
         where: { id: blogID },
@@ -38,7 +40,7 @@ export async function POST(req: NextRequest) {
           hoursRead: { increment: durationInHours },
         },
       });
-      console.log("logged has read!");
+      // console.log("logged has read!");
       return NextResponse.json({ status: 200 });
     }
 
