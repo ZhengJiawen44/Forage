@@ -44,6 +44,7 @@ model Blog {
   authorID Int
   views Int @default(0)
   reads Int @default(0)
+  hoursRead Decimal @default(0.0)
   history History[]
 }
 

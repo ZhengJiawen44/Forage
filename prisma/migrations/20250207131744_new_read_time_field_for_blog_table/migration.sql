@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Blog" ADD COLUMN     "hoursRead" DECIMAL(65,30) NOT NULL DEFAULT 0;

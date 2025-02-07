@@ -9,7 +9,6 @@ const Tracker = ({ blogID }: TrackerProps) => {
   let idleStart = new Date().getTime();
   let idleTotal = 0;
   const IDLE_THRESHOLD = 39 * 1000; //in milliseconds
-  const TIME_TO_READ = 120 * 1000; //dummy data for time required to read this blog
 
   const startTime = new Date().getTime();
   // Reset idle timer on user activity
@@ -28,8 +27,8 @@ const Tracker = ({ blogID }: TrackerProps) => {
     try {
       //on page load, a view is made
       navigator.sendBeacon(
-        "/api/anlaytics",
-        JSON.stringify({ view: { hasViewed: true } })
+        "/api/analytics",
+        JSON.stringify({ blogID, view: { hasViewed: true } })
       );
 
       //on scoll, the idle time staring point is reset to NOW, and previous idle time is calculated
@@ -62,21 +61,23 @@ const Tracker = ({ blogID }: TrackerProps) => {
         clearInterval(intervalID);
         const endTime = new Date().getTime();
         const totalTimeInSeconds = (endTime - startTime) / 1000;
-        const activeTimeInSeconds = totalTimeInSeconds - idleTotal / 1000;
+        const idleTotalSeconds = idleTotal / 1000;
+        const activeTimeInSeconds = totalTimeInSeconds - idleTotalSeconds;
 
         // Ensure we don't send negative time
         const finalActiveTime = Math.max(0, activeTimeInSeconds);
 
-        if (finalActiveTime > 50) {
-          //on leaving the page, has read is and it's duration in seconds is sent to the backend
-          navigator.sendBeacon(
-            "/api/analytics",
-            JSON.stringify({
-              blogID,
-              read: { hasRead: true, duration: finalActiveTime },
-            })
-          );
-        }
+        //on leaving the page, has read and it's duration in seconds is sent to the backend
+        navigator.sendBeacon(
+          "/api/analytics",
+          JSON.stringify({
+            blogID,
+            read: {
+              hasRead: true,
+              duration: finalActiveTime,
+            },
+          })
+        );
       };
     } catch (error) {
       console.log(error);
