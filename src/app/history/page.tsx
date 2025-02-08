@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
 import { unstable_cache } from "next/cache";
-
+import { requireAuth } from "@/lib/authorization/requireAuth";
 const getUserHistory = unstable_cache(
   async (userID: number) => {
     console.log("db queried for history");

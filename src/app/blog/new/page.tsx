@@ -1,14 +1,9 @@
 import React from "react";
 import { BlogForm } from "@/app/(components)";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/authorization/requireAuth";
 const page = async () => {
   //is a user logged in?
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
-  if (!token) {
-    redirect("/auth/login");
-  }
+  await requireAuth("/auth/login");
   return (
     <>
       <BlogForm />

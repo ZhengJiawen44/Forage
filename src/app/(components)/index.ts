@@ -11,4 +11,5 @@ export { default as ProfileContent } from "./profileContents/index";
 export { default as IllustratedMessage } from "./reusable-ui/IllustratedMessage";
 export { default as HistoryList } from "./blogHistory/HistoryList";
 export { default as Tracker } from "./blogPage/Tracker";
+export { default as GraphContainer } from "./analytics/GraphContainer";
 export * from "./reusable-ui/blogCard";

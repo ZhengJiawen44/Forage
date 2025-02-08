@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -42,10 +36,11 @@ model Blog {
   createdAt DateTime @default(now())
   author User @relation(fields:[authorID], references: [id]) 
   authorID Int
-  views Int @default(0)
-  reads Int @default(0)
-  hoursRead Decimal @default(0.0)
+  views Int @default(0)        // Keep these as running totals
+  reads Int @default(0)        // Keep these as running totals
+  hoursRead Decimal @default(0.0) // Keep these as running totals
   history History[]
+  analytics BlogAnalytics[]    // New relation to analytics
 }
 
 model History {
@@ -55,4 +50,17 @@ model History {
   reader User @relation(fields:[authorID], references: [id]) 
   authorID Int
   readAt DateTime
+}
+
+model BlogAnalytics {
+  id Int @id @default(autoincrement())
+  blog Blog @relation(fields: [blogID], references:[id])
+  blogID Int
+  date DateTime
+  views Int @default(0)
+  reads Int @default(0)
+  totalHoursRead Decimal @default(0.0)
+  averageHoursRead Decimal @default(0.0)
+
+  @@unique([blogID, date])    // Ensure one record per blog per date
 }

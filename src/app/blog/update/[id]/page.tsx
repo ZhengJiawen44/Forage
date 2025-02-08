@@ -4,20 +4,10 @@ import { BlogForm } from "@/app/(components)";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyToken } from "@/lib/token/verifyToken";
-
+import { requireAuth } from "@/lib/authorization/requireAuth";
 const page = async ({ params }: { params: { id: number } }) => {
   //get the user
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
-  if (!token?.value) {
-    console.log("403 unauthorized");
-    redirect("/");
-  }
-  const { errorMessage, decodedPayload } = await verifyToken(token.value);
-  if (errorMessage) {
-    console.log("403 unauthorized");
-    redirect("/");
-  }
+  const decodedPayload = await requireAuth("/");
 
   //get the specific blog
   const { id } = await params;
