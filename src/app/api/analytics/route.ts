@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prismaClient";
-
+import { Decimal } from "@prisma/client/runtime/library";
 interface View {
   hasViewed: boolean;
 }
@@ -17,22 +17,42 @@ export async function POST(req: NextRequest) {
   if (!blogID) {
     return NextResponse.json({ status: 400 });
   }
+  const today = new Date();
   try {
     if (view?.hasViewed === true) {
+      //update the running counts on the blog table
       await prisma.blog.update({
         where: { id: blogID },
         data: { views: { increment: 1 } },
       });
+
+      //upsert today's view count in the blogAnalytics table
+      await prisma.blogAnalytics.upsert({
+        where: {
+          blogID_date: {
+            // Uses the @@unique constraint
+            blogID: blogID,
+            date: today,
+          },
+        },
+        create: {
+          blogID: blogID,
+          date: today,
+          views: 1,
+        },
+        update: {
+          views: { increment: 1 },
+        },
+      });
       // console.log("logged has views!");
       return NextResponse.json({ status: 200 });
-    } else if (read?.hasRead === true) {
+    }
+    if (read?.hasRead === true) {
       console.log(read?.hasRead);
       let durationInHours = read?.duration / 3600; //convert to hours
-      console.log(durationInHours);
       durationInHours = +durationInHours.toFixed(2); //round to 2 decimal places
-      //debugging purposes
-      console.log(durationInHours);
 
+      //update the running read counts and read time on the blog table
       await prisma.blog.update({
         where: { id: blogID },
         data: {
@@ -40,6 +60,25 @@ export async function POST(req: NextRequest) {
           hoursRead: { increment: durationInHours },
         },
       });
+      //upsert today's read count and read times for the blog in blogs analytics table
+      await prisma.blogAnalytics.upsert({
+        where: {
+          blogID_date: {
+            // Uses the @@unique constraint
+            blogID: blogID,
+            date: today,
+          },
+        },
+        create: {
+          blogID: blogID,
+          date: today,
+          reads: 1,
+        },
+        update: {
+          reads: { increment: read.duration },
+        },
+      });
+
       // console.log("logged has read!");
       return NextResponse.json({ status: 200 });
     }
