@@ -5,8 +5,8 @@ import { Sidebar } from "@/app/(components)";
 import Dashboard from "@/app/(components)/dashboard/index";
 import { Toaster } from "./(components)/reusable-ui/toaster";
 import { UserProvider } from "./providers/UserProvider";
-``;
 import { getUserTokenString } from "@/lib/cookies/getUserTokenString";
+import QueryProvider from "@/app/providers/QueryProvider"
 export const metadata: Metadata = {
   title: "forage",
   description: "forage is a blog site dedicated to developers",
@@ -30,6 +30,8 @@ const getUser = async (cookieString: string) => {
   return user;
 };
 
+
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -42,6 +44,7 @@ export default async function RootLayout({
       <body
         className={`${montserrat.className}  antialiased bg-item lg:bg-background`}
       >
+        <QueryProvider>
         <UserProvider initialUser={user}>
           <Dashboard />
           <div className="block content-center lg:flex h-screen lg:gap-[2rem] md:p-5 xl:px-28 2xl:px-64 min-h-screen mt-10 2xl:mt-20">
@@ -52,6 +55,7 @@ export default async function RootLayout({
             <Sidebar />
           </div>
         </UserProvider>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
