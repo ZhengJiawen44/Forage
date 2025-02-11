@@ -6,11 +6,14 @@ import { MdOutlineAvTimer } from "react-icons/md";
 import clsx from "clsx";
 import { AnalyticRecord } from "@/types";
 import { cn } from "@/lib/utils";
-
+import dynamic from "next/dynamic";
+const Graph = dynamic(() => import("./Graph"), { ssr: false });
 interface Analytics {
   analytics: AnalyticRecord[];
 }
 const GraphContainer = ({ analytics }: Analytics) => {
+  console.log(analytics);
+
   function panelReducer(
     state: string,
     action: { type: "pageViews" | "readCount" | "averageReadTime" }
@@ -27,46 +30,49 @@ const GraphContainer = ({ analytics }: Analytics) => {
   const [activeTab, dispatchTab] = useReducer(panelReducer, "pageViews");
 
   return (
-    <div className="w-full border h-80 rounded-2xl">
-      <div className="w-ful flex flex-wrap">
-        <PanelButton
-          className={clsx(
-            "rounded-tl-2xl",
-            activeTab === "pageViews" ? "text-foreground" : ""
-          )}
-          label="Views"
-          icon={<MdOutlineRemoveRedEye className="w-5 h-5" />}
-          onClick={() => {
-            dispatchTab({ type: "pageViews" });
-          }}
-        >
-          345
-        </PanelButton>
-        <PanelButton
-          className={activeTab === "readCount" ? "text-foreground" : ""}
-          label="Reads"
-          icon={<MdCheckCircleOutline className="w-5 h-5" />}
-          onClick={() => {
-            dispatchTab({ type: "readCount" });
-          }}
-        >
-          891
-        </PanelButton>
-        <PanelButton
-          className={clsx(
-            "rounded-tr-2xl",
-            activeTab === "averageReadTime" ? "text-foreground" : ""
-          )}
-          label="Average read duration"
-          icon={<MdOutlineAvTimer className="w-5 h-5" />}
-          onClick={() => {
-            dispatchTab({ type: "averageReadTime" });
-          }}
-        >
-          299
-        </PanelButton>
+    <>
+      <div className="w-full border h-[30rem] rounded-2xl flex flex-col">
+        <div className="w-full flex flex-wrap ">
+          <PanelButton
+            className={clsx(
+              "rounded-tl-2xl",
+              activeTab === "pageViews" ? "text-foreground" : ""
+            )}
+            label="Views"
+            icon={<MdOutlineRemoveRedEye className="w-5 h-5" />}
+            onClick={() => {
+              dispatchTab({ type: "pageViews" });
+            }}
+          >
+            345
+          </PanelButton>
+          <PanelButton
+            className={activeTab === "readCount" ? "text-foreground" : ""}
+            label="Reads"
+            icon={<MdCheckCircleOutline className="w-5 h-5" />}
+            onClick={() => {
+              dispatchTab({ type: "readCount" });
+            }}
+          >
+            891
+          </PanelButton>
+          <PanelButton
+            className={clsx(
+              "rounded-tr-2xl",
+              activeTab === "averageReadTime" ? "text-foreground" : ""
+            )}
+            label="Average read duration"
+            icon={<MdOutlineAvTimer className="w-5 h-5" />}
+            onClick={() => {
+              dispatchTab({ type: "averageReadTime" });
+            }}
+          >
+            299
+          </PanelButton>
+        </div>
+        <Graph />
       </div>
-    </div>
+    </>
   );
 };
 

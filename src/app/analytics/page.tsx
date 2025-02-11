@@ -1,11 +1,11 @@
 import React from "react";
 import { GraphContainer } from "../(components)";
 import { requireAuth } from "@/lib/authorization/requireAuth";
-import {prisma} from "@/lib/prismaClient"
+import { prisma } from "@/lib/prismaClient";
 import { AnalyticRecord } from "@/types";
 
 const page = async () => {
-  const {id} = await requireAuth();
+  const { id } = await requireAuth();
 
   //method 1: fetch blogs for user and get their analytics-slow,multiple queries
   //method 2: change db schema to include user id-duplicate data, undesirable schema
@@ -19,20 +19,20 @@ const page = async () => {
       date: true,
       views: true,
       reads: true,
-      totalHoursRead: true
+      totalHoursRead: true,
     },
     where: {
       blog: {
-        authorID: id
-      }
-    }
+        authorID: id,
+      },
+    },
   });
 
   //convert prisma decimal to javascript number
-  const analytics:AnalyticRecord[] = rawAnalytics.map((record)=>{
-    return {...record, totalHoursRead:record.totalHoursRead.toNumber()};
-  })
-  return <GraphContainer analytics = {analytics}/>;
+  const analytics: AnalyticRecord[] = rawAnalytics.map((record) => {
+    return { ...record, totalHoursRead: record.totalHoursRead.toNumber() };
+  });
+  return <GraphContainer analytics={analytics} />;
 };
 
 export default page;
