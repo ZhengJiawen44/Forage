@@ -1,40 +1,106 @@
 "use client";
-import React from "react";
+import React, { useReducer, useState } from "react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { MdOutlineAvTimer } from "react-icons/md";
-import { MdOutlinePercent } from "react-icons/md";
-const GraphContainer = () => {
+import clsx from "clsx";
+import { AnalyticRecord } from "@/types";
+import { cn } from "@/lib/utils";
+
+interface Analytics {
+  analytics: AnalyticRecord[];
+}
+const GraphContainer = ({ analytics }: Analytics) => {
+  function panelReducer(
+    state: string,
+    action: { type: "pageViews" | "readCount" | "averageReadTime" }
+  ) {
+    if (action.type === "pageViews") {
+      return "pageViews";
+    } else if (action.type === "readCount") {
+      return "readCount";
+    } else {
+      return "averageReadTime";
+    }
+  }
+
+  const [activeTab, dispatchTab] = useReducer(panelReducer, "pageViews");
+
   return (
     <div className="w-full border h-80 rounded-2xl">
       <div className="w-ful flex flex-wrap">
-        <div className="flex flex-1 flex-col justify-center items-center p-5 border rounded-tl-2xl">
-          <p className="text-[0.8rem] flex justify-center items-center gap-3">
-            Views <MdOutlineRemoveRedEye className="w-5 h-5" />
-          </p>
-          <p className="text-[1.5rem]">342</p>
-        </div>
-        <div className="flex flex-1 flex-col justify-center items-center p-5 border">
-          <p className="text-[0.8rem] flex justify-center items-center gap-3 ">
-            Reads <MdCheckCircleOutline className="w-5 h-5" />
-          </p>
-          <p className="text-[1.5rem]">298</p>
-        </div>
-        <div className="flex flex-1 flex-col justify-center items-center p-5 border">
-          <p className="text-[0.8rem] flex justify-center items-center gap-3">
-            click through rate <MdOutlinePercent className="w-5 h-5" />
-          </p>
-          <p className="text-[1.5rem]">98%</p>
-        </div>
-        <div className="flex flex-1 flex-col justify-center items-center p-5 border rounded-tr-2xl">
-          <p className="text-[0.8rem] flex justify-center items-center gap-3">
-            Average read duration <MdOutlineAvTimer className="w-5 h-5" />
-          </p>
-          <p className="text-[1.5rem]">0.2</p>
-        </div>
+        <PanelButton
+          className={clsx(
+            "rounded-tl-2xl",
+            activeTab === "pageViews" ? "text-foreground" : ""
+          )}
+          label="Views"
+          icon={<MdOutlineRemoveRedEye className="w-5 h-5" />}
+          onClick={() => {
+            dispatchTab({ type: "pageViews" });
+          }}
+        >
+          345
+        </PanelButton>
+        <PanelButton
+          className={activeTab === "readCount" ? "text-foreground" : ""}
+          label="Reads"
+          icon={<MdCheckCircleOutline className="w-5 h-5" />}
+          onClick={() => {
+            dispatchTab({ type: "readCount" });
+          }}
+        >
+          891
+        </PanelButton>
+        <PanelButton
+          className={clsx(
+            "rounded-tr-2xl",
+            activeTab === "averageReadTime" ? "text-foreground" : ""
+          )}
+          label="Average read duration"
+          icon={<MdOutlineAvTimer className="w-5 h-5" />}
+          onClick={() => {
+            dispatchTab({ type: "averageReadTime" });
+          }}
+        >
+          299
+        </PanelButton>
       </div>
     </div>
   );
 };
+
+//Panel Button component
+function PanelButton({
+  children,
+  className,
+  label,
+  icon,
+  onClick,
+  ...props
+}: {
+  children?: React.ReactNode;
+  props?: [string];
+  className?: string;
+  label: string;
+  icon: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+}) {
+  return (
+    <div
+      {...props}
+      className={cn(
+        "flex flex-1 flex-col justify-center items-center p-5 border  text-item-foreground hover:cursor-pointer hover:text-foreground",
+        className
+      )}
+      onClick={onClick}
+    >
+      <p className="text-[0.8rem] flex justify-center items-center gap-3">
+        {label} {icon}
+      </p>
+      <p className="text-[1.5rem]">{children}</p>
+    </div>
+  );
+}
 
 export default GraphContainer;

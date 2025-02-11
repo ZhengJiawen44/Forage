@@ -1,3 +1,4 @@
+
 export interface Blog {
   id: number;
   authorID: number;
@@ -14,3 +15,13 @@ export interface History {
   blogID: number;
   readAt: Date;
 }
+
+export interface AnalyticRecord{
+  id:number;
+  blogID: number;
+  date: Date;
+  views: number;
+  reads: number;
+  totalHoursRead:number;
+}
+

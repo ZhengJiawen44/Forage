@@ -48,8 +48,13 @@ const Menu = ({ userEmail, userName }: menuProps) => {
             <p className="text-[0.9rem]">Story</p>
           </DropdownMenuItem>
           <DropdownMenuItem className="flex justify-start items-center gap-2 h-fit focus:bg-[#383838]">
-            <TbChartLine className="w-[1.2rem] h-[1.2rem]" strokeWidth="1" />
-            <p className="text-[0.9rem]">Analytics</p>
+            <Link
+              href="/analytics"
+              className="text-[0.9rem] flex justify-start items-center gap-2 w-full h-full"
+            >
+              <TbHistory className="w-[1.2rem] h-[1.2rem]" strokeWidth="1" />
+              Analytics
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator className="border border-[#464646] my-4" />
           <DropdownMenuItem className="focus:bg-[#383838] mb-4">
