@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
         role: true,
         about: true,
         historyEnabled: true,
+        createdAt: true,
       },
     });
 

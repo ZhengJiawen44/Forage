@@ -1,5 +1,5 @@
 "use client";
-import React, { useReducer, useState } from "react";
+import React, { Suspense, useReducer, useState } from "react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { MdCheckCircleOutline } from "react-icons/md";
 import { MdOutlineAvTimer } from "react-icons/md";
@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { AnalyticRecord } from "@/types";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
+import MonthPicker from "./MonthPicker";
 const Graph = dynamic(() => import("./Graph"), { ssr: false });
 interface Analytics {
   analytics: AnalyticRecord[];
@@ -31,6 +32,10 @@ const GraphContainer = ({ analytics }: Analytics) => {
 
   return (
     <>
+      <Suspense fallback={<>loading</>}>
+        <MonthPicker />
+      </Suspense>
+
       <div className="w-full border h-[30rem] rounded-2xl flex flex-col">
         <div className="w-full flex flex-wrap ">
           <PanelButton
