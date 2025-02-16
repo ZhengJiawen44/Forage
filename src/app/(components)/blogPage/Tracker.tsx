@@ -68,16 +68,18 @@ const Tracker = ({ blogID }: TrackerProps) => {
         const finalActiveTime = Math.max(0, activeTimeInSeconds);
 
         //on leaving the page, has read and it's duration in seconds is sent to the backend
-        navigator.sendBeacon(
-          "/api/analytics",
-          JSON.stringify({
-            blogID,
-            read: {
-              hasRead: true,
-              duration: finalActiveTime,
-            },
-          })
-        );
+        if (finalActiveTime > 30) {
+          navigator.sendBeacon(
+            "/api/analytics",
+            JSON.stringify({
+              blogID,
+              read: {
+                hasRead: true,
+                duration: finalActiveTime,
+              },
+            })
+          );
+        }
       };
     } catch (error) {
       console.log(error);

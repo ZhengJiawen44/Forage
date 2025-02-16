@@ -10,7 +10,12 @@ import {
 } from "@/app/(components)/reusable-ui/select";
 import { Skeleton } from "@/app/(components)/reusable-ui/skeleton";
 
-const MonthPicker = () => {
+interface MonthPickerProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const MonthPicker = ({ value, onChange }: MonthPickerProps) => {
   const { status, data } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
@@ -47,19 +52,18 @@ const MonthPicker = () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
   }
 
-  // Default to the latest month, stores the time value for selections in string for
-  const [selectedMonth, setSelectedMonth] = useState("");
-
   useEffect(() => {
-    if (displayDate.length > 0) {
-      setSelectedMonth(`${displayDate[displayDate.length - 1].getTime()}`);
+    if (displayDate.length > 0 && !value) {
+      onChange(`${displayDate[displayDate.length - 1].getTime()}`);
     }
-  }, [data]);
+  }, [data, value, onChange]);
+
   if (status === "pending") {
     return <Skeleton className="w-[10rem] h-10 rounded-full" />;
   }
+
   return (
-    <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select a month" />
       </SelectTrigger>
